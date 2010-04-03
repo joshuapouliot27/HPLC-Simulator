@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='ISO-8859-1' ?>
+<!DOCTYPE map
+  PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp Map Version 1.0//EN"
+         "http://java.sun.com/products/javahelp/map_1_0.dtd">
+
+<map version="1.0">
+	<mapID target="getting_started" url="main_index.htm">
+	<mapID target="tutorials" url="tutorials.htm">
+	<mapID target="panel.chromatographicproperties" url="chromatographicproperties.htm">
+	<mapID target="controls.meohfraction" url="meohfraction.htm" />
+	<mapID target="controls.temperature" url="temperature.htm" />
+	<mapID target="controls.injectionvolume" url="injectionvolume.htm" />
+	<mapID target="controls.flowrate" url="flowrate.htm" />
+	<mapID target="controls.flowvelocity" url="flowvelocity.htm" />
+	<mapID target="controls.hetp" url="hetp.htm" />
+	<mapID target="controls.theoreticalplates" url="theoreticalplates.htm" />
+	<mapID target="controls.backpressure" url="backpressure.htm" />
+	<mapID target="panel.generalproperties" url="generalproperties.htm">
+	<mapID target="controls.eluentviscosity" url="eluentviscosity.htm" />
+	<mapID target="controls.diffusioncoefficient" url="diffusioncoefficient.htm" />
+	<mapID target="controls.timeconstant" url="timeconstant.htm" />
+	<mapID target="controls.signaloffset" url="signaloffset.htm" />
+	<mapID target="controls.noise" url="noise.htm" />
+	<mapID target="controls.automatictimespan" url="automatictimespan.htm" />
+	<mapID target="controls.initialtime" url="initialtime.htm" />
+	<mapID target="controls.finaltime" url="finaltime.htm" />
+	<mapID target="controls.numdatapoints" url="numdatapoints.htm" />
+	<mapID target="panel.columnproperties" url="columnproperties.htm">
+	<mapID target="controls.columnlength" url="columnlength.htm" />
+	<mapID target="controls.columndiameter" url="columndiameter.htm" />
+	<mapID target="controls.particlesize" url="particlesize.htm" />
+	<mapID target="controls.voidfraction" url="voidfraction.htm" />
+	<mapID target="controls.voidvolume" url="voidvolume.htm" />
+	<mapID target="controls.voidtime" url="voidtime.htm" />
+	<mapID target="controls.vandeemter" url="vandeemter.htm" />
+	<mapID target="controls.reducedplateheight" url="reducedplateheight.htm" />
+</map>
