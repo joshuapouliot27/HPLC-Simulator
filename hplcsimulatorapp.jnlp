@@ -2,14 +2,14 @@
 <jnlp spec="1.0+" codebase="http://www.hplcsimulator.org/" href="http://www.hplcsimulator.org/hplcsimulatorapp.jnlp" version="2.0">
   <information>
     <title>HPLC Simulator</title>
-    <vendor>Vendor</vendor>
+    <vendor>hplcsimulator.org</vendor>
     <homepage href="http://www.hplcsimulator.org/"/>
     <description>HPLC simulator</description>
     <description kind="short">HPLC simulator is a web-based high-pressure liquid chromatography simulation. Adjust a wide range of chromatographic parameters and see their affect on retention times, column efficiency, backpressure, and more.</description>
     <offline-allowed/> 
   </information>
 
-    <resources>
+  <resources>
       <j2se version="1.5+" href="http://java.sun.com/products/autodl/j2se"/>
       <property name="sun.java2d.noddraw" value="true"/>
       <jar href="HPLCSimulator.jar" main="true"/>
@@ -19,7 +19,7 @@
   	  <jar href="jh.jar"/>
   	  <jar href="jhbasic.jar"/>
   	  <jar href="jsearch.jar"/>
-    </resources>
+  </resources>
 
   <application-desc main-class="AppletFrame"/>
   
