@@ -46,10 +46,10 @@ public class ChemicalDialog extends JDialog implements ActionListener{
 	public int m_iCompound = 0;
 	public String m_strCompoundName = "";  //  @jve:decl-index=0:
 	public double m_dConcentration = 0;
-	public double m_dSlope1 = 0;
-	public double m_dSlope2 = 0;
-	public double m_dIntercept1 = 0;
-	public double m_dIntercept2 = 0;
+	public double m_dLogkwvsTSlope = 0;
+	public double m_dLogkwvsTIntercept = 0;
+	public double m_dSvsTSlope = 0;
+	public double m_dSvsTIntercept = 0;
 	public double m_dMolarVolume = 0;
 	/**
 	 * @param owner
@@ -151,14 +151,7 @@ public class ChemicalDialog extends JDialog implements ActionListener{
 	{
 		if (jcboCompound == null) 
 		{
-			String[] strNameList = new String[Compound.getCompoundNum()];
-			Compound newCompound = new Compound();
-			for (int i = 0; i < Compound.getCompoundNum(); i++)
-			{
-				newCompound.loadCompoundInfo(i);
-				strNameList[i] = new String(newCompound.strCompoundName);
-			}
-			jcboCompound = new JComboBox(strNameList);
+			jcboCompound = new JComboBox(Globals.CompoundNameArray);
 			jcboCompound.setFont(new Font("Dialog", Font.PLAIN, 12));
 			jcboCompound.setBackground(Color.white);
 			jcboCompound.setBounds(new Rectangle(16, 24, 229, 21));
@@ -229,19 +222,19 @@ public class ChemicalDialog extends JDialog implements ActionListener{
 		thisCompound.loadCompoundInfo(m_iCompound);
 		
 		m_strCompoundName = thisCompound.strCompoundName;
-		m_dSlope1 = thisCompound.dSlope1;
-		m_dIntercept1 = thisCompound.dIntercept1;
-		m_dSlope2 = thisCompound.dSlope2;
-		m_dIntercept2 = thisCompound.dIntercept2;
+		m_dLogkwvsTSlope = thisCompound.dLogkwvsTSlope;
+		m_dLogkwvsTIntercept = thisCompound.dLogkwvsTIntercept;
+		m_dSvsTSlope = thisCompound.dSvsTSlope;
+		m_dSvsTIntercept = thisCompound.dSvsTIntercept;
 		m_dMolarVolume = thisCompound.dMolarVolume;
 		m_dConcentration = thisCompound.dConcentration;
 
 		NumberFormat formatter = new DecimalFormat("#0.0000");
 
-		jlblSlope1.setText(formatter.format(m_dSlope1));
-		jlblIntercept1.setText(formatter.format(m_dIntercept1));
-		jlblSlope2.setText(formatter.format(m_dSlope2));
-		jlblIntercept2.setText(formatter.format(m_dIntercept2));
+		jlblSlope1.setText(formatter.format(m_dLogkwvsTSlope));
+		jlblIntercept1.setText(formatter.format(m_dLogkwvsTIntercept));
+		jlblSlope2.setText(formatter.format(m_dSvsTSlope));
+		jlblIntercept2.setText(formatter.format(m_dSvsTIntercept));
 		jtxtConcentration.setText(formatter.format(m_dConcentration));
 	}
 	

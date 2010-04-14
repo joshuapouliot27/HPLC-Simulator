@@ -27,16 +27,89 @@ class Globals
 {
 	public static HelpSet hsMainHelpSet = null;
 	public static HelpBroker hbMainHelpBroker = null;
+	public static String[] CompoundNameArray = {
+		"n-benzyl formamide",
+		"benzylalcohol",
+		"phenol",
+		"3-phenyl propanol",
+		"acetopheonone",
+		"benzonitrile",
+		"p-chlorophenol",
+		"nitrobenzene",
+		"methyl benzoate",
+		"anisole",
+		"benzene",
+		"p-nitrotoluene",
+		"p-nitrobenzyl chloride",
+		"toluene",
+		"benzophenone",
+		"bromobenzene",
+		"naphthalene",
+		"ethylbenzene",
+		"p-xylene",
+		"p-dichlorobenzene",
+		"propylbenzene",
+		"n-butylbenzene"
+	};
+	/* The LSSTDataArray is organized as [compound][eluent (0 = ACN, 1 = MeOH)][parameter (0 = Logk'w vs. T slope, 1 = Log k'w vs. T intercept, 2 = S vs. T slope, 3 = S vs. T intercept)]*/
+	public static double[][][] LSSTDataArray = {
+		/*N-benzyl formamide*/		{{-0.003731062, 0.769127502, 0.001962312, -1.950157208}, {-0.008930, 1.540840, 0.007655, -2.693812}},
+		/*benzylalcohol*/			{{-0.00364158,  0.870975072, 0.001538701, -1.801193074}, {-0.008879, 1.643379, 0.007510, -2.603915}},
+		/*phenol*/ 					{{-0.007051397, 1.222652803, 0.004948239, -2.157819856}, {-0.010465, 1.714002, 0.009040, -2.668850}},
+		/*3-phenyl propanol*/		{{-0.005175387, 1.617423196, 0.004245094, -2.711627278}, {-0.012422, 2.682599, 0.010667, -3.544294}},
+		/*acetopheonone*/			{{-0.006113393, 1.615282733, 0.004190421, -2.419171414}, {-0.009257, 2.098172, 0.008684, -2.981032}},
+		/*benzonitrile*/			{{-0.008118482, 1.759520682, 0.006344149, -2.581132813}, {-0.009409, 1.995681, 0.009057, -2.971312}},
+		/*p-chlorophenol*/			{{-0.009910541, 2.006666967, 0.009176534, -3.110178571}, {-0.015142, 2.752714, 0.013319, -3.575982}},
+		/*nitrobenzene*/			{{-0.009433757, 2.074051745, 0.008291834, -2.909075892}, {-0.010864, 2.277843, 0.009471, -2.982885}},
+		/*methyl benzoate*/			{{-0.0077323,   2.116364506, 0.006053077, -2.911497882}, {-0.011888, 2.754816, 0.010739, -3.478031}},
+		/*anisole*/					{{-0.008804318, 2.2070705,   0.007554149, -2.941605639}, {-0.011362, 2.587045, 0.009682, -3.103432}},
+		/*benzene*/					{{-0.008529343, 2.208069224, 0.007114051, -2.82653686},  {-0.010915, 2.574300, 0.009507, -3.003558}},
+		/*p-nitrotoluene*/			{{-0.010705359, 2.565390235, 0.009864271, -3.433694873}, {-0.012887, 2.900254, 0.011005, -3.522154}},
+		/*p-nitrobenzyl chloride*/	{{-0.012956701, 2.804538425, 0.012986999, -3.866695802}, {-0.014804, 3.063453, 0.013295, -3.802081}},
+		/*toluene*/					{{-0.010041886, 2.738254098, 0.009005662, -3.393491059}, {-0.013100, 3.230992, 0.010959, -3.547073}},
+		/*benzophenone*/			{{-0.011069419, 3.087847385, 0.010362441, -4.064139779}, {-0.015610, 3.814708, 0.014480, -4.572059}},
+		/*bromobenzene*/			{{-0.011273051, 2.941762836, 0.010618543, -3.651869929}, {-0.015204, 3.539528, 0.013731, -3.937992}},
+		/*naphthalene*/				{{-0.012795634, 3.296888486, 0.012596045, -4.112896456}, {-0.017658, 3.996277, 0.015853, -4.364601}},
+		/*ethylbenzene*/			{{-0.011878845, 3.278713293, 0.01150122,  -4.00434081},  {-0.016026, 3.915079, 0.014007, -4.212582}},
+		/*p-xylene*/				{{-0.011333502, 3.257874421, 0.01022372,  -3.911260542}, {-0.015301, 3.898820, 0.012295, -4.091578}},
+		/*p-dichlorobenzene*/		{{-0.01247399,  3.351026587, 0.011894773, -4.06721018},  {-0.016725, 4.042718, 0.014898, -4.384667}},
+		/*propylbenzene*/			{{-0.012995521, 3.811104371, 0.012122284, -4.521888293}, {-0.017711, 4.572339, 0.014763, -4.776607}},
+		/*n-butylbenzene*/			{{-0.013247488, 4.268938682, 0.011228978, -4.916062651}, {-0.019604, 5.195287, 0.015945, -5.293528}}
+	};
+	public static double[] MolarVolumeArray = {
+		/*N-benzyl formamide*/		156.1,
+		/*benzylalcohol*/			125.6,
+		/*phenol*/					103.4,
+		/*3-phenyl propanol*/		170,
+		/*acetopheonone*/			140.4,
+		/*benzonitrile*/			122.7,
+		/*p-chlorophenol*/			124.3,
+		/*nitrobenzene*/			122.7,
+		/*methyl benzoate*/			151.2,
+		/*anisole*/					128.1,
+		/*benzene*/					96,
+		/*p-nitrotoluene*/			144.9,
+		/*p-nitrobenzyl chloride*/	165.8,
+		/*toluene*/					118.2,
+		/*benzophenone*/			206.8,
+		/*bromobenzene*/			119.3,
+		/*naphthalene*/				147.6,
+		/*ethylbenzene*/			140.4,
+		/*p-xylene*/				140.4,
+		/*p-dichlorobenzene*/		137.8,
+		/*propylbenzene*/			162.6,
+		/*n-butylbenzene*/			184.8
+	};
 }
 
 class Compound
 {
 	String strCompoundName;
 	double dConcentration;
-	double dSlope1;
-	double dIntercept1;
-	double dSlope2;
-	double dIntercept2;
+	double dLogkwvsTSlope;
+	double dLogkwvsTIntercept;
+	double dSvsTSlope;
+	double dSvsTIntercept;
 	double dMolarVolume;
 	
 	double dRetentionTime;
@@ -53,230 +126,12 @@ class Compound
 	{
 		iCompoundIndex = iIndex;
 		
-		switch (iIndex)
-		{
-		case 0: // n-benzyl formamide
-			strCompoundName = "n-benzyl formamide";
-			dSlope1 = 2.30258*-0.00400592560830356;
-			dIntercept1 = 2.30258*0.770866320204006;
-			
-			dSlope2 = 2.30258*0.00210633532436242;
-			dIntercept2 = 2.30258*-1.95104303919;
-			dMolarVolume = 156.1;
-			break;
-		case 1: // benzyl alcohol
-			strCompoundName = "benzyl alcohol";
-			dSlope1 = 2.30258*-0.00391008226662745;
-			dIntercept1 = 2.30258*0.872684428628248;
-			
-			dSlope2 = 2.30258*0.00167809572382528;
-			dIntercept2 = 2.30258*-1.81012708002127;
-			
-			dMolarVolume = 125.6;
-			break;
-		case 2: // phenol
-			strCompoundName = "phenol";
-			dSlope1 = 2.30258*-0.00757157517564261;
-			dIntercept1 = 2.30258*1.22597671413584;
-			
-			dSlope2 = 2.30258*0.00531364688463643;
-			dIntercept2 = 2.30258*-2.16017252376361;
-			
-			dMolarVolume = 103.4;
-			break;
-		case 3: // 3-phenyl propanol
-			strCompoundName = "3-phenyl propanol";
-			dSlope1 = 2.30258*-0.00555752850448598;
-			dIntercept1 = 2.30258*1.61988170742292;
-			
-			dSlope2 = 2.30258*0.00455901086174404;
-			dIntercept2 = 2.30258*-2.71366867611246;
-			
-			dMolarVolume = 170;
-			break;
-		case 4: // acetophenone
-			strCompoundName = "acetophenone";
-			dSlope1 = 2.30258*-0.00656287336946379;
-			dIntercept1 = 2.30258*1.61797589062985;
-			
-			dSlope2 = 2.30258*0.00449206618532801;
-			dIntercept2 = 2.30258*-2.42017817576976;
-			
-			dMolarVolume = 140.4;
-			break;
-		case 5: // benzonitrile
-			strCompoundName = "benzonitrile";
-			dSlope1 = 2.30258*-0.00871713006158633;
-			dIntercept1 = 2.30258*1.7633343669628;
-			
-			dSlope2 = 2.30258*0.00681180442435532;
-			dIntercept2 = 2.30258*-2.58410471016241;
-			
-			dMolarVolume = 122.7;
-			break;
-		case 6: // p-chlorophenol
-			strCompoundName = "p-chlorophenol";
-			dSlope1 = 2.30258*-0.0106421316053285;
-			dIntercept1 = 2.30258*2.01136494370789;
-			
-			dSlope2 = 2.30258*0.00985416218318515;
-			dIntercept2 = 2.30258*-3.11454038455393;
-			
-			dMolarVolume = 124.3;
-			break;
-		case 7: // nitrobenzene
-			strCompoundName = "nitrobenzene";
-			dSlope1 = 2.30258*-0.00805477755728467;
-			dIntercept1 = 2.30258*1.94228405917832;
-			
-			dSlope2 = 2.30258*0.00890315917768479;
-			dIntercept2 = 2.30258*-2.91296540086711;
-			
-			dMolarVolume = 122.7;
-			break;
-		case 8: // methyl benzoate
-			strCompoundName = "methyl benzoate";
-			dSlope1 = 2.30258*-0.0083027971034418;
-			dIntercept1 = 2.30258*2.12001407205127;
-			
-			dSlope2 = 2.30258*0.00649981299283409;
-			dIntercept2 = 2.30258*-2.91436201685199;
-			
-			dMolarVolume = 151.2;
-			break;
-		case 9: // anisole
-			strCompoundName = "anisole";
-			dSlope1 = 2.30258* -0.00945401733563803;
-			dIntercept1 = 2.30258*2.21123180417535;
-			
-			dSlope2 = 2.30258*0.00811158706318597;
-			dIntercept2 = 2.30258*-2.94517569655072;
-			
-			dMolarVolume = 128.1;
-			break;
-		case 10: // benzene
-			strCompoundName = "benzene";
-			dSlope1 = 2.30258*-0.00915912944500843;
-			dIntercept1 = 2.30258*2.21212067952787;
-			
-			dSlope2 = 2.30258*0.00764000882763618;
-			dIntercept2 = 2.30258*-2.82995188862982;
-			
-			dMolarVolume = 96;
-			break;
-		case 11: // p-nitrotoluene
-			strCompoundName = "p-nitrotoluene";
-			dSlope1 = 2.30258*-0.0114948726028585;
-			dIntercept1 = 2.30258*2.57042503991969;
-			
-			dSlope2 = 2.30258*0.0105913897345535;
-			dIntercept2 = 2.30258*-3.43831466914758;
-			
-			dMolarVolume = 144.9;
-			break;
-		case 12: // p-nitrobenzyl chloride
-			strCompoundName = "p-nitrobenzyl chloride";
-			dSlope1 = 2.30258*-0.013912235537328;
-			dIntercept1 = 2.30258*2.8106313167988;
-			
-			dSlope2 = 2.30258*0.0139444051244846;
-			dIntercept2 = 2.30258*-3.87278361535332;
-			
-			dMolarVolume = 165.8;
-			break;
-		case 13: // toluene
-			strCompoundName = "toluene";
-			dSlope1 = 2.30258*-0.0107827743956062;
-			dIntercept1 = 2.30258*2.74299315423678;
-			
-			dSlope2 = 2.30258*0.00966990191609268;
-			dIntercept2 = 2.30258*-3.39773064943588;
-			
-			dMolarVolume = 118.2;
-			break;
-		case 14: // benzophenone
-			strCompoundName = "benzophenone";
-			dSlope1 = 2.30258*-0.011886387905335;
-			dIntercept1 = 2.30258*3.09308565623585;
-			
-			dSlope2 = 2.30258*0.0111271062588277;
-			dIntercept2 = 2.30258*-4.06903684711433;
-			
-			dMolarVolume = 206.8;
-			break;
-		case 15: // bromobenzene
-			strCompoundName = "bromobenzene";
-			dSlope1 = 2.30258*-0.012105029016898;
-			dIntercept1 = 2.30258*2.94709643373498;
-			
-			dSlope2 = 2.30258*0.0114024149475323;
-			dIntercept2 = 2.30258*-3.65690442173045;
-			
-			dMolarVolume = 119.3;
-			break;
-		case 16: // naphthalene
-			strCompoundName = "naphthalene";
-			dSlope1 = 2.30258*-0.0137396585492798;
-			dIntercept1 = 2.30258*3.30292523655581;
-			
-			dSlope2 = 2.30258*0.0135250497104058;
-			dIntercept2 = 2.30258*-4.1188233801337;
-			
-			dMolarVolume = 147.6;
-			break;
-		case 17: // ethyl benzene
-			strCompoundName = "ethyl benzene";
-			dSlope1 = 2.30258*-0.0127527136022442;
-			dIntercept1 = 2.30258*3.28418356734091;
-			
-			dSlope2 = 2.30258*0.0123447010949239;
-			dIntercept2 = 2.30258*-4.00949840654916;
-			
-			dMolarVolume = 140.4;
-			break;
-		case 18: // p-xylene
-			strCompoundName = "p-xylene";
-			dSlope1 = 2.30258*-0.0121697463506307;
-			dIntercept1 = 2.30258*3.26322623793787;
-			
-			dSlope2 = 2.30258*0.0109778607049344;
-			dIntercept2 = 2.30258*-3.91607670076105;
-			
-			dMolarVolume = 140.4;
-			break;
-		case 19: // p-dichlorobenzene
-			strCompoundName = "p-dichlorobenzene";
-			dSlope1 = 2.30258*-0.0133943283220945;
-			dIntercept1 = 2.30258*3.35691395306361;
-			
-			dSlope2 = 2.30258*0.0127718959763792;
-			dIntercept2 = 2.30258*-4.07279858731805;
-			
-			dMolarVolume = 137.8;
-			break;
-		case 20: // propylbenzene
-			strCompoundName = "propylbenzene";
-			dSlope1 = 2.30258*-0.0139547182068069;
-			dIntercept1 = 2.30258*3.81725808879461;
-			
-			dSlope2 = 2.30258*0.0130172624329028;
-			dIntercept2 = 2.30258*-4.52764097511215;
-			
-			dMolarVolume = 162.6;
-			break;
-		case 21: // n-butylbenzene
-			strCompoundName = "n-butylbenzene";
-			dSlope1 = 2.30258*-0.0141417183608352;
-			dIntercept1 = 2.30258*4.26515043907842;
-			
-			dSlope2 = 2.30258*0.0138179700728438;
-			dIntercept2 = 2.30258*-5.04537890229836;
-			
-			dMolarVolume = 184.8;
-			break;
-		default:
-			return false;
-		}
+		strCompoundName = Globals.CompoundNameArray[iIndex];
+		dLogkwvsTSlope = Globals.LSSTDataArray[iIndex][0][0];
+		dLogkwvsTIntercept = Globals.LSSTDataArray[iIndex][0][1];
+		dSvsTSlope = Globals.LSSTDataArray[iIndex][0][2];
+		dSvsTIntercept = Globals.LSSTDataArray[iIndex][0][3];
+		dMolarVolume = Globals.MolarVolumeArray[iIndex];
 		
 		return true;
 	}
@@ -318,6 +173,7 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 	public int m_iNumPoints = 3000;
 	public double m_dEluentViscosity = 1;
 	public double m_dBackpressure = 400;
+	public int m_iOrganicModifier = 0; // 0 = Acetonitrile, 1 = Methanol
 	
 	public Vector<Compound> m_vectCompound = new Vector<Compound>();
 	/**
@@ -722,10 +578,10 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 	    	Compound newCompound = new Compound();
 	    	newCompound.strCompoundName = dlgChemical.m_strCompoundName;
 	    	newCompound.dConcentration = dlgChemical.m_dConcentration;
-	    	newCompound.dSlope1 = dlgChemical.m_dSlope1;
-	    	newCompound.dIntercept1 = dlgChemical.m_dIntercept1;
-	    	newCompound.dSlope2 = dlgChemical.m_dSlope2;
-	    	newCompound.dIntercept2 = dlgChemical.m_dIntercept2;
+	    	newCompound.dLogkwvsTSlope = dlgChemical.m_dLogkwvsTSlope;
+	    	newCompound.dLogkwvsTIntercept = dlgChemical.m_dLogkwvsTIntercept;
+	    	newCompound.dSvsTSlope = dlgChemical.m_dSvsTSlope;
+	    	newCompound.dSvsTIntercept = dlgChemical.m_dSvsTIntercept;
 	    	newCompound.dMolarVolume = dlgChemical.m_dMolarVolume;
 	    	newCompound.iCompoundIndex = dlgChemical.m_iCompound;
 	    	
@@ -778,10 +634,10 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 	    	Compound newCompound = new Compound();
 	    	newCompound.strCompoundName = dlgChemical.m_strCompoundName;
 	    	newCompound.dConcentration = dlgChemical.m_dConcentration;
-	    	newCompound.dSlope1 = dlgChemical.m_dSlope1;
-	    	newCompound.dIntercept1 = dlgChemical.m_dIntercept1;
-	    	newCompound.dSlope2 = dlgChemical.m_dSlope2;
-	    	newCompound.dIntercept2 = dlgChemical.m_dIntercept2;
+	    	newCompound.dLogkwvsTSlope = dlgChemical.m_dLogkwvsTSlope;
+	    	newCompound.dLogkwvsTIntercept = dlgChemical.m_dLogkwvsTIntercept;
+	    	newCompound.dSvsTSlope = dlgChemical.m_dSvsTSlope;
+	    	newCompound.dSvsTIntercept = dlgChemical.m_dSvsTIntercept;
 	    	newCompound.dMolarVolume = dlgChemical.m_dMolarVolume;
 	    	newCompound.iCompoundIndex = dlgChemical.m_iCompound;
 	    	
@@ -996,13 +852,19 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 		m_dFlowVelocity = (m_dColumnLength / 10) / m_dVoidTime;
 		contentPane.jlblFlowVelocity.setText(formatter.format(m_dFlowVelocity));
 		
-		// Calculate eluent viscosity
-		// TODO: this formula is for acetonitrile/water mixtures, not MeOH/Water mixtures
-		// See Chen, H.; Horvath, C. Anal. Methods Instrum. 1993, 1, 213-222.
 		double dTempKelvin = m_dTemperature + 273.15;
-		m_dEluentViscosity = Math.exp((m_dMeOHFraction * (-3.476 + (726 / dTempKelvin))) + ((1 - m_dMeOHFraction) * (-5.414 + (1566 / dTempKelvin))) + (m_dMeOHFraction * (1 - m_dMeOHFraction) * (-1.762 + (929 / dTempKelvin))));
+
+		// Calculate eluent viscosity
+		// This formula is for acetonitrile/water mixtures:
+		// See Chen, H.; Horvath, C. Anal. Methods Instrum. 1993, 1, 213-222.
+		//m_dEluentViscosity = Math.exp((m_dMeOHFraction * (-3.476 + (726 / dTempKelvin))) + ((1 - m_dMeOHFraction) * (-5.414 + (1566 / dTempKelvin))) + (m_dMeOHFraction * (1 - m_dMeOHFraction) * (-1.762 + (929 / dTempKelvin))));
+		// This formula is for methanol/water mixtures:
+		// Based on fit of data (at 1 bar) in Journal of Chromatography A, 1210 (2008) 30–44.
+		m_dEluentViscosity = Math.exp((m_dMeOHFraction * (-4.597 + (1211 / dTempKelvin))) + ((1 - m_dMeOHFraction) * (-5.961 + (1736 / dTempKelvin))) + (m_dMeOHFraction * (1 - m_dMeOHFraction) * (-6.215 + (2809 / dTempKelvin))));
 		contentPane.jlblEluentViscosity.setText(formatter.format(m_dEluentViscosity));
 
+		
+		
 		// Calculate backpressure (in pascals) (Darcy equation)
 		// See Bird, R. B.; Stewart, W. E.; Lightfoot, E. N. Transport Phenomena; Wiley & Sons: New York, 1960.
 		m_dBackpressure = 500 * (m_dEluentViscosity / 1000) * (((m_dFlowVelocity / 100) * (m_dColumnLength / 1000)) / Math.pow(m_dParticleSize / 1000000, 2));
@@ -1046,11 +908,11 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 		for (int i = 0; i < m_vectCompound.size(); i++)
 		{
 	    	// Calculate lnk'w1
-	    	double lnkprimew1 = (m_vectCompound.get(i).dSlope1 * this.m_dTemperature) + m_vectCompound.get(i).dIntercept1;
+	    	double lnkprimew1 = (m_vectCompound.get(i).dLogkwvsTSlope * this.m_dTemperature) + m_vectCompound.get(i).dLogkwvsTIntercept;
 	    	// Calculate S1
-	    	double S1 = -1 * ((m_vectCompound.get(i).dSlope2 * this.m_dTemperature) + m_vectCompound.get(i).dIntercept2);
+	    	double S1 = -1 * ((m_vectCompound.get(i).dSvsTSlope * this.m_dTemperature) + m_vectCompound.get(i).dSvsTIntercept);
 			// Calculate k'
-	    	double kprime = Math.exp(lnkprimew1 - (S1 * this.m_dMeOHFraction));
+	    	double kprime = Math.pow(10, lnkprimew1 - (S1 * this.m_dMeOHFraction));
 	    	contentPane.vectChemicalRows.get(i).set(2, formatter.format(kprime));
 	    	
 	    	double dRetentionTime = m_dVoidTime * (1 + kprime);
