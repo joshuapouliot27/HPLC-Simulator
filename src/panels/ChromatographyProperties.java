@@ -291,7 +291,7 @@ public class ChromatographyProperties extends JXPanel
 	 */
 	private JComboBox getJcboOrganicModifier() {
 		if (jcboOrganicModifier == null) {
-			jcboOrganicModifier = new JComboBox(src.Globals.OrganicModifierArray);
+			jcboOrganicModifier = new JComboBox();
 			jcboOrganicModifier.setBounds(new Rectangle(120, 8, 121, 21));
 		}
 		return jcboOrganicModifier;

@@ -2,6 +2,7 @@
 <project-modules id="moduleCoreId" project-version="1.5.0">
     <wb-module deploy-name="HPLC Simulator">
         <wb-resource deploy-path="/" source-path="/trunk/appClientModule"/>
+        <wb-resource deploy-path="/" source-path="/src"/>
         <property name="java-output-path"/>
     </wb-module>
 </project-modules>
