@@ -24,9 +24,9 @@
   <applet-desc 
       documentBase="."
       name="HPLC Simulator Applet"
-      main-class="HPLCSimulatorApplet"
-      width="854"
-      height="689">
+      main-class="org.hplcsimulator.HPLCSimulatorApplet"
+      width="900"
+      height="650">
   </applet-desc>
   
 </jnlp>

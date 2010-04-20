@@ -21,6 +21,6 @@
   	  <jar href="jsearch.jar"/>
   </resources>
 
-  <application-desc main-class="AppletFrame"/>
+  <application-desc main-class="org.hplcsimulator.AppletFrame"/>
   
 </jnlp>
