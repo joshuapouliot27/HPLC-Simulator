@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
-	<classpathentry kind="lib" path="C:/Program Files/Java/jogl-1.1.1-rc8-windows-i586/lib/jogl.jar"/>
-	<classpathentry kind="lib" path="C:/Program Files/Java/jogl-1.1.1-rc8-windows-i586/lib/gluegen-rt.jar"/>
-	<classpathentry kind="lib" path="C:/Program Files/Java/jh2.0/javahelp/lib/jsearch.jar"/>
-	<classpathentry kind="lib" path="C:/Program Files/Java/jh2.0/javahelp/lib/jh.jar"/>
-	<classpathentry kind="lib" path="C:/Program Files/Java/jh2.0/javahelp/lib/jhall.jar"/>
-	<classpathentry kind="lib" path="C:/Program Files/Java/jh2.0/javahelp/lib/jhbasic.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre1.5.0"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/SwingX"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/Java/javahelp2_0_05/jh2.0/javahelp/lib/jh.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/Java/javahelp2_0_05/jh2.0/javahelp/lib/jhall.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/Java/javahelp2_0_05/jh2.0/javahelp/lib/jhbasic.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/Java/javahelp2_0_05/jh2.0/javahelp/lib/jsearch.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/Java/swingx-1.6.2/swingx-core-1.6.2.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/Java/jogl-1.1.1-windows-amd64/lib/gluegen-rt.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="C:/Program Files (x86)/Java/jogl-1.1.1-windows-amd64/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/Java/jogl-1.1.1-windows-amd64/lib/jogl.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="C:/Program Files (x86)/Java/jogl-1.1.1-windows-amd64/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre6"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

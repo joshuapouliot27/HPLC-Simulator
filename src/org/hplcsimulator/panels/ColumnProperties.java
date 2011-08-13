@@ -8,6 +8,7 @@ import java.awt.Rectangle;
 import java.awt.Font;
 import java.awt.Point;
 import javax.swing.JTextField;
+import javax.swing.JComboBox;
 
 public class ColumnProperties extends JXPanel 
 {
@@ -43,6 +44,10 @@ public class ColumnProperties extends JXPanel
 	public JLabel jlblVoidVolume3 = null;
 	public JLabel jlblVoidTime3 = null;
 
+	private JLabel jlblStationaryPhase = null;
+
+	private JComboBox jcboStationaryPhase = null;
+
 	/**
 	 * This method initializes 
 	 * 
@@ -57,89 +62,93 @@ public class ColumnProperties extends JXPanel
 	 * 
 	 */
 	private void initialize() {
+        jlblStationaryPhase = new JLabel();
+        jlblStationaryPhase.setText("Stationary phase:");
+        jlblStationaryPhase.setSize(new Dimension(125, 16));
+        jlblStationaryPhase.setLocation(new Point(8, 8));
         jlblVoidTime3 = new JLabel();
         jlblVoidTime3.setText("s");
-        jlblVoidTime3.setLocation(new Point(196, 108));
+        jlblVoidTime3.setLocation(new Point(196, 152));
         jlblVoidTime3.setSize(new Dimension(45, 16));
         jlblVoidTime3.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblVoidVolume3 = new JLabel();
         jlblVoidVolume3.setText("mL");
-        jlblVoidVolume3.setLocation(new Point(196, 88));
+        jlblVoidVolume3.setLocation(new Point(196, 132));
         jlblVoidVolume3.setSize(new Dimension(45, 16));
         jlblVoidVolume3.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblParticleSize2 = new JLabel();
         jlblParticleSize2.setText("um");
-        jlblParticleSize2.setLocation(new Point(196, 48));
+        jlblParticleSize2.setLocation(new Point(196, 92));
         jlblParticleSize2.setSize(new Dimension(45, 16));
         jlblParticleSize2.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblColumnDiameter2 = new JLabel();
         jlblColumnDiameter2.setText("mm");
-        jlblColumnDiameter2.setLocation(new Point(196, 28));
+        jlblColumnDiameter2.setLocation(new Point(196, 72));
         jlblColumnDiameter2.setSize(new Dimension(45, 16));
         jlblColumnDiameter2.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblColumnLength2 = new JLabel();
         jlblColumnLength2.setText("mm");
-        jlblColumnLength2.setLocation(new Point(196, 8));
+        jlblColumnLength2.setLocation(new Point(196, 52));
         jlblColumnLength2.setSize(new Dimension(45, 16));
         jlblColumnLength2.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblVoidTime = new JLabel();
         jlblVoidTime.setText("29.987");
-        jlblVoidTime.setLocation(new Point(136, 108));
+        jlblVoidTime.setLocation(new Point(136, 152));
         jlblVoidTime.setSize(new Dimension(57, 16));
         jlblVoidTime.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblVoidVolume = new JLabel();
         jlblVoidVolume.setText("0.9987");
-        jlblVoidVolume.setLocation(new Point(136, 88));
+        jlblVoidVolume.setLocation(new Point(136, 132));
         jlblVoidVolume.setSize(new Dimension(57, 16));
         jlblVoidVolume.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblReducedPlateHeight = new JLabel();
         jlblReducedPlateHeight.setText("0.9987");
-        jlblReducedPlateHeight.setLocation(new Point(136, 208));
+        jlblReducedPlateHeight.setLocation(new Point(136, 252));
         jlblReducedPlateHeight.setSize(new Dimension(57, 16));
         jlblReducedPlateHeight.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblReducedPlateHeight2 = new JLabel();
         jlblReducedPlateHeight2.setText("Reduced plate height:");
         jlblReducedPlateHeight2.setSize(new Dimension(125, 16));
-        jlblReducedPlateHeight2.setLocation(new Point(8, 208));
+        jlblReducedPlateHeight2.setLocation(new Point(8, 252));
         jlblCTerm = new JLabel();
-        jlblCTerm.setBounds(new Rectangle(96, 188, 37, 16));
+        jlblCTerm.setBounds(new Rectangle(96, 232, 37, 16));
         jlblCTerm.setText("C:");
         jlblBTerm = new JLabel();
-        jlblBTerm.setBounds(new Rectangle(96, 168, 37, 16));
+        jlblBTerm.setBounds(new Rectangle(96, 212, 37, 16));
         jlblBTerm.setText("B:");
         jlblATerm = new JLabel();
-        jlblATerm.setBounds(new Rectangle(96, 148, 37, 16));
+        jlblATerm.setBounds(new Rectangle(96, 192, 37, 16));
         jlblATerm.setText("A:");
         jlblVanDeemter = new JLabel();
-        jlblVanDeemter.setBounds(new Rectangle(8, 128, 181, 16));
+        jlblVanDeemter.setBounds(new Rectangle(8, 172, 181, 16));
         jlblVanDeemter.setText("Reduced Van Deemter terms:");
         jlblVanDeemter.setName("");
         jlblVoidTime2 = new JLabel();
         jlblVoidTime2.setText("Void time:");
         jlblVoidTime2.setSize(new Dimension(125, 16));
-        jlblVoidTime2.setLocation(new Point(8, 108));
+        jlblVoidTime2.setLocation(new Point(8, 152));
         jlblVoidVolume2 = new JLabel();
         jlblVoidVolume2.setText("Void volume:");
         jlblVoidVolume2.setSize(new Dimension(125, 16));
-        jlblVoidVolume2.setLocation(new Point(8, 88));
+        jlblVoidVolume2.setLocation(new Point(8, 132));
         jlblVoidFraction = new JLabel();
         jlblVoidFraction.setText("Void fraction:");
         jlblVoidFraction.setSize(new Dimension(125, 16));
-        jlblVoidFraction.setLocation(new Point(8, 68));
+        jlblVoidFraction.setLocation(new Point(8, 112));
         jlblParticleSize = new JLabel();
         jlblParticleSize.setText("Particle size:");
         jlblParticleSize.setSize(new Dimension(125, 16));
-        jlblParticleSize.setLocation(new Point(8, 48));
+        jlblParticleSize.setLocation(new Point(8, 92));
         jlblColumnDiameter = new JLabel();
         jlblColumnDiameter.setText("Diameter:");
         jlblColumnDiameter.setSize(new Dimension(125, 16));
-        jlblColumnDiameter.setLocation(new Point(8, 28));
+        jlblColumnDiameter.setLocation(new Point(8, 72));
         jlblColumnLength = new JLabel();
         jlblColumnLength.setText("Length:");
         jlblColumnLength.setSize(new Dimension(125, 16));
-        jlblColumnLength.setLocation(new Point(8, 8));
+        jlblColumnLength.setLocation(new Point(8, 52));
         this.setLayout(null);
-        this.setSize(new Dimension(254, 233));
+        this.setSize(new Dimension(254, 275));
         this.setBackground(Color.white);
         this.add(jlblColumnLength, null);
         this.add(jlblColumnDiameter, null);
@@ -167,6 +176,8 @@ public class ColumnProperties extends JXPanel
         this.add(jlblParticleSize2, null);
         this.add(jlblVoidVolume3, null);
         this.add(jlblVoidTime3, null);
+        this.add(jlblStationaryPhase, null);
+        this.add(getJcboStationaryPhase(), null);
 			
 	}
 
@@ -180,7 +191,7 @@ public class ColumnProperties extends JXPanel
 			jtxtColumnLength = new JTextField();
 			jtxtColumnLength.setText("100");
 			jtxtColumnLength.setSize(new Dimension(57, 20));
-			jtxtColumnLength.setLocation(new Point(136, 8));
+			jtxtColumnLength.setLocation(new Point(136, 52));
 		}
 		return jtxtColumnLength;
 	}
@@ -195,7 +206,7 @@ public class ColumnProperties extends JXPanel
 			jtxtColumnDiameter = new JTextField();
 			jtxtColumnDiameter.setText("4.6");
 			jtxtColumnDiameter.setSize(new Dimension(57, 20));
-			jtxtColumnDiameter.setLocation(new Point(136, 28));
+			jtxtColumnDiameter.setLocation(new Point(136, 72));
 		}
 		return jtxtColumnDiameter;
 	}
@@ -210,7 +221,7 @@ public class ColumnProperties extends JXPanel
 			jtxtParticleSize = new JTextField();
 			jtxtParticleSize.setText("3");
 			jtxtParticleSize.setSize(new Dimension(57, 20));
-			jtxtParticleSize.setLocation(new Point(136, 48));
+			jtxtParticleSize.setLocation(new Point(136, 92));
 		}
 		return jtxtParticleSize;
 	}
@@ -225,7 +236,7 @@ public class ColumnProperties extends JXPanel
 			jtxtVoidFraction = new JTextField();
 			jtxtVoidFraction.setText("0.6");
 			jtxtVoidFraction.setSize(new Dimension(57, 20));
-			jtxtVoidFraction.setLocation(new Point(136, 68));
+			jtxtVoidFraction.setLocation(new Point(136, 112));
 		}
 		return jtxtVoidFraction;
 	}
@@ -240,7 +251,7 @@ public class ColumnProperties extends JXPanel
 			jtxtATerm = new JTextField();
 			jtxtATerm.setText("1");
 			jtxtATerm.setSize(new Dimension(57, 20));
-			jtxtATerm.setLocation(new Point(136, 144));
+			jtxtATerm.setLocation(new Point(136, 188));
 		}
 		return jtxtATerm;
 	}
@@ -255,7 +266,7 @@ public class ColumnProperties extends JXPanel
 			jtxtBTerm = new JTextField();
 			jtxtBTerm.setText("3");
 			jtxtBTerm.setSize(new Dimension(57, 20));
-			jtxtBTerm.setLocation(new Point(136, 164));
+			jtxtBTerm.setLocation(new Point(136, 208));
 		}
 		return jtxtBTerm;
 	}
@@ -270,9 +281,25 @@ public class ColumnProperties extends JXPanel
 			jtxtCTerm = new JTextField();
 			jtxtCTerm.setText("0.05");
 			jtxtCTerm.setSize(new Dimension(57, 20));
-			jtxtCTerm.setLocation(new Point(136, 184));
+			jtxtCTerm.setLocation(new Point(136, 228));
 		}
 		return jtxtCTerm;
 	}
 
-}  //  @jve:decl-index=0:visual-constraint="10,10"
+	/**
+	 * This method initializes jcboStationaryPhase	
+	 * 	
+	 * @return javax.swing.JComboBox	
+	 */
+	private JComboBox getJcboStationaryPhase() {
+		if (jcboStationaryPhase == null) {
+			jcboStationaryPhase = new JComboBox();
+			jcboStationaryPhase.addItem(new String("Generic Octadecylsilane (C18)"));
+			jcboStationaryPhase.setSelectedIndex(0);
+			jcboStationaryPhase.setLocation(new Point(8, 26));
+			jcboStationaryPhase.setSize(new Dimension(233, 21));
+		}
+		return jcboStationaryPhase;
+	}
+
+}  //  @jve:decl-index=0:visual-constraint="-34,10"

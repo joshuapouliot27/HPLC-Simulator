@@ -7,7 +7,10 @@ public class Globals
 {
 	public static HelpSet hsMainHelpSet = null;
 	public static HelpBroker hbMainHelpBroker = null;
-	public static String[] OrganicModifierArray = {
+	public static String[] SolventAArray = {
+		"Water"
+	};
+	public static String[] SolventBArray = {
 		"Acetonitrile",
 		"Methanol"
 	};
@@ -16,7 +19,7 @@ public class Globals
 		"benzylalcohol",
 		"phenol",
 		"3-phenyl propanol",
-		"acetopheonone",
+		"acetophenone",
 		"benzonitrile",
 		"p-chlorophenol",
 		"nitrobenzene",
@@ -41,7 +44,7 @@ public class Globals
 		/*benzylalcohol*/			{{-0.00364158,  0.870975072, 0.001538701, -1.801193074}, {-0.008879, 1.643379, 0.007510, -2.603915}},
 		/*phenol*/ 					{{-0.007051397, 1.222652803, 0.004948239, -2.157819856}, {-0.010465, 1.714002, 0.009040, -2.668850}},
 		/*3-phenyl propanol*/		{{-0.005175387, 1.617423196, 0.004245094, -2.711627278}, {-0.012422, 2.682599, 0.010667, -3.544294}},
-		/*acetopheonone*/			{{-0.006113393, 1.615282733, 0.004190421, -2.419171414}, {-0.009257, 2.098172, 0.008684, -2.981032}},
+		/*acetophenone*/			{{-0.006113393, 1.615282733, 0.004190421, -2.419171414}, {-0.009257, 2.098172, 0.008684, -2.981032}},
 		/*benzonitrile*/			{{-0.008118482, 1.759520682, 0.006344149, -2.581132813}, {-0.009409, 1.995681, 0.009057, -2.971312}},
 		/*p-chlorophenol*/			{{-0.009910541, 2.006666967, 0.009176534, -3.110178571}, {-0.015142, 2.752714, 0.013319, -3.575982}},
 		/*nitrobenzene*/			{{-0.009433757, 2.074051745, 0.008291834, -2.909075892}, {-0.010864, 2.277843, 0.009471, -2.982885}},
@@ -65,7 +68,7 @@ public class Globals
 		/*benzylalcohol*/			125.6,
 		/*phenol*/					103.4,
 		/*3-phenyl propanol*/		170,
-		/*acetopheonone*/			140.4,
+		/*acetophenone*/			140.4,
 		/*benzonitrile*/			122.7,
 		/*p-chlorophenol*/			124.3,
 		/*nitrobenzene*/			122.7,

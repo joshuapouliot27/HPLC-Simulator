@@ -22,12 +22,12 @@
     <data>HPLCSimHelpTOC.xml</data>
   </view>
 
-  <view>
+  <!--<view>
     <name>Index</name>
     <label>Index</label>
     <type>javax.help.IndexView</type>
     <data>HPLCSimHelpIndex.xml</data>
-  </view>
+  </view>-->
 
   <view>
     <name>Search</name>

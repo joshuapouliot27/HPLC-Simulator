@@ -29,12 +29,27 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
 		double y;
 	}
 	
+	public class LineMarker
+	{
+		String strMarkerName;
+		double dTime;
+		
+		public LineMarker()
+		{
+			strMarkerName = "";
+			dTime = 0;
+		}
+	}
+
 	public class DataSeries
 	{
+		int iIndex;
 		String strName;
 		Color clrLineColor;
 		int iLineThickness;
 		Vector<DPoint> vectDataArray;
+		boolean bOnlyMarkers;
+		boolean bUseSecondScale;
 		
 		double dXMin;
 		double dYMin;
@@ -47,6 +62,8 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
 			clrLineColor = new Color(0, 0, 0);
 			iLineThickness = 1;
 			vectDataArray = new Vector<DPoint>();
+			bOnlyMarkers = false;
+			bUseSecondScale = false;
 		}
 	}
 	
@@ -104,8 +121,10 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
 	DRect m_rectGraph = new DRect();
 	double m_dXMultiplier;
 	double m_dYMultiplier;
+	double m_dSecondYMultiplier;
 	double m_dInvXMultiplier;
 	double m_dInvYMultiplier;
+	double m_dSecondInvYMultiplier;
 
 	int m_iMajorUnitTypeX;
 	double m_dMajorUnitXTypeValue;
@@ -113,20 +132,43 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
 	double m_dNextNextMajorUnitXTypeValue;
 	String m_strXAxisLabel = "";
 	String m_strXAxisLabelShort = "";
+	boolean m_bXAxisRangeIndicatorsVisible = true;
 	
 	int m_iMajorUnitTypeY;
 	double m_dMajorUnitYTypeValue;
 	double m_dNextMajorUnitYTypeValue;
 	double m_dNextNextMajorUnitYTypeValue;
-	String m_strYAxisLabel;
-	String m_strYAxisLabelShort;
-
+	String m_strYAxisLabel = "";
+	String m_strYAxisLabelShort = "";
+	String m_strYAxisTitle = "Signal";
+	String m_strYAxisBaseUnit = "units";
+	String m_strYAxisBaseUnitShort = "U";
+	boolean m_bYAxisRangeIndicatorsVisible = true;
+	boolean m_bControlsEnabled = true;
+	
+	double m_dYAxisUpperLimit = 9 * MEGAUNITS;
+	double m_dYAxisLowerLimit = -9 * MEGAUNITS;
+	double m_dSecondYAxisUpperLimit = 9 * MEGAUNITS;
+	double m_dSecondYAxisLowerLimit = -9 * MEGAUNITS;
+	
+	int m_iSecondMajorUnitTypeY;
+	double m_dSecondMajorUnitYTypeValue;
+	double m_dSecondNextMajorUnitYTypeValue;
+	double m_dSecondNextNextMajorUnitYTypeValue;
+	String m_strSecondYAxisLabel = "";
+	String m_strSecondYAxisLabelShort = "";
+	boolean m_bSecondYAxisVisible = false;
+	String m_strSecondYAxisTitle = "Solvent B Fraction";
+	String m_strSecondYAxisBaseUnit = "% v/v";
+	String m_strSecondYAxisBaseUnitShort = "%";
+		
 	Vector<DataSeries> m_vectDataSeries = new Vector<DataSeries>();
+	Vector<LineMarker> m_vectLineMarkers = new Vector<LineMarker>();
 	
 	static GLU glu = new GLU();
     
-    static Font m_fontXAxisLabel = new Font("Dialog", Font.BOLD, 14);
-    static Font m_fontYAxisLabel = new Font("Dialog", Font.BOLD, 14);
+    static Font m_fontXAxisLabel = new Font("Dialog", Font.BOLD, 12);
+    static Font m_fontYAxisLabel = new Font("Dialog", Font.BOLD, 12);
     static Font m_fontXAxisDivision = new Font("Dialog", Font.PLAIN, 12);  //  @jve:decl-index=0:
     static Font m_fontYAxisDivision = new Font("Dialog", Font.PLAIN, 12);
 
@@ -159,6 +201,8 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
 	boolean m_bAutoScaleY = true;
     private ArrayList<AutoScaleListener> _listeners = new ArrayList<AutoScaleListener>();
 
+    Object lockObject = new Object();
+    
     private static final long serialVersionUID = 1L;
 
     /**
@@ -210,11 +254,14 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
         Image imgZoomOut = toolkit.getImage(getClass().getResource("/org/hplcsimulator/images/zoomout.gif"));
         m_curZoomOut = toolkit.createCustomCursor(imgZoomOut, new Point(5,5), "zoomout");
         
-        setCursor(m_curOpenHand);
+        if (m_bControlsEnabled)
+        	setCursor(m_curOpenHand);
     }
 		
     public void display(GLAutoDrawable drawable)
     {
+    	synchronized(this.lockObject)
+    	{
         GL gl = drawable.getGL();
 
         gl.glViewport(0, 0, this.getWidth(), this.getHeight());
@@ -229,13 +276,13 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
         
     	gl.glLineWidth(1.0f);
 
+        DrawGraph();
+
     	//Set up a clipping region inside the graphrect
     	double[] upperXBoundPlane = {1.0, 0.0, 0.0, -m_rectGraph.left - 1};
         double[] lowerXBoundPlane = {-1.0, 0.0, 0.0, m_rectGraph.right};
         double[] upperYBoundPlane = {0.0, -1.0, 0.0, m_rectGraph.top};
         double[] lowerYBoundPlane = {0.0, 1.0, 0.0, -m_rectGraph.bottom - 1};
-    	
-        DrawGraph();
 
         gl.glClipPlane(GL.GL_CLIP_PLANE0, DoubleBuffer.wrap(upperXBoundPlane));
     	gl.glEnable(GL.GL_CLIP_PLANE0);
@@ -247,7 +294,8 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
     	gl.glEnable(GL.GL_CLIP_PLANE3);
 
         DrawChannelLines();
-    	DrawZoomBox();
+        drawLineLabels();
+    	drawZoomBox();
         
     	//Remove the clipping region
     	gl.glDisable(GL.GL_CLIP_PLANE0);
@@ -257,6 +305,7 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
         
     	
         this.swapBuffers();
+    	}
     }
     
     /**
@@ -377,14 +426,14 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
 							dNewViewRect.bottom = dMouseYPos - (MINHEIGHT / 2);
 
 							//Make sure that we don't run off the top or bottom
-							if (dNewViewRect.top > 9 * MEGAUNITS)
+							if (dNewViewRect.top > m_dYAxisUpperLimit)
 							{
-								dNewViewRect.top = 9 * MEGAUNITS;
+								dNewViewRect.top = m_dYAxisUpperLimit;
 								dNewViewRect.bottom = dNewViewRect.top - 1;
 							}
-							if (dNewViewRect.bottom < -9 * MEGAUNITS)
+							if (dNewViewRect.bottom < m_dYAxisLowerLimit)
 							{
-								dNewViewRect.bottom = -9 * MEGAUNITS;
+								dNewViewRect.bottom = m_dYAxisLowerLimit;
 								dNewViewRect.top = dNewViewRect.bottom + 1;
 							}
 						}
@@ -457,14 +506,14 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
     						dNewViewRect.left = dNewViewRect.left + dWidth;
     					}
     					//Make sure that we don't run off the top or bottom
-    					if (dNewViewRect.top > 9 * MEGAUNITS)
+    					if (dNewViewRect.top > m_dYAxisUpperLimit)
     					{
-    						dNewViewRect.top = 9 * MEGAUNITS;
+    						dNewViewRect.top = m_dYAxisUpperLimit;
     						dNewViewRect.bottom = dNewViewRect.top - dHeight;
     					}
-    					if (dNewViewRect.bottom < -9 * MEGAUNITS)
+    					if (dNewViewRect.bottom < m_dYAxisLowerLimit)
     					{
-    						dNewViewRect.bottom = -9 * MEGAUNITS;
+    						dNewViewRect.bottom = m_dYAxisLowerLimit;
     						dNewViewRect.top = dNewViewRect.bottom + dHeight;
     					}
 
@@ -503,11 +552,11 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
 					if (dNewViewRect.right > 104 * DAYS)
 						dNewViewRect.right = 104 * DAYS;
 
-					if (dNewViewRect.bottom < -9 * MEGAUNITS)
-						dNewViewRect.bottom = -9 * MEGAUNITS;
+					if (dNewViewRect.bottom < m_dYAxisLowerLimit)
+						dNewViewRect.bottom = m_dYAxisLowerLimit;
 
-					if (dNewViewRect.top > 9 * MEGAUNITS)
-						dNewViewRect.top = 9 * MEGAUNITS;
+					if (dNewViewRect.top > m_dYAxisUpperLimit)
+						dNewViewRect.top = m_dYAxisUpperLimit;
 
 					//Set the new viewrect to the m_ZoomSelRect
 					m_drectView.left = dNewViewRect.left;
@@ -592,179 +641,181 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
     protected void processMouseMotionEvent(MouseEvent e)
     {
     	Point pointCursor = e.getPoint();
-    	
-    	if (this.m_iMode == 0)
-    	{
-			// For left mouse button down, translate the graph around
-			if (m_bTranslating)
-			{
-				//If gets to an edge, no more translation
-				//Time max = +/- 104 days
-				//Potential max = +/- 9 megaunits
-				this.turnOffAutoScale();
-				
-				if ((m_drectLastViewPos.top + ((double)(pointCursor.y - m_pointLastCursorPos.y) * m_dYMultiplier)) <= 9 * MEGAUNITS
-					&& ((m_drectLastViewPos.top + ((double)(pointCursor.y - m_pointLastCursorPos.y) * m_dYMultiplier)) - m_drectLastViewPos.getHeight()) >= -9 * MEGAUNITS)
+		if (m_bControlsEnabled)
+		{
+	    	if (this.m_iMode == 0)
+	    	{
+				// For left mouse button down, translate the graph around
+				if (m_bTranslating)
 				{
-					m_drectView.top = m_drectLastViewPos.top + (m_dYMultiplier * (double)(pointCursor.y - m_pointLastCursorPos.y));
-					m_drectView.bottom = m_drectView.top - m_drectLastViewPos.getHeight();
-				}
-				else if ((m_drectLastViewPos.top + ((double)(pointCursor.y - m_pointLastCursorPos.y) * m_dYMultiplier)) > 9 * MEGAUNITS)
-				{
-					m_drectView.top = MEGAUNITS * 9;
-					m_drectView.bottom = m_drectView.top - m_drectLastViewPos.getHeight();
-				}
-				else if (((m_drectLastViewPos.top + ((double)(pointCursor.y - m_pointLastCursorPos.y) * m_dYMultiplier)) - m_drectLastViewPos.getHeight()) < -9 * MEGAUNITS)
-				{
-					m_drectView.bottom = -9 * MEGAUNITS;
-					m_drectView.top = m_drectView.bottom + m_drectLastViewPos.getHeight();
-				}
-	
-				if ((m_drectLastViewPos.left - ((double)(pointCursor.x - m_pointLastCursorPos.x) * m_dXMultiplier)) >= -104 * DAYS
-						&& ((m_drectLastViewPos.left - ((double)(pointCursor.x - m_pointLastCursorPos.x) * m_dXMultiplier)) + m_drectLastViewPos.getWidth()) <= 104 * DAYS)
-				{
-					m_drectView.left = m_drectLastViewPos.left - (m_dXMultiplier * (double)(pointCursor.x - m_pointLastCursorPos.x));
-					m_drectView.right = m_drectView.left + m_drectLastViewPos.getWidth();
-				}
-				else if ((m_drectLastViewPos.left - ((double)(pointCursor.x - m_pointLastCursorPos.x) * m_dXMultiplier)) < -104 * DAYS)
-				{
-					m_drectView.left = -104 * DAYS;
-					m_drectView.right = m_drectView.left + m_drectLastViewPos.getWidth();
-				}
-				else if ((m_drectLastViewPos.left - ((double)(pointCursor.x - m_pointLastCursorPos.x) * m_dXMultiplier)) + m_drectLastViewPos.getWidth() > 104 * DAYS)
-				{
-					m_drectView.right = 104 * DAYS;
-					m_drectView.left = m_drectView.right - m_drectLastViewPos.getWidth();
-				}
-				
-		    	this.repaint();
-			}
-			else if (m_bZooming)
-			{
-				double dfactor = Math.pow(1.05,(double)(m_pointLastCursorPos.y - pointCursor.y));
-				double MINWIDTH = 1;
-				double MINHEIGHT = 20;
-				
-				this.turnOffAutoScale();
-				
-				if ((m_drectLastViewPos.right - (m_drectLastViewPos.getWidth() * 0.5) + 
-					(m_drectLastViewPos.getWidth() * dfactor) * 0.5) - 
-					(m_drectLastViewPos.left + (m_drectLastViewPos.getWidth() * 0.5) - 
-					(m_drectLastViewPos.getWidth() * dfactor) * 0.5) > MINWIDTH)
-				{
-					if (m_drectLastViewPos.left + (m_drectLastViewPos.getWidth() * 0.5) - (m_drectLastViewPos.getWidth() * dfactor) * 0.5 < -104 * DAYS)
-						m_drectView.left = -104 * DAYS;
-					else
-						m_drectView.left = m_drectLastViewPos.left + (m_drectLastViewPos.getWidth() * 0.5) - (m_drectLastViewPos.getWidth() * dfactor) * 0.5;
-	
-					if (m_drectLastViewPos.right - (m_drectLastViewPos.getWidth() * 0.5) + (m_drectLastViewPos.getWidth() * dfactor) * 0.5 > 104 * DAYS)
-						m_drectView.right =  104 * DAYS;
-					else
-						m_drectView.right = m_drectLastViewPos.right - (m_drectLastViewPos.getWidth() * 0.5) + (m_drectLastViewPos.getWidth() * dfactor) * 0.5;
-				}
-				else
-				{
-					double centerh = m_drectView.left + ((m_drectView.right - m_drectView.left) * 0.5);			
-					m_drectView.left = centerh - (MINWIDTH * 0.5);
-					m_drectView.right = centerh + (MINWIDTH * 0.5);
-				}
-	
-				if ((m_drectLastViewPos.top - (m_drectLastViewPos.getHeight() * 0.5) + 
-						(m_drectLastViewPos.getHeight() * dfactor) * 0.5) - 
-						(m_drectLastViewPos.bottom + (m_drectLastViewPos.getHeight() * 0.5) - 
-						(m_drectLastViewPos.getHeight() * dfactor) * 0.5) > MINHEIGHT)
-				{
-					if (m_drectLastViewPos.top - (m_drectLastViewPos.getHeight() * 0.5) + (m_drectLastViewPos.getHeight() * dfactor) * 0.5 > 9 * MEGAUNITS)
-						m_drectView.top = 9 * MEGAUNITS;
-					else
-						m_drectView.top = m_drectLastViewPos.top - (m_drectLastViewPos.getHeight() * 0.5) + (m_drectLastViewPos.getHeight() * dfactor) * 0.5;
+					//If gets to an edge, no more translation
+					//Time max = +/- 104 days
+					//Potential max = +/- 9 megaunits, but use m_dYAxisUpperLimit and m_dYAxisLowerLimit
+					this.turnOffAutoScale();
 					
-					if (m_drectLastViewPos.bottom + (m_drectLastViewPos.getHeight() * 0.5) - (m_drectLastViewPos.getHeight() * dfactor) * 0.5 < -9 * MEGAUNITS)
-						m_drectView.bottom = -9 * MEGAUNITS;
-					else
-						m_drectView.bottom = m_drectLastViewPos.bottom + (m_drectLastViewPos.getHeight() * 0.5) - (m_drectLastViewPos.getHeight() * dfactor) * 0.5;
+					if ((m_drectLastViewPos.top + ((double)(pointCursor.y - m_pointLastCursorPos.y) * m_dYMultiplier)) <= m_dYAxisUpperLimit
+						&& ((m_drectLastViewPos.top + ((double)(pointCursor.y - m_pointLastCursorPos.y) * m_dYMultiplier)) - m_drectLastViewPos.getHeight()) >= m_dYAxisLowerLimit)
+					{
+						m_drectView.top = m_drectLastViewPos.top + (m_dYMultiplier * (double)(pointCursor.y - m_pointLastCursorPos.y));
+						m_drectView.bottom = m_drectView.top - m_drectLastViewPos.getHeight();
+					}
+					else if ((m_drectLastViewPos.top + ((double)(pointCursor.y - m_pointLastCursorPos.y) * m_dYMultiplier)) > m_dYAxisUpperLimit)
+					{
+						m_drectView.top = m_dYAxisUpperLimit;
+						m_drectView.bottom = m_drectView.top - m_drectLastViewPos.getHeight();
+					}
+					else if (((m_drectLastViewPos.top + ((double)(pointCursor.y - m_pointLastCursorPos.y) * m_dYMultiplier)) - m_drectLastViewPos.getHeight()) < m_dYAxisLowerLimit)
+					{
+						m_drectView.bottom = m_dYAxisLowerLimit;
+						m_drectView.top = m_drectView.bottom + m_drectLastViewPos.getHeight();
+					}
+		
+					if ((m_drectLastViewPos.left - ((double)(pointCursor.x - m_pointLastCursorPos.x) * m_dXMultiplier)) >= -104 * DAYS
+							&& ((m_drectLastViewPos.left - ((double)(pointCursor.x - m_pointLastCursorPos.x) * m_dXMultiplier)) + m_drectLastViewPos.getWidth()) <= 104 * DAYS)
+					{
+						m_drectView.left = m_drectLastViewPos.left - (m_dXMultiplier * (double)(pointCursor.x - m_pointLastCursorPos.x));
+						m_drectView.right = m_drectView.left + m_drectLastViewPos.getWidth();
+					}
+					else if ((m_drectLastViewPos.left - ((double)(pointCursor.x - m_pointLastCursorPos.x) * m_dXMultiplier)) < -104 * DAYS)
+					{
+						m_drectView.left = -104 * DAYS;
+						m_drectView.right = m_drectView.left + m_drectLastViewPos.getWidth();
+					}
+					else if ((m_drectLastViewPos.left - ((double)(pointCursor.x - m_pointLastCursorPos.x) * m_dXMultiplier)) + m_drectLastViewPos.getWidth() > 104 * DAYS)
+					{
+						m_drectView.right = 104 * DAYS;
+						m_drectView.left = m_drectView.right - m_drectLastViewPos.getWidth();
+					}
+					
+			    	this.repaint();
 				}
-				else
+				else if (m_bZooming)
 				{
-					double centerv = m_drectView.bottom + ((m_drectView.top - m_drectView.bottom) * 0.5);			
-					m_drectView.top = centerv + (MINHEIGHT * 0.5);
-					m_drectView.bottom = centerv - (MINHEIGHT * 0.5);
-				}
-				
-		    	this.repaint();
-			}
-			else if (m_bResizing)
-			{
-				double dfactory = Math.pow(1.05,(double)(m_pointLastCursorPos.y - pointCursor.y));
-				double dfactorx = Math.pow(1.05,(double)(m_pointLastCursorPos.x - pointCursor.x));
-				double MINWIDTH = 1;
-				double MINHEIGHT = 20;
-	
-				this.turnOffAutoScale();
-				
-				if ((m_drectLastViewPos.right - (m_drectLastViewPos.getWidth() * 0.5) + 
-						(m_drectLastViewPos.getWidth() * dfactorx) * 0.5) - 
+					double dfactor = Math.pow(1.05,(double)(m_pointLastCursorPos.y - pointCursor.y));
+					double MINWIDTH = 1;
+					double MINHEIGHT = 20;
+					
+					this.turnOffAutoScale();
+					
+					if ((m_drectLastViewPos.right - (m_drectLastViewPos.getWidth() * 0.5) + 
+						(m_drectLastViewPos.getWidth() * dfactor) * 0.5) - 
 						(m_drectLastViewPos.left + (m_drectLastViewPos.getWidth() * 0.5) - 
-						(m_drectLastViewPos.getWidth() * dfactorx) * 0.5) > MINWIDTH)
-				{
-					if (m_drectLastViewPos.left + (m_drectLastViewPos.getWidth() * 0.5) - (m_drectLastViewPos.getWidth() * dfactorx) * 0.5 < -104 * DAYS)
-						m_drectView.left = -104 * DAYS;
+						(m_drectLastViewPos.getWidth() * dfactor) * 0.5) > MINWIDTH)
+					{
+						if (m_drectLastViewPos.left + (m_drectLastViewPos.getWidth() * 0.5) - (m_drectLastViewPos.getWidth() * dfactor) * 0.5 < -104 * DAYS)
+							m_drectView.left = -104 * DAYS;
+						else
+							m_drectView.left = m_drectLastViewPos.left + (m_drectLastViewPos.getWidth() * 0.5) - (m_drectLastViewPos.getWidth() * dfactor) * 0.5;
+		
+						if (m_drectLastViewPos.right - (m_drectLastViewPos.getWidth() * 0.5) + (m_drectLastViewPos.getWidth() * dfactor) * 0.5 > 104 * DAYS)
+							m_drectView.right =  104 * DAYS;
+						else
+							m_drectView.right = m_drectLastViewPos.right - (m_drectLastViewPos.getWidth() * 0.5) + (m_drectLastViewPos.getWidth() * dfactor) * 0.5;
+					}
 					else
-						m_drectView.left = m_drectLastViewPos.left + (m_drectLastViewPos.getWidth() * 0.5) - (m_drectLastViewPos.getWidth() * dfactorx) * 0.5;
-	
-					if (m_drectLastViewPos.right - (m_drectLastViewPos.getWidth() * 0.5) + (m_drectLastViewPos.getWidth() * dfactorx) * 0.5 > 104 * DAYS)
-						m_drectView.right =  104 * DAYS;
+					{
+						double centerh = m_drectView.left + ((m_drectView.right - m_drectView.left) * 0.5);			
+						m_drectView.left = centerh - (MINWIDTH * 0.5);
+						m_drectView.right = centerh + (MINWIDTH * 0.5);
+					}
+		
+					if ((m_drectLastViewPos.top - (m_drectLastViewPos.getHeight() * 0.5) + 
+							(m_drectLastViewPos.getHeight() * dfactor) * 0.5) - 
+							(m_drectLastViewPos.bottom + (m_drectLastViewPos.getHeight() * 0.5) - 
+							(m_drectLastViewPos.getHeight() * dfactor) * 0.5) > MINHEIGHT)
+					{
+						if (m_drectLastViewPos.top - (m_drectLastViewPos.getHeight() * 0.5) + (m_drectLastViewPos.getHeight() * dfactor) * 0.5 > m_dYAxisUpperLimit)
+							m_drectView.top = m_dYAxisUpperLimit;
+						else
+							m_drectView.top = m_drectLastViewPos.top - (m_drectLastViewPos.getHeight() * 0.5) + (m_drectLastViewPos.getHeight() * dfactor) * 0.5;
+						
+						if (m_drectLastViewPos.bottom + (m_drectLastViewPos.getHeight() * 0.5) - (m_drectLastViewPos.getHeight() * dfactor) * 0.5 < m_dYAxisLowerLimit)
+							m_drectView.bottom = m_dYAxisLowerLimit;
+						else
+							m_drectView.bottom = m_drectLastViewPos.bottom + (m_drectLastViewPos.getHeight() * 0.5) - (m_drectLastViewPos.getHeight() * dfactor) * 0.5;
+					}
 					else
-						m_drectView.right = m_drectLastViewPos.right - (m_drectLastViewPos.getWidth() * 0.5) + (m_drectLastViewPos.getWidth() * dfactorx) * 0.5;
-				}
-				else
-				{
-					double centerh = m_drectView.left + ((m_drectView.right - m_drectView.left) * 0.5);			
-					m_drectView.left = centerh - (MINWIDTH * 0.5);
-					m_drectView.right = centerh + (MINWIDTH * 0.5);
-				}
-				
-				if ((m_drectLastViewPos.top - (m_drectLastViewPos.getHeight() * 0.5) + 
-						(m_drectLastViewPos.getHeight() * dfactory) * 0.5) - 
-						(m_drectLastViewPos.bottom + (m_drectLastViewPos.getHeight() * 0.5) - 
-						(m_drectLastViewPos.getHeight() * dfactory) * 0.5) > MINHEIGHT)
-				{
-					if (m_drectLastViewPos.top - (m_drectLastViewPos.getHeight() * 0.5) + (m_drectLastViewPos.getHeight() * dfactory) * 0.5 > 9 * MEGAUNITS)
-						m_drectView.top = 9 * MEGAUNITS;
-					else
-						m_drectView.top = m_drectLastViewPos.top - (m_drectLastViewPos.getHeight() * 0.5) + (m_drectLastViewPos.getHeight() * dfactory) * 0.5;
+					{
+						double centerv = m_drectView.bottom + ((m_drectView.top - m_drectView.bottom) * 0.5);			
+						m_drectView.top = centerv + (MINHEIGHT * 0.5);
+						m_drectView.bottom = centerv - (MINHEIGHT * 0.5);
+					}
 					
-					if (m_drectLastViewPos.bottom + (m_drectLastViewPos.getHeight() * 0.5) - (m_drectLastViewPos.getHeight() * dfactory) * 0.5 < -9 * MEGAUNITS)
-						m_drectView.bottom = -9 * MEGAUNITS;
-					else
-						m_drectView.bottom = m_drectLastViewPos.bottom + (m_drectLastViewPos.getHeight() * 0.5) - (m_drectLastViewPos.getHeight() * dfactory) * 0.5;
+			    	this.repaint();
 				}
-				else
+				else if (m_bResizing)
 				{
-					double centerv = m_drectView.bottom + ((m_drectView.top - m_drectView.bottom) * 0.5);			
-					m_drectView.top = centerv + (MINHEIGHT * 0.5);
-					m_drectView.bottom = centerv - (MINHEIGHT * 0.5);
+					double dfactory = Math.pow(1.05,(double)(m_pointLastCursorPos.y - pointCursor.y));
+					double dfactorx = Math.pow(1.05,(double)(m_pointLastCursorPos.x - pointCursor.x));
+					double MINWIDTH = 1;
+					double MINHEIGHT = 20;
+		
+					this.turnOffAutoScale();
+					
+					if ((m_drectLastViewPos.right - (m_drectLastViewPos.getWidth() * 0.5) + 
+							(m_drectLastViewPos.getWidth() * dfactorx) * 0.5) - 
+							(m_drectLastViewPos.left + (m_drectLastViewPos.getWidth() * 0.5) - 
+							(m_drectLastViewPos.getWidth() * dfactorx) * 0.5) > MINWIDTH)
+					{
+						if (m_drectLastViewPos.left + (m_drectLastViewPos.getWidth() * 0.5) - (m_drectLastViewPos.getWidth() * dfactorx) * 0.5 < -104 * DAYS)
+							m_drectView.left = -104 * DAYS;
+						else
+							m_drectView.left = m_drectLastViewPos.left + (m_drectLastViewPos.getWidth() * 0.5) - (m_drectLastViewPos.getWidth() * dfactorx) * 0.5;
+		
+						if (m_drectLastViewPos.right - (m_drectLastViewPos.getWidth() * 0.5) + (m_drectLastViewPos.getWidth() * dfactorx) * 0.5 > 104 * DAYS)
+							m_drectView.right =  104 * DAYS;
+						else
+							m_drectView.right = m_drectLastViewPos.right - (m_drectLastViewPos.getWidth() * 0.5) + (m_drectLastViewPos.getWidth() * dfactorx) * 0.5;
+					}
+					else
+					{
+						double centerh = m_drectView.left + ((m_drectView.right - m_drectView.left) * 0.5);			
+						m_drectView.left = centerh - (MINWIDTH * 0.5);
+						m_drectView.right = centerh + (MINWIDTH * 0.5);
+					}
+					
+					if ((m_drectLastViewPos.top - (m_drectLastViewPos.getHeight() * 0.5) + 
+							(m_drectLastViewPos.getHeight() * dfactory) * 0.5) - 
+							(m_drectLastViewPos.bottom + (m_drectLastViewPos.getHeight() * 0.5) - 
+							(m_drectLastViewPos.getHeight() * dfactory) * 0.5) > MINHEIGHT)
+					{
+						if (m_drectLastViewPos.top - (m_drectLastViewPos.getHeight() * 0.5) + (m_drectLastViewPos.getHeight() * dfactory) * 0.5 > m_dYAxisUpperLimit)
+							m_drectView.top = m_dYAxisUpperLimit;
+						else
+							m_drectView.top = m_drectLastViewPos.top - (m_drectLastViewPos.getHeight() * 0.5) + (m_drectLastViewPos.getHeight() * dfactory) * 0.5;
+						
+						if (m_drectLastViewPos.bottom + (m_drectLastViewPos.getHeight() * 0.5) - (m_drectLastViewPos.getHeight() * dfactory) * 0.5 < m_dYAxisLowerLimit)
+							m_drectView.bottom = m_dYAxisLowerLimit;
+						else
+							m_drectView.bottom = m_drectLastViewPos.bottom + (m_drectLastViewPos.getHeight() * 0.5) - (m_drectLastViewPos.getHeight() * dfactory) * 0.5;
+					}
+					else
+					{
+						double centerv = m_drectView.bottom + ((m_drectView.top - m_drectView.bottom) * 0.5);			
+						m_drectView.top = centerv + (MINHEIGHT * 0.5);
+						m_drectView.bottom = centerv - (MINHEIGHT * 0.5);
+					}
+					
+			    	this.repaint();
 				}
-				
-		    	this.repaint();
-			}
-    	}
-    	else if (this.m_iMode == 1) // Zoom in mode
-    	{
-			if (m_bZoomToolTracking == true)
-			{
-				m_ZoomSelRect.right = (double)pointCursor.x;
-								
-				int iWindowHeight = this.getHeight();
-				m_ZoomSelRect.bottom = iWindowHeight - pointCursor.y;
-				
-				this.repaint();
-			}
-    	}
-    	else if (this.m_iMode == 2) // Zoom out mode
-    	{
-    		// Do nothing on mouse move for zoom out.
-    	}
+	    	}
+	    	else if (this.m_iMode == 1) // Zoom in mode
+	    	{
+				if (m_bZoomToolTracking == true)
+				{
+					m_ZoomSelRect.right = (double)pointCursor.x;
+									
+					int iWindowHeight = this.getHeight();
+					m_ZoomSelRect.bottom = iWindowHeight - pointCursor.y;
+					
+					this.repaint();
+				}
+	    	}
+	    	else if (this.m_iMode == 2) // Zoom out mode
+	    	{
+	    		// Do nothing on mouse move for zoom out.
+	    	}
+		}
 		
     	m_pointLastCursorPos.x = e.getPoint().x;
     	m_pointLastCursorPos.y = e.getPoint().y;
@@ -797,6 +848,7 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
 
     	String strNextXAxisLabel = "";
     	String strNextYAxisLabel = "";
+    	String strSecondNextYAxisLabel = "";
 
     	DRect rectWindow = new DRect();
     	rectWindow.bottom = 0;
@@ -816,16 +868,30 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
     	DecimalFormat decformat = new DecimalFormat("#.#");
 
     	// Calculate the rectangle for the graph itself
-    	m_rectGraph.left = rectWindow.left + 2 + metricsYAxisLabel.getHeight() + (2 * metricsYAxisDivision.getHeight()) + GREAT_LINE_LENGTH;
-    	m_rectGraph.bottom = rectWindow.bottom + (3 * metricsXAxisDivision.getHeight()) + 2 + GREAT_LINE_LENGTH;
-    	m_rectGraph.right = rectWindow.right - 5;
+    	if (this.m_bYAxisRangeIndicatorsVisible)
+    		m_rectGraph.left = rectWindow.left + 2 + metricsYAxisLabel.getHeight() + (2 * metricsYAxisDivision.getHeight()) + GREAT_LINE_LENGTH;
+    	else
+    		m_rectGraph.left = rectWindow.left + 2 + metricsYAxisLabel.getHeight() + (1 * metricsYAxisDivision.getHeight()) + GREAT_LINE_LENGTH;
+    		
+    	if (this.m_bXAxisRangeIndicatorsVisible)
+    		m_rectGraph.bottom = rectWindow.bottom + (3 * metricsXAxisDivision.getHeight()) + 2 + GREAT_LINE_LENGTH;
+    	else
+    		m_rectGraph.bottom = rectWindow.bottom + (2 * metricsXAxisDivision.getHeight()) + 2 + GREAT_LINE_LENGTH;
+   		
+    	if (this.m_bSecondYAxisVisible)
+    		m_rectGraph.right = rectWindow.right - 2 - metricsYAxisLabel.getHeight() - (1 * metricsYAxisDivision.getHeight()) - GREAT_LINE_LENGTH;
+    	else
+    		m_rectGraph.right = rectWindow.right - 5;
+    		
     	m_rectGraph.top = rectWindow.top - 5;
     
-    	//Calculate the multipliers (in units/pixel)
+    	// Calculate the multipliers (in units/pixel)
     	m_dXMultiplier = (m_drectView.right - m_drectView.left) / (m_rectGraph.right - m_rectGraph.left);
     	m_dYMultiplier = (m_drectView.top - m_drectView.bottom) / (m_rectGraph.top - m_rectGraph.bottom);
+    	m_dSecondYMultiplier = (m_dSecondYAxisUpperLimit - m_dSecondYAxisLowerLimit) / (m_rectGraph.top - m_rectGraph.bottom);
     	m_dInvXMultiplier = 1 / m_dXMultiplier;
     	m_dInvYMultiplier = 1 / m_dYMultiplier;
+    	m_dSecondInvYMultiplier = 1 / m_dSecondYMultiplier;
 
     	double dFrameRefX = m_dXMultiplier * 20;
     	
@@ -1293,12 +1359,15 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
     		}
 
     	}
-
-        printGL(m_rendererXAxisDivision, (int)m_rectGraph.left, (int)(rectWindow.bottom + metricsXAxisDivision.getHeight() + 2), JUSTIFY_LEFT, 0, strTopLeft);
-        printGL(m_rendererXAxisDivision, (int)m_rectGraph.left, (int)(rectWindow.bottom + 2), JUSTIFY_LEFT, 0, strBottomLeft);
-        printGL(m_rendererXAxisDivision, (int)m_rectGraph.right, (int)(rectWindow.bottom + metricsXAxisDivision.getHeight() + 2), JUSTIFY_RIGHT, 0, strTopRight);
-        printGL(m_rendererXAxisDivision, (int)m_rectGraph.right, (int)(rectWindow.bottom + 2), JUSTIFY_RIGHT, 0, strBottomRight);
-        /**************Finished drawing the X-Axis***************/
+    	
+    	if (m_bXAxisRangeIndicatorsVisible)
+    	{
+	        printGL(m_rendererXAxisDivision, (int)m_rectGraph.left, (int)(rectWindow.bottom + metricsXAxisDivision.getHeight() + 2), JUSTIFY_LEFT, 0, strTopLeft);
+	        printGL(m_rendererXAxisDivision, (int)m_rectGraph.left, (int)(rectWindow.bottom + 2), JUSTIFY_LEFT, 0, strBottomLeft);
+	        printGL(m_rendererXAxisDivision, (int)m_rectGraph.right, (int)(rectWindow.bottom + metricsXAxisDivision.getHeight() + 2), JUSTIFY_RIGHT, 0, strTopRight);
+	        printGL(m_rendererXAxisDivision, (int)m_rectGraph.right, (int)(rectWindow.bottom + 2), JUSTIFY_RIGHT, 0, strBottomRight);
+    	}
+	    /**************Finished drawing the X-Axis***************/
         
         /**************Begin drawing the Y-Axis*****************/
     	double dMajorUnitY;
@@ -1327,9 +1396,9 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
     		m_dMajorUnitYTypeValue = NANOUNITS;
     		m_dNextMajorUnitYTypeValue = MICROUNITS;
     		m_dNextNextMajorUnitYTypeValue = MILLIUNITS;
-    		m_strYAxisLabel = "nanounits";
-    		m_strYAxisLabelShort = "nU";
-    		strNextYAxisLabel = "\u03BCU";
+    		m_strYAxisLabel = "nano" + this.m_strYAxisBaseUnit;
+    		m_strYAxisLabelShort = "n" + this.m_strYAxisBaseUnitShort;
+    		strNextYAxisLabel = "\u03BC" + this.m_strYAxisBaseUnitShort;
     	}
     	else if (dFrameRefY <= 50 * MICROUNITS)
     	{	//Check microseconds
@@ -1356,9 +1425,9 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
     		m_dMajorUnitYTypeValue = MICROUNITS;
     		m_dNextMajorUnitYTypeValue = MILLIUNITS;
     		m_dNextNextMajorUnitYTypeValue = UNITS;
-    		m_strYAxisLabel = "microunits";
-    		m_strYAxisLabelShort = "\u03BCU";
-    		strNextYAxisLabel = "mU";
+    		m_strYAxisLabel = "micro" + this.m_strYAxisBaseUnit;
+    		m_strYAxisLabelShort = "\u03BC" + this.m_strYAxisBaseUnitShort;
+    		strNextYAxisLabel = "m" + this.m_strYAxisBaseUnitShort;
     	}
     	else if (dFrameRefY <= 50 * MILLIUNITS) //Is the 11 pixel graduation less than 0.1 s?
     	{	//Check milliseconds
@@ -1385,9 +1454,9 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
     		m_dMajorUnitYTypeValue = MILLIUNITS;
     		m_dNextMajorUnitYTypeValue = UNITS;
     		m_dNextNextMajorUnitYTypeValue = KILOUNITS;
-    		m_strYAxisLabel = "milliunits";
-    		m_strYAxisLabelShort = "mU";
-    		strNextYAxisLabel = "U";
+    		m_strYAxisLabel = "milli" + this.m_strYAxisBaseUnit;
+    		m_strYAxisLabelShort = "m" + this.m_strYAxisBaseUnitShort;
+    		strNextYAxisLabel = this.m_strYAxisBaseUnitShort;
     	}
     	else if (dFrameRefY <= 50 * UNITS) //Is the 11 pixel graduation less than 0.1 s?
     	{	//Check milliseconds
@@ -1414,9 +1483,9 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
     		m_dMajorUnitYTypeValue = UNITS;
     		m_dNextMajorUnitYTypeValue = KILOUNITS;
     		m_dNextNextMajorUnitYTypeValue = MEGAUNITS;
-    		m_strYAxisLabel = "units";
-    		m_strYAxisLabelShort = "U";
-    		strNextYAxisLabel = "kU";
+    		m_strYAxisLabel = this.m_strYAxisBaseUnit;
+    		m_strYAxisLabelShort = this.m_strYAxisBaseUnitShort;
+    		strNextYAxisLabel = "k" + this.m_strYAxisBaseUnitShort;
     	}
     	else if (dFrameRefY <= 50 * KILOUNITS) //Is the 11 pixel graduation less than 0.1 s?
     	{	//Check milliseconds
@@ -1442,9 +1511,9 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
     		m_iMajorUnitTypeY = 5;
     		m_dMajorUnitYTypeValue = KILOUNITS;
     		m_dNextMajorUnitYTypeValue = MEGAUNITS;
-    		m_strYAxisLabel = "kilounits";
-    		m_strYAxisLabelShort = "kU";
-    		strNextYAxisLabel = "MU";
+    		m_strYAxisLabel = "kilo" + this.m_strYAxisBaseUnit;
+    		m_strYAxisLabelShort = "k" + this.m_strYAxisBaseUnitShort;
+    		strNextYAxisLabel = "M" + this.m_strYAxisBaseUnitShort;
     	}
     	else
     	{
@@ -1469,8 +1538,8 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
 
     		m_iMajorUnitTypeY = 6;
     		m_dMajorUnitYTypeValue = MEGAUNITS;
-    		m_strYAxisLabelShort = "MU";
-    		m_strYAxisLabel = "megaunits";
+    		m_strYAxisLabelShort = "M" + this.m_strYAxisBaseUnitShort;
+    		m_strYAxisLabel = "mega" + this.m_strYAxisBaseUnit;
     	}
     	
     	//Now we have the major unit in ldMajorUnitY.
@@ -1654,8 +1723,8 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
     				bottomneg = true;
     			}
 
-    			strTop = String.format("%d", topvalue) + strTop + " U";
-    			strBottom = String.format("%d", bottomvalue) + strBottom + " U";
+    			strTop = String.format("%d", topvalue) + strTop + " " + this.m_strYAxisBaseUnitShort;
+    			strBottom = String.format("%d", bottomvalue) + strBottom + " " + this.m_strYAxisBaseUnitShort;
 
     			if (topneg)
     				strTop = "-" + strTop;
@@ -1669,8 +1738,8 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
     			topvalue = (int)(Floor(m_drectView.top / KILOUNITS));
     			bottomvalue = (int)(Floor(m_drectView.bottom / KILOUNITS));
 
-    			strTop = String.format("%d", topvalue) + strTop + " kU";
-    			strBottom = String.format("%d", bottomvalue) + strBottom + " kU";
+    			strTop = String.format("%d", topvalue) + strTop + " k" + this.m_strYAxisBaseUnitShort;
+    			strBottom = String.format("%d", bottomvalue) + strBottom + " k" + this.m_strYAxisBaseUnitShort;
     			break;
     		}
     	case 5:
@@ -1678,38 +1747,445 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
     			topvalue = (int)(Floor(m_drectView.top / MEGAUNITS));
     			bottomvalue = (int)(Floor(m_drectView.bottom / MEGAUNITS));
 
-    			strTop = String.format("%d", topvalue) + strTop + " MU";
-    			strBottom = String.format("%d", bottomvalue) + strBottom + " MU";
+    			strTop = String.format("%d", topvalue) + strTop + " M" + this.m_strYAxisBaseUnitShort;
+    			strBottom = String.format("%d", bottomvalue) + strBottom + " M" + this.m_strYAxisBaseUnitShort;
     			break;
     		}
 
     	}
     	
-        printGL(m_rendererYAxisDivision, (int)(rectWindow.left + 2 + metricsYAxisLabel.getHeight() + metricsYAxisDivision.getHeight()), (int)m_rectGraph.bottom, JUSTIFY_LEFT, 90, strBottom);
-        printGL(m_rendererYAxisDivision, (int)(rectWindow.left + 2 + metricsYAxisLabel.getHeight() + metricsYAxisDivision.getHeight()), (int)m_rectGraph.top, JUSTIFY_RIGHT, 90, strTop);
-
+    	if (m_bYAxisRangeIndicatorsVisible)
+    	{
+    		printGL(m_rendererYAxisDivision, (int)(rectWindow.left + 2 + metricsYAxisLabel.getHeight() + metricsYAxisDivision.getHeight()), (int)m_rectGraph.bottom, JUSTIFY_LEFT, 90, strBottom);
+    		printGL(m_rendererYAxisDivision, (int)(rectWindow.left + 2 + metricsYAxisLabel.getHeight() + metricsYAxisDivision.getHeight()), (int)m_rectGraph.top, JUSTIFY_RIGHT, 90, strTop);
+    	}
+    	
     /**************Finished drawing the Y-Axis***************/
 
+    /**************Begin drawing the Second Y-Axis*****************/
+    	if (m_bSecondYAxisVisible)
+    	{
+    		double dSecondMajorUnitY;
+	
+	    	double dSecondFrameRefY = 20 * m_dSecondYMultiplier;
+	
+	    	double dSecondDifferenceY = m_dSecondYAxisUpperLimit - m_dSecondYAxisLowerLimit;
+	
+	    	//Start if's from the bottom up - we want the smallest unit that fits
+	    	if (dSecondFrameRefY <= 50 * NANOUNITS)
+	    	{	//Check nanounits
+	    		if (1 >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 1; // 1 nu
+	    		else if (2 >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 2; // 2 nu
+	    		else if (5 >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 5; // 5 nu
+	    		else if (10 >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 10; // 10 nu
+	    		else if (20 >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 20; // 20 nu
+	    		else
+	    			dSecondMajorUnitY = 50; // 50 nu
+	
+	    		m_iSecondMajorUnitTypeY = 1;
+	    		m_dSecondMajorUnitYTypeValue = NANOUNITS;
+	    		m_dSecondNextMajorUnitYTypeValue = MICROUNITS;
+	    		m_dSecondNextNextMajorUnitYTypeValue = MILLIUNITS;
+	    		m_strSecondYAxisLabel = "nano" + this.m_strSecondYAxisBaseUnit;
+	    		m_strSecondYAxisLabelShort = "n" + this.m_strSecondYAxisBaseUnitShort;
+	    		strSecondNextYAxisLabel = "\u03BC" + this.m_strSecondYAxisBaseUnitShort;
+	    	}
+	    	else if (dSecondFrameRefY <= 50 * MICROUNITS)
+	    	{	//Check microseconds
+	    		if (0.1 * MICROUNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 0.1 * MICROUNITS; //0.1 us
+	    		else if (0.2 * MICROUNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 0.2 * MICROUNITS; //0.2 us
+	    		else if (0.5 * MICROUNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 0.5 * MICROUNITS; //0.5 us
+	    		else if (1 * MICROUNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 1 * MICROUNITS; //1 us
+	    		else if (2 * MICROUNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 2 * MICROUNITS; //2 us
+	    		else if (5 * MICROUNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 5 * MICROUNITS; //5 us
+	    		else if (10 * MICROUNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 10 * MICROUNITS; //10 us
+	    		else if (20 * MICROUNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 20 * MICROUNITS; //20 us
+	    		else
+	    			dSecondMajorUnitY = 50 * MICROUNITS; //50 us
+	
+	    		m_iSecondMajorUnitTypeY = 2;
+	    		m_dSecondMajorUnitYTypeValue = MICROUNITS;
+	    		m_dSecondNextMajorUnitYTypeValue = MILLIUNITS;
+	    		m_dSecondNextNextMajorUnitYTypeValue = UNITS;
+	    		m_strSecondYAxisLabel = "micro" + this.m_strSecondYAxisBaseUnit;
+	    		m_strSecondYAxisLabelShort = "\u03BC" + this.m_strSecondYAxisBaseUnitShort;
+	    		strSecondNextYAxisLabel = "m" + this.m_strSecondYAxisBaseUnitShort;
+	    	}
+	    	else if (dSecondFrameRefY <= 50 * MILLIUNITS) //Is the 11 pixel graduation less than 0.1 s?
+	    	{	//Check milliseconds
+	    		if (0.1 * MILLIUNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 0.1 * MILLIUNITS; //0.1 ms
+	    		else if (0.2 * MILLIUNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 0.2 * MILLIUNITS; //0.2 ms
+	    		else if (0.5 * MILLIUNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 0.5 * MILLIUNITS; //0.5 ms
+	    		else if (1 * MILLIUNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 1 * MILLIUNITS; //1 ms
+	    		else if (2 * MILLIUNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 2 * MILLIUNITS; //2 ms
+	    		else if (5 * MILLIUNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 5 * MILLIUNITS; //5 ms
+	    		else if (10 * MILLIUNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 10 * MILLIUNITS; //10 ms
+	    		else if (20 * MILLIUNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 20 * MILLIUNITS; //20 ms
+	    		else
+	    			dSecondMajorUnitY = 50 * MILLIUNITS; //50 ms
+	
+	    		m_iSecondMajorUnitTypeY = 3;
+	    		m_dSecondMajorUnitYTypeValue = MILLIUNITS;
+	    		m_dSecondNextMajorUnitYTypeValue = UNITS;
+	    		m_dSecondNextNextMajorUnitYTypeValue = KILOUNITS;
+	    		m_strSecondYAxisLabel = "milli" + this.m_strSecondYAxisBaseUnit;
+	    		m_strSecondYAxisLabelShort = "m" + this.m_strSecondYAxisBaseUnitShort;
+	    		strSecondNextYAxisLabel = this.m_strSecondYAxisBaseUnitShort;
+	    	}
+	    	else if (dSecondFrameRefY <= 50 * UNITS) //Is the 11 pixel graduation less than 0.1 s?
+	    	{	//Check milliseconds
+	    		if (0.1 * UNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 0.1 * UNITS; //0.1 ms
+	    		else if (0.2 * UNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 0.2 * UNITS; //0.2 ms
+	    		else if (0.5 * UNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 0.5 * UNITS; //0.5 ms
+	    		else if (1 * UNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 1 * UNITS; //1 ms
+	    		else if (2 * UNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 2 * UNITS; //2 ms
+	    		else if (5 * UNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 5 * UNITS; //5 ms
+	    		else if (10 * UNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 10 * UNITS; //10 ms
+	    		else if (20 * UNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 20 * UNITS; //20 ms
+	    		else
+	    			dSecondMajorUnitY = 50 * UNITS; //50 ms
+	
+	    		m_iSecondMajorUnitTypeY = 4;
+	    		m_dSecondMajorUnitYTypeValue = UNITS;
+	    		m_dSecondNextMajorUnitYTypeValue = KILOUNITS;
+	    		m_dSecondNextNextMajorUnitYTypeValue = MEGAUNITS;
+	    		m_strSecondYAxisLabel = this.m_strSecondYAxisBaseUnit;
+	    		m_strSecondYAxisLabelShort = this.m_strSecondYAxisBaseUnitShort;
+	    		strSecondNextYAxisLabel = "k" + this.m_strSecondYAxisBaseUnitShort;
+	    	}
+	    	else if (dSecondFrameRefY <= 50 * KILOUNITS) //Is the 11 pixel graduation less than 0.1 s?
+	    	{	//Check milliseconds
+	    		if (0.1 * KILOUNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 0.1 * KILOUNITS; //0.1 ms
+	    		else if (0.2 * KILOUNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 0.2 * KILOUNITS; //0.2 ms
+	    		else if (0.5 * KILOUNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 0.5 * KILOUNITS; //0.5 ms
+	    		else if (1 * KILOUNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 1 * KILOUNITS; //1 ms
+	    		else if (2 * KILOUNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 2 * KILOUNITS; //2 ms
+	    		else if (5 * KILOUNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 5 * KILOUNITS; //5 ms
+	    		else if (10 * KILOUNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 10 * KILOUNITS; //10 ms
+	    		else if (20 * KILOUNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 20 * KILOUNITS; //20 ms
+	    		else
+	    			dSecondMajorUnitY = 50 * KILOUNITS; //50 ms
+	
+	    		m_iSecondMajorUnitTypeY = 5;
+	    		m_dSecondMajorUnitYTypeValue = KILOUNITS;
+	    		m_dSecondNextMajorUnitYTypeValue = MEGAUNITS;
+	    		m_strSecondYAxisLabel = "kilo" + this.m_strSecondYAxisBaseUnit;
+	    		m_strSecondYAxisLabelShort = "k" + this.m_strSecondYAxisBaseUnitShort;
+	    		strSecondNextYAxisLabel = "M" + this.m_strSecondYAxisBaseUnitShort;
+	    	}
+	    	else
+	    	{
+	    		if (0.1 * MEGAUNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 0.1 * MEGAUNITS; //0.1 ms
+	    		else if (0.2 * MEGAUNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 0.2 * MEGAUNITS; //0.2 ms
+	    		else if (0.5 * MEGAUNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 0.5 * MEGAUNITS; //0.5 ms
+	    		else if (1 * MEGAUNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 1 * MEGAUNITS; //1 ms
+	    		else if (2 * MEGAUNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 2 * MEGAUNITS; //2 ms
+	    		else if (5 * MEGAUNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 5 * MEGAUNITS; //5 ms
+	    		else if (10 * MEGAUNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 10 * MEGAUNITS; //10 ms
+	    		else if (20 * MEGAUNITS >= dSecondFrameRefY)
+	    			dSecondMajorUnitY = 20 * MEGAUNITS; //20 ms
+	    		else
+	    			dSecondMajorUnitY = 50 * MEGAUNITS; //50 ms
+	
+	    		m_iSecondMajorUnitTypeY = 6;
+	    		m_dSecondMajorUnitYTypeValue = MEGAUNITS;
+	    		m_strSecondYAxisLabelShort = "M" + this.m_strSecondYAxisBaseUnitShort;
+	    		m_strSecondYAxisLabel = "mega" + this.m_strSecondYAxisBaseUnit;
+	    	}
+	    	
+	    	//Now we have the major unit in m_dSecondMajorUnitY.
+	
+	    	int iSecondNumYDivisions = (int)(dSecondDifferenceY / dSecondMajorUnitY) + 2;
+	
+	    	//Find the bottom start point
+	    	if ((m_dSecondYAxisLowerLimit / dSecondMajorUnitY) <= Floor(m_dSecondYAxisLowerLimit / dSecondMajorUnitY))
+	    	{ //in this case we are negative or right on a division
+	    		ystart = (Floor(m_dSecondYAxisLowerLimit / dSecondMajorUnitY)) * dSecondMajorUnitY - dSecondMajorUnitY;
+	    	}
+	    	else
+	    	{ //in this case we are positive
+	    		ystart = (Floor(m_dSecondYAxisLowerLimit / dSecondMajorUnitY)) * dSecondMajorUnitY;
+	    	}
+	
+	    	pixelMajorUnitY = (int)(dSecondMajorUnitY / m_dSecondYMultiplier) + 1;
+	    	iMajorUnitsPerLabelY = (int)(metricsYAxisDivision.stringWidth("8888.8") / pixelMajorUnitY) + 1;
+	
+	    	for (i = 0; i < iSecondNumYDivisions; i++)
+	    	{
+	    		int ypos = (int)m_rectGraph.bottom + (int)(((ystart - m_dSecondYAxisLowerLimit) + (dSecondMajorUnitY * (double)i)) * m_dSecondInvYMultiplier);
+	    		
+	    		if (ypos >= m_rectGraph.bottom
+	    			&& ypos <= m_rectGraph.top)
+	    		{
+	    			double dValue = ystart + dSecondMajorUnitY * (double)i; //ldValue is the CLongDouble value of the current major unit line
+	
+	    			double dBaseValue; //ldBaseValue is the CLongDouble value of the current increment line unit
+	    			double dNextBaseValue; //ldNextBaseValue is the CLongDouble value of the current line unit past the ldBaseValue unit
+	
+	    			if (m_iSecondMajorUnitTypeY == 6)
+	    			{
+	    				dBaseValue = 0;
+	    				dNextBaseValue = 0;
+	    			}
+	    			else if (m_iSecondMajorUnitTypeY == 5)
+	    			{
+	    				dBaseValue = (Floor(dValue / m_dSecondNextMajorUnitYTypeValue)) * m_dSecondNextMajorUnitYTypeValue;
+	    				dNextBaseValue = 0;
+	    			}
+	    			else
+	    			{
+	    				dBaseValue = (Floor(dValue / m_dSecondNextMajorUnitYTypeValue)) * m_dSecondNextMajorUnitYTypeValue;
+	    				dNextBaseValue = (Floor(dValue / m_dSecondNextNextMajorUnitYTypeValue)) * m_dSecondNextNextMajorUnitYTypeValue;
+	    			}
+	
+	    			double dDisplayValue = (double)((dValue - dBaseValue) / m_dSecondMajorUnitYTypeValue);
+	    			double dNextDisplayValue = (double)((dValue - dNextBaseValue) / m_dSecondNextMajorUnitYTypeValue);
+	
+	    			//Check to see if it is greater than a major graduation
+	    			if (dDisplayValue == 0)
+	    			{//Greater than a major graduation
+	
+	    				//Draw the increment line
+	    		   		gl.glColor3f(51f/255f, 51f/255f, 51f/255f);
+	    				gl.glBegin(GL.GL_LINES);
+	    					gl.glVertex2i((int)(m_rectGraph.right + GREAT_LINE_LENGTH), ypos);
+	    					gl.glVertex2i((int)m_rectGraph.right, ypos);
+	    				gl.glEnd();
+	    					
+	    				//Draw the text to the left of the increment graduations
+	    				String str = decformat.format(dNextDisplayValue);
+	
+	    				// Only draw the units if it's a value other than 0.
+	    				if (dValue != 0)
+	    					str += strSecondNextYAxisLabel;
+	
+	    		        printGL(m_rendererYAxisDivision, (int)(m_rectGraph.right + GREAT_LINE_LENGTH + 2), ypos, JUSTIFY_CENTER, 270, str);
+	    			}
+	    			else
+	    			{//Just a major graduation
+	    				double x2 = (dValue / dSecondMajorUnitY) / (double)iMajorUnitsPerLabelY;
+	    				double x3 = Floor(x2);
+	
+	    				if (x2 == x3)
+	    				{
+	    					//Draw the text underneath the major graduations
+	    					String str = decformat.format(dDisplayValue);
+	    										    					
+	        		        printGL(m_rendererYAxisDivision, (int)(m_rectGraph.right + MAJOR_LINE_LENGTH + 2), ypos, JUSTIFY_CENTER, 270, str);
+	    				}
+	
+	    				//Draw the major line
+	    		   		gl.glColor3f(51f/255f, 51f/255f, 51f/255f);
+	    				gl.glBegin(GL.GL_LINES);
+	    					gl.glVertex2i((int)(m_rectGraph.right + MAJOR_LINE_LENGTH), ypos);
+	    					gl.glVertex2i((int)m_rectGraph.right, ypos);
+	    				gl.glEnd();
+	    			}
+	
+	    			//Draw the vertical lines that form the grid of the graph
+	    			//gl.glColor3f((float)220/(float)255,(float)220/(float)255,(float)220/(float)255); //Light grey
+	    			//gl.glBegin(GL.GL_LINES);
+	    			//	gl.glVertex2i((int)m_rectGraph.left, ypos);
+	    			//	gl.glVertex2i((int)m_rectGraph.right, ypos);
+	    			//gl.glEnd();
+	    		}
+	
+	    		//Draw the minor graduations
+	       		gl.glColor3f(51f/255f, 51f/255f, 51f/255f);
+	
+	    		for (j = 1; j < 5; j++)
+	    		{
+	    			int extraypos = (int)((dSecondMajorUnitY * (double)((double)j / (double)5)) * m_dSecondInvYMultiplier);
+	    			if (ypos + extraypos >= m_rectGraph.bottom
+	    				&& ypos + extraypos <= m_rectGraph.top)
+	    			{
+	    				gl.glBegin(GL.GL_LINES);
+	    					gl.glVertex2i((int)(m_rectGraph.right + MINOR_LINE_LENGTH), ypos + extraypos);
+	    					gl.glVertex2i((int)m_rectGraph.right, ypos + extraypos);
+	    				gl.glEnd();
+	    			}
+	    		}
+	    	}
+	/*
+	    	//int topvalue, bottomvalue;
+	    	//boolean topneg = false;
+	    	//boolean bottomneg = false;
+	
+	    	//String strTop;
+	    	//String strBottom;
+	    	topneg = false;
+	    	bottomneg = false;
+	    	
+	    	strTop = "";
+	    	strBottom = "";
+	    	//Now decide which values should be shown
+	    	//fV = 1
+	    	//MV = 8
+	    	switch(m_iSecondMajorUnitTypeY)
+	    	{
+	    	case 1:
+	    		{
+	    			topvalue = (int)((m_dSecondYAxisUpperLimit - (Floor(m_dSecondYAxisUpperLimit / MILLIUNITS) * MILLIUNITS)) / MICROUNITS);
+	    			bottomvalue = (int)((m_dSecondYAxisLowerLimit - (Floor(m_dSecondYAxisLowerLimit / MILLIUNITS) * MILLIUNITS)) / MICROUNITS);
+	    			if (topvalue < 0)
+	    			{
+	    				topvalue = Math.abs(topvalue);
+	    				topneg = true;
+	    			}
+	    			if (bottomvalue < 0)
+	    			{
+	    				bottomvalue = Math.abs(bottomvalue);
+	    				bottomneg = true;
+	    			}
+	    			
+	    			strTop = String.format(" %03d", topvalue) + strTop;
+	    			strBottom = String.format(" %03d", bottomvalue) + strBottom;
+	    		}
+	    	case 2:
+	    		{
+	    			topvalue = (int)((m_dSecondYAxisUpperLimit - (Floor(m_dSecondYAxisUpperLimit / UNITS) * UNITS)) / MILLIUNITS);
+	    			bottomvalue = (int)((m_dSecondYAxisLowerLimit - (Floor(m_dSecondYAxisLowerLimit / UNITS) * UNITS)) / MILLIUNITS);
+	    			if (topvalue < 0)
+	    			{
+	    				topvalue = Math.abs(topvalue);
+	    				topneg = true;
+	    			}
+	    			if (bottomvalue < 0)
+	    			{
+	    				bottomvalue = Math.abs(bottomvalue);
+	    				bottomneg = true;
+	    			}
+	    			
+	    			strTop = String.format(".%03d", topvalue) + strTop;
+	    			strBottom = String.format(".%03d", bottomvalue) + strBottom;
+	    		}
+	    	case 3:
+	    		{
+	    			topvalue = (int)(Floor(m_dSecondYAxisUpperLimit / UNITS));
+	    			bottomvalue = (int)(Floor(m_dSecondYAxisLowerLimit / UNITS));
+	    			if (topvalue < 0)
+	    			{
+	    				topvalue = Math.abs(topvalue);
+	    				topneg = true;
+	    			}
+	    			if (bottomvalue < 0)
+	    			{
+	    				bottomvalue = Math.abs(bottomvalue);
+	    				bottomneg = true;
+	    			}
+	
+	    			strTop = String.format("%d", topvalue) + strTop + " " + this.m_strSecondYAxisBaseUnitShort;
+	    			strBottom = String.format("%d", bottomvalue) + strBottom + " " + this.m_strSecondYAxisBaseUnitShort;
+	
+	    			if (topneg)
+	    				strTop = "-" + strTop;
+	    			if (bottomneg)
+	    				strBottom = "-" + strBottom;
+	
+	    			break;
+	    		}
+	    	case 4:
+	    		{ //if it gets here, it must actually equal the number - we're on volts, need to only see kV
+	    			topvalue = (int)(Floor(m_dSecondYAxisUpperLimit / KILOUNITS));
+	    			bottomvalue = (int)(Floor(m_dSecondYAxisLowerLimit / KILOUNITS));
+	
+	    			strTop = String.format("%d", topvalue) + strTop + " k" + this.m_strSecondYAxisBaseUnitShort;
+	    			strBottom = String.format("%d", bottomvalue) + strBottom + " k" + this.m_strSecondYAxisBaseUnitShort;
+	    			break;
+	    		}
+	    	case 5:
+	    		{
+	    			topvalue = (int)(Floor(m_dSecondYAxisUpperLimit / MEGAUNITS));
+	    			bottomvalue = (int)(Floor(m_dSecondYAxisLowerLimit / MEGAUNITS));
+	
+	    			strTop = String.format("%d", topvalue) + strTop + " M" + this.m_strSecondYAxisBaseUnitShort;
+	    			strBottom = String.format("%d", bottomvalue) + strBottom + " M" + this.m_strSecondYAxisBaseUnitShort;
+	    			break;
+	    		}
+	
+	    	}
+	    	*/
+    	}
+    /**************Finished drawing the Second Y-Axis***************/
+    	
     	//Draw Axes
    		gl.glColor3f(51f/255f, 51f/255f, 51f/255f);
     	gl.glBegin(GL.GL_LINE_STRIP);
     		gl.glVertex2i((int)m_rectGraph.left, (int)m_rectGraph.top);
     		gl.glVertex2i((int)m_rectGraph.left, (int)m_rectGraph.bottom);
     		gl.glVertex2i((int)m_rectGraph.right, (int)m_rectGraph.bottom);
+    		if (m_bSecondYAxisVisible)
+        		gl.glVertex2i((int)m_rectGraph.right, (int)m_rectGraph.top);
     	gl.glEnd();
 
     	String str;
 
     	//Draw the text on the left side
-    	str = String.format("Signal (%s)", m_strYAxisLabel);
+    	str = String.format("%s (%s)", m_strYAxisTitle, m_strYAxisLabel);
         printGL(m_rendererYAxisLabel, (int)(rectWindow.left + metricsYAxisLabel.getHeight()), (int)(m_rectGraph.bottom + (Math.abs(m_rectGraph.top - m_rectGraph.bottom) / 2)), JUSTIFY_CENTER, 90, str);
-    	
+
+    	//Draw the text on the right side
+        if (m_bSecondYAxisVisible)
+        {
+        	str = String.format("%s (%s)", m_strSecondYAxisTitle, m_strSecondYAxisLabel);
+        	printGL(m_rendererYAxisLabel, (int)(rectWindow.right - metricsYAxisLabel.getHeight()), (int)(m_rectGraph.bottom + (Math.abs(m_rectGraph.top - m_rectGraph.bottom) / 2)), JUSTIFY_CENTER, 270, str);
+        }
+        
     	//Draw the text on the bottom
     	str = String.format("Time (%s)", m_strXAxisLabel);
     	int iBottomOfXMarker = (int)(m_rectGraph.bottom - (metricsXAxisDivision.getHeight() + GREAT_LINE_LENGTH));
     	int iSpaceOnBottom = (int)(iBottomOfXMarker - rectWindow.bottom);
-    	int iTextPos = (int)(m_rectGraph.bottom - (metricsXAxisDivision.getHeight() + GREAT_LINE_LENGTH) - ((iSpaceOnBottom / 2) + (metricsXAxisLabel.getHeight() / 2)));
-        printGL(m_rendererXAxisLabel, (int)(m_rectGraph.left + ((m_rectGraph.right - m_rectGraph.left) / 2)), iTextPos, JUSTIFY_CENTER, 0, str);
+    	int iTextPos = 0;
+    	if (this.m_bXAxisRangeIndicatorsVisible)
+    		iTextPos = (int)(m_rectGraph.bottom - (metricsXAxisDivision.getHeight() + GREAT_LINE_LENGTH) - ((iSpaceOnBottom / 2) + (metricsXAxisLabel.getHeight() / 2)));
+    	else
+    		iTextPos = (int)(m_rectGraph.bottom - (metricsXAxisDivision.getHeight() + GREAT_LINE_LENGTH) - 3 -(/*((iSpaceOnBottom / 2) + */(metricsXAxisLabel.getHeight() / 2)));
+    		
+    	printGL(m_rendererXAxisLabel, (int)(m_rectGraph.left + ((m_rectGraph.right - m_rectGraph.left) / 2)), iTextPos, JUSTIFY_CENTER, 0, str);
     }
 
     public void DrawChannelLines()
@@ -1745,8 +2221,28 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
     		float linercolor = (float)m_vectDataSeries.get(i).clrLineColor.getRed()/(float)255;
     		float linegcolor = (float)m_vectDataSeries.get(i).clrLineColor.getGreen()/(float)255;
     		float linebcolor = (float)m_vectDataSeries.get(i).clrLineColor.getBlue()/(float)255;
-    		
+
+    		float markerrcolor = (float)m_vectDataSeries.get(i).clrLineColor.getRed()/(float)255;
+    		float markergcolor = (float)m_vectDataSeries.get(i).clrLineColor.getGreen()/(float)255;
+    		float markerbcolor = (float)m_vectDataSeries.get(i).clrLineColor.getBlue()/(float)255;
+
     		int j = 0;
+    		
+    		double dInvYMultiplier;
+    		double dRectViewTop;
+    		double dRectViewBottom;
+    		if (!m_vectDataSeries.get(i).bUseSecondScale)
+    		{
+    			dInvYMultiplier = m_dInvYMultiplier;
+    			dRectViewTop = m_drectView.top;
+    			dRectViewBottom = m_drectView.bottom;
+    		}
+    		else
+    		{
+    			dInvYMultiplier = m_dSecondInvYMultiplier;
+    			dRectViewTop = m_dSecondYAxisUpperLimit;
+    			dRectViewBottom = m_dSecondYAxisLowerLimit;
+    		}
     		
 			for (j = 0; j < m_vectDataSeries.get(i).vectDataArray.size(); j++)
 			{
@@ -1754,14 +2250,14 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
 				{
 					bdLastPoint = m_vectDataSeries.get(i).vectDataArray.get(0);
 					dLastPoint.x = m_rectGraph.left + (m_dInvXMultiplier * (bdLastPoint.x - m_drectView.left));
-					dLastPoint.y = m_rectGraph.bottom + (m_dInvYMultiplier * (bdLastPoint.y - m_drectView.bottom));
+					dLastPoint.y = m_rectGraph.bottom + (dInvYMultiplier * (bdLastPoint.y - dRectViewBottom));
 				}
 				else
 				{
 
 					bdCurrentPoint = m_vectDataSeries.get(i).vectDataArray.get(j);
 					dCurrentPoint.x = m_rectGraph.left + (m_dInvXMultiplier * (bdCurrentPoint.x - m_drectView.left));
-					dCurrentPoint.y = m_rectGraph.bottom + (m_dInvYMultiplier * (bdCurrentPoint.y - m_drectView.bottom));
+					dCurrentPoint.y = m_rectGraph.bottom + (dInvYMultiplier * (bdCurrentPoint.y - dRectViewBottom));
 					
 					if (dCurrentPoint.x > dLastPoint.x)
 					{
@@ -1913,11 +2409,37 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
 							}
 						}
 
-						gl.glColor3f(linercolor, linegcolor, linebcolor);
-						gl.glBegin(GL.GL_LINES);
-							gl.glVertex2i(x1, y1);
-							gl.glVertex2i(x2, y2);
-						gl.glEnd();
+			    		if (m_vectDataSeries.get(i).bOnlyMarkers == false)
+			    		{
+			    			// Draw the line
+			    			gl.glColor3f(linercolor, linegcolor, linebcolor);
+			    			gl.glBegin(GL.GL_LINES);
+								gl.glVertex2i(x1, y1);
+								gl.glVertex2i(x2, y2);
+								gl.glEnd();
+			    		}
+			    		else
+			    		{
+			    			// Draw the marker
+			    			gl.glColor3f(markerrcolor, markergcolor, markerbcolor);
+			    			gl.glBegin(GL.GL_TRIANGLE_FAN);
+			    				gl.glVertex2i(x1, y1);
+			    				for (double dAngle = 0; dAngle <= 360; dAngle += 5)
+			    				{
+			    					gl.glVertex2d(x1 + Math.sin(dAngle) * 2, y1 + Math.cos(dAngle) * 2);
+			    				}
+			    			gl.glEnd();
+			    			if (j == m_vectDataSeries.get(i).vectDataArray.size() - 1)
+			    			{
+				    			gl.glBegin(GL.GL_TRIANGLE_FAN);
+			    				gl.glVertex2i(x2, y2);
+			    				for (double dAngle = 0; dAngle <= 360; dAngle += 5)
+			    				{
+			    					gl.glVertex2d(x2 + Math.sin(dAngle) * 2, y2 + Math.cos(dAngle) * 2);
+			    				}
+			    				gl.glEnd();
+			    			}
+			    		}
 					}
 					
 					bdLastPoint = bdCurrentPoint;
@@ -1932,7 +2454,7 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
     	gl.glLineWidth(1.0f); //Return the line width back to 1;
     }
     
-    private void DrawZoomBox()
+    private void drawZoomBox()
     {
     	GL gl = this.getGL();
     	
@@ -1954,7 +2476,33 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
     	}
 
     }
+    
+    private void drawLineLabels()
+    {
+    	GL gl = this.getGL();
+    	
+		gl.glEnable(GL.GL_LINE_STIPPLE);
+		gl.glLineStipple(1,(short)0xF0F0);
+		gl.glColor3f(0.3f, 0.3f, 0.3f);
+    	for (int i = 0; i < m_vectLineMarkers.size(); i++)
+    	{
+			gl.glBegin(GL.GL_LINES);
+	    		gl.glVertex2d(m_rectGraph.left + (m_dInvXMultiplier * ((m_vectLineMarkers.get(i).dTime * MINUTES) - m_drectView.left)), m_rectGraph.top);
+				gl.glVertex2d(m_rectGraph.left + (m_dInvXMultiplier * ((m_vectLineMarkers.get(i).dTime * MINUTES) - m_drectView.left)), m_rectGraph.bottom);
+			gl.glEnd();
+			
+			printGLColor(m_rendererYAxisDivision, (int)(m_rectGraph.left + (m_dInvXMultiplier * ((m_vectLineMarkers.get(i).dTime * MINUTES) - m_drectView.left))) - 1, (int)(m_rectGraph.bottom + 3), JUSTIFY_LEFT, 90, m_vectLineMarkers.get(i).strMarkerName, 0.3f, 0.3f, 0.3f, 1.0f);
+    	}
+		gl.glDisable(GL.GL_LINE_STIPPLE);
+		
+    }
+    
     private void printGL(TextRenderer renderer, int x, int y, int iJustification, float fAngle, String str)
+    {
+    	printGLColor(renderer, x, y, iJustification, fAngle, str, 51f/255f, 51f/255f, 51f/255f, 1.0f);
+    }
+
+    private void printGLColor(TextRenderer renderer, int x, int y, int iJustification, float fAngle, String str, float R, float G, float B, float A)
     {
     	GL gl = this.getGL();
 
@@ -1965,7 +2513,7 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
         renderer.beginRendering(this.getWidth(), this.getHeight());
         gl.glMatrixMode(GL.GL_MODELVIEW);
 
-    	renderer.setColor(51f/255f, 51f/255f, 51f/255f, 1.0f);
+    	renderer.setColor(R, G, B, A);
 
     	gl.glLoadIdentity();
     	gl.glTranslatef((float)x, (float)y, 0f);
@@ -2023,6 +2571,9 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
 	//@Override
 	public void mousePressed(MouseEvent arg0) 
 	{
+		if (!m_bControlsEnabled)
+			return;
+		
 		if (m_iMode == 0)
 		{
 			setCursor(this.m_curClosedHand);
@@ -2032,35 +2583,144 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
 	//@Override
 	public void mouseReleased(MouseEvent arg0) 
 	{
+		if (!m_bControlsEnabled)
+			return;
+
 		if (m_iMode == 0)
 		{
 			setCursor(this.m_curOpenHand);
 		}
 	}
+	
+	public void setYAxisTitle(String strTitle)
+	{
+		this.m_strYAxisTitle = strTitle;
+		return;
+	}
 
-	public int AddSeries(String strSeriesName, Color clrLineColor, int iLineThickness)
+	public void setSecondYAxisTitle(String strTitle)
+	{
+		this.m_strSecondYAxisTitle = strTitle;
+		return;
+	}
+
+	public void setYAxisBaseUnit(String strBaseUnit, String strBaseUnitAbbreviated)
+	{
+		this.m_strYAxisBaseUnit = strBaseUnit;
+		this.m_strYAxisBaseUnitShort = strBaseUnitAbbreviated;
+		return;
+	}
+
+	public void setSecondYAxisBaseUnit(String strBaseUnit, String strBaseUnitAbbreviated)
+	{
+		this.m_strSecondYAxisBaseUnit = strBaseUnit;
+		this.m_strSecondYAxisBaseUnitShort = strBaseUnitAbbreviated;
+		return;
+	}
+
+	public boolean setYAxisRangeLimits(double dMinimum, double dMaximum)
+	{
+		if (dMaximum * UNITS > 9 * MEGAUNITS)
+			return false;
+		else if (dMinimum * UNITS < -9 * MEGAUNITS)
+			return false;
+		else if (dMaximum <= dMinimum)
+			return false;
+		
+		this.m_dYAxisUpperLimit = dMaximum * UNITS;
+		this.m_dYAxisLowerLimit = dMinimum * UNITS;
+		
+		return true;
+	}
+	
+	public boolean setSecondYAxisRangeLimits(double dMinimum, double dMaximum)
+	{
+		if (dMaximum * UNITS > 9 * MEGAUNITS)
+			return false;
+		else if (dMinimum * UNITS < -9 * MEGAUNITS)
+			return false;
+		else if (dMaximum <= dMinimum)
+			return false;
+		
+		this.m_dSecondYAxisUpperLimit = dMaximum * UNITS;
+		this.m_dSecondYAxisLowerLimit = dMinimum * UNITS;
+		
+		return true;
+	}
+	
+	public void setYAxisRangeIndicatorsVisible(Boolean bVisible)
+	{
+		this.m_bYAxisRangeIndicatorsVisible = bVisible;
+	}
+
+	public void setXAxisRangeIndicatorsVisible(Boolean bVisible)
+	{
+		this.m_bXAxisRangeIndicatorsVisible = bVisible;
+	}
+
+	public void setSecondYAxisVisible(Boolean bVisible)
+	{
+		this.m_bSecondYAxisVisible = bVisible;
+	}
+
+	public int AddSeries(String strSeriesName, Color clrLineColor, int iLineThickness, boolean bOnlyMarkers, boolean bUseSecondScale)
 	{
 		DataSeries dataSeries = new DataSeries();
 		
 		dataSeries.strName = strSeriesName;
 		dataSeries.clrLineColor = clrLineColor;
 		dataSeries.iLineThickness = iLineThickness;
+		dataSeries.bOnlyMarkers = bOnlyMarkers;
+		dataSeries.bUseSecondScale = bUseSecondScale;
+		
+		// Find the first hole in the indices
+		for (int i = 0; i <= m_vectDataSeries.size(); i++)
+		{
+			boolean bFound = false;
+			
+			for (int j = 0; j < m_vectDataSeries.size(); j++)
+			{
+				if (m_vectDataSeries.get(j).iIndex == i)
+				{
+					bFound = true;
+					break;
+				}
+			}
+			
+			if (bFound == false)
+			{
+				dataSeries.iIndex = i;
+			}
+		}
 		
 		m_vectDataSeries.add(dataSeries);
 		
-		return m_vectDataSeries.size() - 1;
+		return dataSeries.iIndex;
 	}
 	
 	public boolean RemoveSeries(int iSeriesIndex)
 	{
-		if (iSeriesIndex >= m_vectDataSeries.size())
+		int iIndex = getSeriesFromIndex(iSeriesIndex);
+		
+		if (iIndex == -1)
 			return false;
 		
-		m_vectDataSeries.remove(iSeriesIndex);
+		m_vectDataSeries.remove(iIndex);
 		
 		return true;
 	}
 	
+	private int getSeriesFromIndex(int iIndex)
+	{
+		for (int i = 0; i < m_vectDataSeries.size(); i++)
+		{
+			if (m_vectDataSeries.get(i).iIndex == iIndex)
+				return i;
+		}
+		
+		return -1;
+	}
+
 	public void RemoveAllSeries()
 	{
 		m_vectDataSeries.removeAllElements();			
@@ -2070,12 +2730,12 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
 
 	public boolean AddDataPoint(int iSeriesIndex, double dXVal, double dYVal)
 	{
-		DataSeries dataSeries = null;
+		int iIndex = getSeriesFromIndex(iSeriesIndex);
 		
-		if (iSeriesIndex >= m_vectDataSeries.size())
+		if (iIndex == -1)
 			return false;
 		
-		dataSeries = m_vectDataSeries.get(iSeriesIndex);
+		DataSeries dataSeries = m_vectDataSeries.get(iIndex);
 		
 		if (dataSeries == null)
 			return false;
@@ -2108,14 +2768,33 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
 		return true;
 	}
 
+	public void addLineMarker(double dTimeInMinutes, String strLabel)
+	{
+		LineMarker lineMarker = new LineMarker();
+		
+		lineMarker.dTime = dTimeInMinutes;
+		lineMarker.strMarkerName = strLabel;
+		
+		this.m_vectLineMarkers.add(lineMarker);
+		
+		return;
+	}
+
+	public void removeAllLineMarkers()
+	{
+		this.m_vectLineMarkers.removeAllElements();
+		
+		return;
+	}
+
 	public boolean AutoScaleToSeries(int iSeriesIndex)
 	{
-		DataSeries dataSeries = null;
+		int iIndex = getSeriesFromIndex(iSeriesIndex);
 		
-		if (iSeriesIndex >= m_vectDataSeries.size())
+		if (iIndex == -1)
 			return false;
-		
-		dataSeries = m_vectDataSeries.get(iSeriesIndex);
+
+		DataSeries dataSeries = m_vectDataSeries.get(iIndex);
 		
 		if (dataSeries == null)
 			return false;
@@ -2134,60 +2813,71 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
 
 	public boolean AutoScaleX()
 	{
-		double dXMin;
-		double dXMax;
-		
+		double dXMin = 0;
+		double dXMax = 0;
+		boolean bUninitialized = true;
+
 		if (m_vectDataSeries.size() == 0)
 			return false;
 		
 		DataSeries dataSeries = null;
-		dataSeries = m_vectDataSeries.get(0);
 		
-		dXMin = dataSeries.dXMin;
-		dXMax = dataSeries.dXMax;
-		
-		for (int i = 1; i < m_vectDataSeries.size(); i++)
+		for (int i = 0; i < m_vectDataSeries.size(); i++)
 		{
 			dataSeries = m_vectDataSeries.get(i);
 			
-			if (dataSeries.dXMin < dXMin)
+			if (dataSeries.vectDataArray.size() <= 1 || dataSeries.bUseSecondScale)
+				continue;
+			
+			if (dataSeries.dXMin < dXMin || bUninitialized)
 				dXMin = dataSeries.dXMin;
-			if (dataSeries.dXMax > dXMax)
+			if (dataSeries.dXMax > dXMax || bUninitialized)
 				dXMax = dataSeries.dXMax;
+			
+			bUninitialized = false;
 		}
 		
-		this.m_drectView.right = dataSeries.dXMax;
-		this.m_drectView.left = dataSeries.dXMin;
+		this.m_drectView.right = dXMax;
+		this.m_drectView.left = dXMin;
 		
 		return true;
 	}
 
 	public boolean AutoScaleY()
 	{
-		double dYMin;
-		double dYMax;
+		double dYMin = 0;
+		double dYMax = 0;
+		boolean bUninitialized = true;
 		
 		if (m_vectDataSeries.size() == 0)
 			return false;
 		
 		DataSeries dataSeries = null;
-		dataSeries = m_vectDataSeries.get(0);
 		
-		dYMin = dataSeries.dYMin;
-		dYMax = dataSeries.dYMax;
-		
-		for (int i = 1; i < m_vectDataSeries.size(); i++)
+		for (int i = 0; i < m_vectDataSeries.size(); i++)
 		{
 			dataSeries = m_vectDataSeries.get(i);
 			
-			if (dataSeries.dYMin < dYMin)
+			if (dataSeries.vectDataArray.size() <= 1 || dataSeries.bUseSecondScale)
+				continue;
+			
+			if (dataSeries.dYMin < dYMin || bUninitialized)
 				dYMin = dataSeries.dYMin;
-			if (dataSeries.dYMax > dYMax)
+			if (dataSeries.dYMax > dYMax || bUninitialized)
 				dYMax = dataSeries.dYMax;
+			
+			bUninitialized = false;
 		}
 		
-		this.m_drectView.bottom = 0;
-		this.m_drectView.top = dataSeries.dYMax;
+		double dAverage = (dYMin + dYMax) / 2;
+		if (dYMax - dYMin < dAverage * 0.001)
+		{
+			dYMax = dAverage + dAverage * 0.01;
+			dYMin = dAverage - dAverage * 0.01;
+		}
+		
+		this.m_drectView.bottom = dYMin;
+		this.m_drectView.top = dYMax;
 		
 		return true;
 	}
@@ -2208,6 +2898,14 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
 	{
 		m_iMode = 2;
         setCursor(m_curZoomOut);
+	}
+	
+	public void setVisibleWindow(double dStartTime, double dEndTime, double dBottom, double dTop)
+	{
+		m_drectView.left = dStartTime * SECONDS;
+		m_drectView.top = dTop * UNITS;
+		m_drectView.right = dEndTime * SECONDS;
+		m_drectView.bottom = dBottom * UNITS;
 	}
 	
 	void setAutoScaleX(boolean bAutoScaleX)
@@ -2258,5 +2956,13 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
         {
             ((AutoScaleListener)listeners.next()).autoScaleChanged(autoScaleEvent);
         }
+    }
+    
+    public void setControlsEnabled(boolean bEnabled)
+    {
+    	this.m_bControlsEnabled = bEnabled;
+    	
+    	if (!bEnabled)
+    		setCursor(Cursor.getDefaultCursor());
     }
 }

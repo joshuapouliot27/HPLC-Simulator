@@ -1,7 +1,7 @@
 package org.hplcsimulator;
 
 import org.hplcsimulator.panels.*;
-
+import org.hplcsimulator.panels.GradientOptions.SpecialTableModel;
 import javax.swing.JPanel;
 
 import java.awt.BorderLayout;
@@ -27,6 +27,9 @@ import javax.swing.ListSelectionModel;
 import javax.swing.JToggleButton;
 import javax.swing.ImageIcon;
 import javax.help.*;
+
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
 
 import org.jdesktop.swingx.*;
 
@@ -58,9 +61,27 @@ public class TopPanel extends JPanel
 	public JButton jbtnContextHelp = null;
 	public JButton jbtnTutorials = null;
 	
+	public MobilePhaseComposition jxpanelMobilePhaseComposition = null;
+	public JXTaskPane jxtaskMobilePhaseComposition = null;
+	
 	public ChromatographyProperties jxpanelChromatographyProperties = null;
+	public JXTaskPane jxtaskChromatographyProperties = null;
+
 	public ColumnProperties jxpanelColumnProperties = null;
+	public JXTaskPane jxtaskColumnProperties = null;
+
 	public GeneralProperties jxpanelGeneralProperties = null;
+	public JXTaskPane jxtaskGeneralProperties = null;
+
+	public IsocraticOptions jxpanelIsocraticOptions = null;
+	public JXTaskPane jxtaskIsocraticOptions = null;
+
+	public GradientOptions jxpanelGradientOptions = null;
+	public JXTaskPane jxtaskGradientOptions = null;
+
+	public PlotOptions jxpanelPlotOptions = null;
+	public JXTaskPane jxtaskPlotOptions = null;
+
 	/**
 	 * This is the default constructor
 	 */
@@ -94,10 +115,32 @@ public class TopPanel extends JPanel
 	    this.add(getJpanelSimulatedChromatogram(), null);
 	    this.add(getControlPanel(), null);
 
-	    CSH.setHelpIDString(jxpanelChromatographyProperties, "controls.chromatography");
-	    CSH.setHelpIDString(jxpanelChromatographyProperties.jtxtOrganicFraction, "controls.meohfraction");
-	    CSH.setHelpIDString(jxpanelChromatographyProperties.jlblOrganicFraction, "controls.meohfraction");
-	    CSH.setHelpIDString(jxpanelChromatographyProperties.jsliderOrganicFraction, "controls.meohfraction");
+	    CSH.setHelpIDString(jxpanelMobilePhaseComposition, "panel.mobilephasecomposition");
+	    CSH.setHelpIDString(jxpanelMobilePhaseComposition.jlblSolventA, "controls.solventa");
+	    CSH.setHelpIDString(jxpanelMobilePhaseComposition.jcboSolventA, "controls.solventa");
+	    CSH.setHelpIDString(jxpanelMobilePhaseComposition.jlblSolventB, "controls.solventb");
+	    CSH.setHelpIDString(jxpanelMobilePhaseComposition.jcboSolventB, "controls.solventb");
+	    CSH.setHelpIDString(jxpanelMobilePhaseComposition.jrdoIsocraticElution, "controls.isocraticelutionmode");
+	    CSH.setHelpIDString(jxpanelMobilePhaseComposition.jrdoGradientElution, "controls.gradientelutionmode");
+	    CSH.setHelpIDString(jxpanelIsocraticOptions.jtxtSolventBFraction, "controls.solventbfraction");
+	    CSH.setHelpIDString(jxpanelIsocraticOptions.jlblSolventBFraction, "controls.solventbfraction");
+	    CSH.setHelpIDString(jxpanelIsocraticOptions.jsliderSolventBFraction, "controls.solventbfraction");
+	    CSH.setHelpIDString(jxpanelGradientOptions.jtableGradientProgram, "controls.gradientprogramtable");
+	    CSH.setHelpIDString(jxpanelGradientOptions.jbtnInsertRow, "controls.gradientprogramtable");
+	    CSH.setHelpIDString(jxpanelGradientOptions.jbtnRemoveRow, "controls.gradientprogramtable");
+	    CSH.setHelpIDString(jxpanelGradientOptions.jtxtMixingVolume, "controls.mixingvolume");
+	    CSH.setHelpIDString(jxpanelGradientOptions.jlblMixingVolume, "controls.mixingvolume");
+	    CSH.setHelpIDString(jxpanelGradientOptions.jlblMixingVolumeUnit, "controls.mixingvolume");
+	    CSH.setHelpIDString(jxpanelGradientOptions.jlblNonMixingVolume, "controls.nonmixingvolume");
+	    CSH.setHelpIDString(jxpanelGradientOptions.jtxtNonMixingVolume, "controls.nonmixingvolume");
+	    CSH.setHelpIDString(jxpanelGradientOptions.jlblNonMixingVolumeUnit, "controls.nonmixingvolume");
+	    CSH.setHelpIDString(jxpanelGradientOptions.jlblDwellVolumeIndicator, "controls.totaldwellvolume");
+	    CSH.setHelpIDString(jxpanelGradientOptions.jlblDwellVolume, "controls.totaldwellvolume");
+	    CSH.setHelpIDString(jxpanelGradientOptions.jlblDwellVolumeUnit, "controls.totaldwellvolume");
+	    CSH.setHelpIDString(jxpanelGradientOptions.jlblDwellTimeIndicator, "controls.dwelltime");
+	    CSH.setHelpIDString(jxpanelGradientOptions.jlblDwellTime, "controls.dwelltime");
+	    CSH.setHelpIDString(jxpanelGradientOptions.jlblDwellTimeUnit, "controls.dwelltime");
+	    CSH.setHelpIDString(jxpanelChromatographyProperties, "panel.chromatographicproperties");
 	    CSH.setHelpIDString(jxpanelChromatographyProperties.jtxtTemp, "controls.temperature");
 	    CSH.setHelpIDString(jxpanelChromatographyProperties.jlblTemperature, "controls.temperature");
 	    CSH.setHelpIDString(jxpanelChromatographyProperties.jsliderTemp, "controls.temperature");
@@ -116,8 +159,9 @@ public class TopPanel extends JPanel
 	    CSH.setHelpIDString(jxpanelChromatographyProperties.jlblTheoreticalPlates, "controls.theoreticalplates");
 	    CSH.setHelpIDString(jxpanelChromatographyProperties.jlblTheoreticalPlates2, "controls.theoreticalplates");
 	    CSH.setHelpIDString(jxpanelChromatographyProperties.jlblBackpressure, "controls.backpressure");
-	    CSH.setHelpIDString(jxpanelChromatographyProperties.jlblBackpressure, "controls.backpressure");
-	    CSH.setHelpIDString(jxpanelChromatographyProperties.jlblBackpressure, "controls.backpressure");
+	    CSH.setHelpIDString(jxpanelChromatographyProperties.jlblBackpressure2, "controls.backpressure");
+	    CSH.setHelpIDString(jxpanelChromatographyProperties.jlblBackpressure3, "controls.backpressure");
+	    CSH.setHelpIDString(jxpanelGeneralProperties, "panel.generalproperties");
 	    CSH.setHelpIDString(jxpanelGeneralProperties.jlblEluentViscosity, "controls.eluentviscosity");
 	    CSH.setHelpIDString(jxpanelGeneralProperties.jlblEluentViscosity2, "controls.eluentviscosity");
 	    CSH.setHelpIDString(jxpanelGeneralProperties.jlblEluentViscosity3, "controls.eluentviscosity");
@@ -142,6 +186,7 @@ public class TopPanel extends JPanel
 	    CSH.setHelpIDString(jxpanelGeneralProperties.jlblFinalTime2, "controls.finaltime");
 	    CSH.setHelpIDString(jxpanelGeneralProperties.jtxtNumPoints, "controls.numdatapoints");
 	    CSH.setHelpIDString(jxpanelGeneralProperties.jlblNumPoints, "controls.numdatapoints");
+	    CSH.setHelpIDString(jxpanelColumnProperties, "panel.columnproperties");
 	    CSH.setHelpIDString(jxpanelColumnProperties.jtxtColumnLength, "controls.columnlength");
 	    CSH.setHelpIDString(jxpanelColumnProperties.jlblColumnLength, "controls.columnlength");
 	    CSH.setHelpIDString(jxpanelColumnProperties.jlblColumnLength2, "controls.columnlength");
@@ -477,41 +522,73 @@ public class TopPanel extends JPanel
 		    taskpanecontainer.setBorder(null);
 		    taskpanecontainer.setPaintBorderInsets(true);
 		    taskpanecontainer.setLayout(verticalLayout);
+
+		    jxtaskMobilePhaseComposition = new JXTaskPane();
+		    jxtaskMobilePhaseComposition.setAnimated(false);
+		    jxtaskMobilePhaseComposition.setTitle("Mobile Phase Composition");
+		    jxtaskMobilePhaseComposition.getContentPane().setBackground(new Color(255,255,255));
+		    ((JComponent)jxtaskMobilePhaseComposition.getContentPane()).setBorder(null);
 		    
-		    JXTaskPane taskpane = new JXTaskPane();
-		    taskpane.setAnimated(false);
-		    taskpane.setTitle("Chromatographic Properties");
-		    taskpane.getContentPane().setBackground(new Color(255,255,255));
-		    ((JComponent)taskpane.getContentPane()).setBorder(null);
+		    jxpanelMobilePhaseComposition = new MobilePhaseComposition();
+		    jxpanelMobilePhaseComposition.setPreferredSize(new Dimension(254,102));
+		    jxtaskMobilePhaseComposition.add(jxpanelMobilePhaseComposition);
+		    
+		    jxpanelIsocraticOptions = new IsocraticOptions();
+		    jxpanelIsocraticOptions.setPreferredSize(new Dimension(254,67));
+		    jxtaskMobilePhaseComposition.add(jxpanelIsocraticOptions);
+
+		    jxpanelGradientOptions = new GradientOptions();
+		    jxpanelGradientOptions.setPreferredSize(new Dimension(254,224));
+		    // Don't add yet. Just create the gradient options panel.
+		    // jxtaskMobilePhaseComposition.add(jxpanelGradientOptions);
+
+		    jxtaskChromatographyProperties = new JXTaskPane();
+		    jxtaskChromatographyProperties.setAnimated(false);
+		    jxtaskChromatographyProperties.setTitle("Chromatographic Properties");
+		    jxtaskChromatographyProperties.getContentPane().setBackground(new Color(255,255,255));
+		    ((JComponent)jxtaskChromatographyProperties.getContentPane()).setBorder(null);
 		    
 		    jxpanelChromatographyProperties = new ChromatographyProperties();
-		    jxpanelChromatographyProperties.setPreferredSize(new Dimension(254,281));
-		    taskpane.add(jxpanelChromatographyProperties);
+		    jxpanelChromatographyProperties.setPreferredSize(new Dimension(254,191));
+		    jxtaskChromatographyProperties.add(jxpanelChromatographyProperties);
 		    
-		    JXTaskPane taskpane2 = new JXTaskPane();
-		    taskpane2.setAnimated(false);
-		    taskpane2.setTitle("General Properties");
-		    taskpane2.getContentPane().setBackground(new Color(255, 255, 255));
-		    ((JComponent)taskpane2.getContentPane()).setBorder(null);
+		    jxtaskPlotOptions = new JXTaskPane();
+		    jxtaskPlotOptions.setAnimated(false);
+		    jxtaskPlotOptions.setTitle("Plot Options");
+		    jxtaskPlotOptions.getContentPane().setBackground(new Color(255,255,255));
+		    ((JComponent)jxtaskPlotOptions.getContentPane()).setBorder(null);
+		    
+		    jxpanelPlotOptions = new PlotOptions();
+		    jxpanelPlotOptions.setPreferredSize(new Dimension(254,207));
+		    jxtaskPlotOptions.add(jxpanelPlotOptions);
+
+		    jxtaskGeneralProperties= new JXTaskPane();
+		    jxtaskGeneralProperties.setAnimated(false);
+		    jxtaskGeneralProperties.setTitle("General Properties");
+		    jxtaskGeneralProperties.getContentPane().setBackground(new Color(255, 255, 255));
+		    ((JComponent)jxtaskGeneralProperties.getContentPane()).setBorder(null);
 
 		    jxpanelGeneralProperties = new GeneralProperties();
 		    jxpanelGeneralProperties.setPreferredSize(new Dimension(254, 190));
-		    taskpane2.add(jxpanelGeneralProperties, BorderLayout.NORTH);
+		    jxtaskGeneralProperties.add(jxpanelGeneralProperties, BorderLayout.NORTH);
 		    
-		    JXTaskPane taskpane3 = new JXTaskPane();
-		    taskpane3.setAnimated(false);
-		    taskpane3.setTitle("Column Properties");
-		    taskpane3.getContentPane().setBackground(new Color(255,255,255));
-		    ((JComponent)taskpane3.getContentPane()).setBorder(null);
+		    jxtaskColumnProperties = new JXTaskPane();
+		    jxtaskColumnProperties.setAnimated(false);
+		    jxtaskColumnProperties.setTitle("Column Properties");
+		    jxtaskColumnProperties.getContentPane().setBackground(new Color(255,255,255));
+		    ((JComponent)jxtaskColumnProperties.getContentPane()).setBorder(null);
 
 		    jxpanelColumnProperties = new ColumnProperties();
-		    jxpanelColumnProperties.setPreferredSize(new Dimension(254,232));
-		    taskpane3.add(jxpanelColumnProperties);
+		    jxpanelColumnProperties.setPreferredSize(new Dimension(254,275));
+		    jxtaskColumnProperties.add(jxpanelColumnProperties);
 
 		    // add the task pane to the taskpanecontainer
-		    taskpanecontainer.add(taskpane, null);
-		    taskpanecontainer.add(taskpane2, null);
-		    taskpanecontainer.add(taskpane3, null);
+		    taskpanecontainer.add(jxtaskMobilePhaseComposition, null);
+		    taskpanecontainer.add(jxtaskPlotOptions,null);
+		    jxtaskPlotOptions.setCollapsed(true);
+		    taskpanecontainer.add(jxtaskChromatographyProperties, null);
+		    taskpanecontainer.add(jxtaskGeneralProperties, null);
+		    taskpanecontainer.add(jxtaskColumnProperties, null);
 		    	
 		    JScrollPane jsclControlPanel = new JScrollPane(taskpanecontainer);
 		    jControlPanel.add(jsclControlPanel);

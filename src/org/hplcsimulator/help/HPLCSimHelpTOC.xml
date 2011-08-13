@@ -5,10 +5,22 @@
          "http://java.sun.com/products/javahelp/toc_2_0.dtd">
 <toc version="2.0">
 <tocitem text="HPLC Simulator" target="main_index">
-	<tocitem text="hello1" target="tut.quickstart"/>
+</tocitem>
+<tocitem text="Mobile Phase Composition" target="panel.mobilephasecomposition">
+	<tocitem text="Solvent A" target="controls.solventa"/>
+	<tocitem text="Solvent B" target="controls.solventb"/>
+	<tocitem text="Isocratic elution mode" target="controls.isocraticelutionmode"/>
+	<tocitem text="Gradient elution mode" target="controls.gradientelutionmode"/>
+	<tocitem text="Solvent B fraction" target="controls.solventbfraction"/>
+	<tocitem text="Gradient program table" target="controls.flowvelocity"/>
+	<tocitem text="Mixing volume" target="controls.mixingvolume"/>
+	<tocitem text="Non-mixing volume" target="controls.nonmixingvolume"/>
+	<tocitem text="Total dwell volume" target="controls.totaldwellvolume"/>
+	<tocitem text="Dwell time" target="controls.dwelltime"/>
+</tocitem>
+<tocitem text="Plot Options" target="panel.plotoptions">
 </tocitem>
 <tocitem text="Chromatographic Properties" target="panel.chromatographicproperties">
-	<tocitem text="MeOH fraction" target="controls.meohfraction"/>
 	<tocitem text="Temperature" target="controls.temperature"/>
 	<tocitem text="Injection volume" target="controls.injectionvolume"/>
 	<tocitem text="Flow rate" target="controls.flowrate"/>
@@ -29,6 +41,7 @@
 	<tocitem text="# Data points" target="controls.numdatapoints"/>
 </tocitem>
 <tocitem text="Column Properties" target="panel.columnproperties">
+	<tocitem text="Stationary phase" target="controls.stationaryphase"/>
 	<tocitem text="Length" target="controls.columnlength"/>
 	<tocitem text="Diameter" target="controls.columndiameter"/>
 	<tocitem text="Particle size" target="controls.particlesize"/>

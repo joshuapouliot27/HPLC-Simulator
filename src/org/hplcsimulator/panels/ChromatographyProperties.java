@@ -20,9 +20,6 @@ public class ChromatographyProperties extends JXPanel
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	public JLabel jlblOrganicFraction = null;
-	public JSlider jsliderOrganicFraction = null;
-	public JTextField jtxtOrganicFraction = null;
 	public JLabel jlblTemperature = null;
 	public JSlider jsliderTemp = null;
 	public JTextField jtxtTemp = null;
@@ -43,9 +40,6 @@ public class ChromatographyProperties extends JXPanel
 	public JLabel jlblBackpressure2 = null;
 	public JLabel jlblBackpressure = null;
 	public JLabel jlblBackpressure3 = null;
-	public JComboBox jcboOrganicModifier = null;
-	public JLabel jlblOrganicModifier = null;
-
 	/**
 	 * This method initializes 
 	 * 
@@ -60,94 +54,84 @@ public class ChromatographyProperties extends JXPanel
 	 * 
 	 */
 	private void initialize() {
-        jlblOrganicModifier = new JLabel();
-        jlblOrganicModifier.setText("Organic Modifier:");
-        jlblOrganicModifier.setSize(new Dimension(109, 16));
-        jlblOrganicModifier.setLocation(new Point(8, 8));
         jlblBackpressure3 = new JLabel();
         jlblBackpressure3.setText("bar");
-        jlblBackpressure3.setLocation(new Point(188, 256));
+        jlblBackpressure3.setLocation(new Point(188, 172));
         jlblBackpressure3.setSize(new Dimension(50, 16));
         jlblBackpressure3.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblBackpressure = new JLabel();
         jlblBackpressure.setText("400");
-        jlblBackpressure.setLocation(new Point(120, 256));
+        jlblBackpressure.setLocation(new Point(120, 172));
         jlblBackpressure.setSize(new Dimension(65, 16));
         jlblBackpressure.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblBackpressure2 = new JLabel();
         jlblBackpressure2.setText("Backpressure:");
         jlblBackpressure2.setSize(new Dimension(109, 16));
-        jlblBackpressure2.setLocation(new Point(8, 256));
+        jlblBackpressure2.setLocation(new Point(8, 172));
         jlblTheoreticalPlates = new JLabel();
         jlblTheoreticalPlates.setText("19000");
-        jlblTheoreticalPlates.setLocation(new Point(120, 236));
+        jlblTheoreticalPlates.setLocation(new Point(120, 152));
         jlblTheoreticalPlates.setSize(new Dimension(65, 16));
         jlblTheoreticalPlates.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblTheoreticalPlates2 = new JLabel();
         jlblTheoreticalPlates2.setText("Theoretical plates:");
         jlblTheoreticalPlates2.setSize(new Dimension(109, 16));
-        jlblTheoreticalPlates2.setLocation(new Point(8, 236));
+        jlblTheoreticalPlates2.setLocation(new Point(8, 152));
         jlblHETP3 = new JLabel();
         jlblHETP3.setText("cm");
-        jlblHETP3.setLocation(new Point(188, 216));
+        jlblHETP3.setLocation(new Point(188, 132));
         jlblHETP3.setSize(new Dimension(50, 16));
         jlblHETP3.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblHETP = new JLabel();
         jlblHETP.setText("0.0005");
-        jlblHETP.setLocation(new Point(120, 216));
+        jlblHETP.setLocation(new Point(120, 132));
         jlblHETP.setSize(new Dimension(65, 16));
         jlblHETP.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblHETP2 = new JLabel();
         jlblHETP2.setText("HETP:");
         jlblHETP2.setSize(new Dimension(109, 16));
-        jlblHETP2.setLocation(new Point(8, 216));
+        jlblHETP2.setLocation(new Point(8, 132));
         jlblFlowVelocity3 = new JLabel();
         jlblFlowVelocity3.setText("cm/s");
-        jlblFlowVelocity3.setLocation(new Point(188, 196));
+        jlblFlowVelocity3.setLocation(new Point(188, 112));
         jlblFlowVelocity3.setSize(new Dimension(50, 16));
         jlblFlowVelocity3.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblFlowVelocity = new JLabel();
         jlblFlowVelocity.setText("0.0005");
-        jlblFlowVelocity.setLocation(new Point(120, 196));
+        jlblFlowVelocity.setLocation(new Point(120, 112));
         jlblFlowVelocity.setSize(new Dimension(65, 16));
         jlblFlowVelocity.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblFlowVelocity2 = new JLabel();
         jlblFlowVelocity2.setText("Flow velocity:");
         jlblFlowVelocity2.setSize(new Dimension(109, 16));
-        jlblFlowVelocity2.setLocation(new Point(8, 196));
+        jlblFlowVelocity2.setLocation(new Point(8, 112));
         jlblFlowRate2 = new JLabel();
         jlblFlowRate2.setText("mL/min");
         jlblFlowRate2.setPreferredSize(new Dimension(50, 16));
-        jlblFlowRate2.setLocation(new Point(188, 176));
+        jlblFlowRate2.setLocation(new Point(188, 92));
         jlblFlowRate2.setSize(new Dimension(50, 16));
         jlblFlowRate2.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblFlowRate = new JLabel();
         jlblFlowRate.setText("Flow rate:");
         jlblFlowRate.setSize(new Dimension(109, 16));
-        jlblFlowRate.setLocation(new Point(8, 176));
+        jlblFlowRate.setLocation(new Point(8, 92));
         jlblInjectionVolume2 = new JLabel();
         jlblInjectionVolume2.setText("uL");
         jlblInjectionVolume2.setPreferredSize(new Dimension(50, 16));
-        jlblInjectionVolume2.setLocation(new Point(188, 156));
+        jlblInjectionVolume2.setLocation(new Point(188, 72));
         jlblInjectionVolume2.setSize(new Dimension(49, 16));
         jlblInjectionVolume2.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblInjectionVolume = new JLabel();
         jlblInjectionVolume.setText("Injection volume:");
         jlblInjectionVolume.setSize(new Dimension(109, 16));
-        jlblInjectionVolume.setLocation(new Point(8, 156));
+        jlblInjectionVolume.setLocation(new Point(8, 72));
         jlblTemperature = new JLabel();
-        jlblTemperature.setBounds(new Rectangle(8, 92, 101, 16));
+        jlblTemperature.setBounds(new Rectangle(8, 8, 101, 16));
         jlblTemperature.setText("Temperature (°C):");
         jlblTemperature.setFont(new Font("Dialog", Font.BOLD, 12));
-        jlblOrganicFraction = new JLabel();
-        jlblOrganicFraction.setBounds(new Rectangle(8, 32, 189, 16));
-        jlblOrganicFraction.setText("Acetonitrile fraction (% v/v):");
         this.setLayout(null);
-        this.setSize(new Dimension(254, 281));
+        this.setSize(new Dimension(254, 191));
         this.setBackground(Color.white);
-        this.add(jlblOrganicFraction, null);
-        this.add(getJsliderOrganicFraction(), null);
-        this.add(getJtxtOrganicFraction(), null);
         this.add(jlblTemperature, null);
         this.add(getJsliderTemp(), null);
         this.add(getJtxtTemp(), null);
@@ -168,48 +152,7 @@ public class ChromatographyProperties extends JXPanel
         this.add(jlblBackpressure2, null);
         this.add(jlblBackpressure, null);
         this.add(jlblBackpressure3, null);
-        this.add(getJcboOrganicModifier(), null);
-        this.add(jlblOrganicModifier, null);
 			
-	}
-
-	/**
-	 * This method initializes jsliderOrganicFraction	
-	 * 	
-	 * @return javax.swing.JSlider	
-	 */
-	private JSlider getJsliderOrganicFraction() {
-		if (jsliderOrganicFraction == null) {
-			jsliderOrganicFraction = new JSlider();
-			jsliderOrganicFraction.setBounds(new Rectangle(0, 48, 200, 43));
-			jsliderOrganicFraction.setFont(new Font("Dialog", Font.PLAIN, 12));
-			jsliderOrganicFraction.setName("Methanol Fraction Slider");
-			jsliderOrganicFraction.setMajorTickSpacing(25);
-			jsliderOrganicFraction.setMaximum(100);
-			jsliderOrganicFraction.setMinorTickSpacing(5);
-			jsliderOrganicFraction.setPaintLabels(true);
-			jsliderOrganicFraction.setPaintTicks(true);
-			jsliderOrganicFraction.setPaintTrack(true);
-			jsliderOrganicFraction.setValue(50);
-			jsliderOrganicFraction.setBackground(Color.white);
-		}
-		return jsliderOrganicFraction;
-	}
-
-	/**
-	 * This method initializes jtxtOrganicFraction	
-	 * 	
-	 * @return javax.swing.JTextField	
-	 */
-	private JTextField getJtxtOrganicFraction() {
-		if (jtxtOrganicFraction == null) {
-			jtxtOrganicFraction = new JTextField();
-			jtxtOrganicFraction.setText("50");
-			jtxtOrganicFraction.setLocation(new Point(200, 44));
-			jtxtOrganicFraction.setSize(new Dimension(41, 20));
-			jtxtOrganicFraction.setName("Methanol Fraction TextField");
-		}
-		return jtxtOrganicFraction;
 	}
 
 	/**
@@ -220,7 +163,7 @@ public class ChromatographyProperties extends JXPanel
 	private JSlider getJsliderTemp() {
 		if (jsliderTemp == null) {
 			jsliderTemp = new JSlider();
-			jsliderTemp.setBounds(new Rectangle(0, 108, 200, 43));
+			jsliderTemp.setBounds(new Rectangle(0, 24, 200, 43));
 			jsliderTemp.setFont(new Font("Dialog", Font.PLAIN, 12));
 			jsliderTemp.setName("Temperature Slider");
 			jsliderTemp.setMajorTickSpacing(20);
@@ -247,7 +190,7 @@ public class ChromatographyProperties extends JXPanel
 			jtxtTemp.setToolTipText("");
 			jtxtTemp.setText("25");
 			jtxtTemp.setActionCommand("test");
-			jtxtTemp.setLocation(new Point(200, 104));
+			jtxtTemp.setLocation(new Point(200, 20));
 			jtxtTemp.setSize(new Dimension(41, 20));
 			jtxtTemp.setName("Temperature TextField");
 		}
@@ -264,7 +207,7 @@ public class ChromatographyProperties extends JXPanel
 			jtxtInjectionVolume = new JTextField();
 			jtxtInjectionVolume.setText("5");
 			jtxtInjectionVolume.setSize(new Dimension(65, 20));
-			jtxtInjectionVolume.setLocation(new Point(120, 156));
+			jtxtInjectionVolume.setLocation(new Point(120, 72));
 		}
 		return jtxtInjectionVolume;
 	}
@@ -279,23 +222,9 @@ public class ChromatographyProperties extends JXPanel
 			jtxtFlowRate = new JTextField();
 			jtxtFlowRate.setText("2");
 			jtxtFlowRate.setSize(new Dimension(65, 20));
-			jtxtFlowRate.setLocation(new Point(120, 176));
+			jtxtFlowRate.setLocation(new Point(120, 92));
 		}
 		return jtxtFlowRate;
-	}
-
-	/**
-	 * This method initializes jcboOrganicModifier	
-	 * 	
-	 * @return javax.swing.JComboBox	
-	 */
-	private JComboBox getJcboOrganicModifier() {
-		if (jcboOrganicModifier == null) {
-			jcboOrganicModifier = new JComboBox(Globals.OrganicModifierArray);
-			jcboOrganicModifier.setBounds(new Rectangle(120, 8, 121, 21));
-			jcboOrganicModifier.setActionCommand("OrganicModifierComboBoxChanged");
-		}
-		return jcboOrganicModifier;
 	}
 
 }  //  @jve:decl-index=0:visual-constraint="10,10"
