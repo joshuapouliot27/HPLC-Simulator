@@ -171,7 +171,7 @@ public class GeneralProperties extends JXPanel {
 	private JCheckBox getJchkAutoTimeRange() {
 		if (jchkAutoTimeRange == null) {
 			jchkAutoTimeRange = new JCheckBox();
-			jchkAutoTimeRange.setBounds(new Rectangle(8, 104, 222, 24));
+			jchkAutoTimeRange.setBounds(new Rectangle(8, 104, 243, 24));
 			jchkAutoTimeRange.setName("jchkAutoTimeRange");
 			jchkAutoTimeRange.setSelected(true);
 			jchkAutoTimeRange.setText("Automatically determine time span");

@@ -14,7 +14,6 @@
       <property name="sun.java2d.noddraw" value="true"/>
       <jar href="HPLCSimulator.jar" main="true"/>
       <extension name="jogl" href="http://download.java.net/media/jogl/builds/archive/jsr-231-1.1.1/webstart/jogl.jnlp" />
-      <extension name="gluegen-rt" href="http://download.java.net/media/gluegen/webstart/gluegen-rt.jnlp" />
   	  <jar href="swingx-core-1.6.2.jar"/>
   	  <jar href="jhall.jar"/>
   	  <jar href="jh.jar"/>

@@ -530,7 +530,7 @@ public class TopPanel extends JPanel
 		    ((JComponent)jxtaskMobilePhaseComposition.getContentPane()).setBorder(null);
 		    
 		    jxpanelMobilePhaseComposition = new MobilePhaseComposition();
-		    jxpanelMobilePhaseComposition.setPreferredSize(new Dimension(254,102));
+		    jxpanelMobilePhaseComposition.setPreferredSize(new Dimension(254,106));
 		    jxtaskMobilePhaseComposition.add(jxpanelMobilePhaseComposition);
 		    
 		    jxpanelIsocraticOptions = new IsocraticOptions();
@@ -579,7 +579,7 @@ public class TopPanel extends JPanel
 		    ((JComponent)jxtaskColumnProperties.getContentPane()).setBorder(null);
 
 		    jxpanelColumnProperties = new ColumnProperties();
-		    jxpanelColumnProperties.setPreferredSize(new Dimension(254,275));
+		    jxpanelColumnProperties.setPreferredSize(new Dimension(254,277));
 		    jxtaskColumnProperties.add(jxpanelColumnProperties);
 
 		    // add the task pane to the taskpanecontainer

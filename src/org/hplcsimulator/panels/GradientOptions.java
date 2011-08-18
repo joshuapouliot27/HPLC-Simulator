@@ -92,7 +92,7 @@ public class GradientOptions extends JXPanel
         jlblMixingVolumeUnit.setText("uL");
         jlblMixingVolumeUnit.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblMixingVolume = new JLabel();
-        jlblMixingVolume.setBounds(new Rectangle(40, 144, 77, 16));
+        jlblMixingVolume.setBounds(new Rectangle(24, 144, 101, 16));
         jlblMixingVolume.setText("Mixing:");
         jlblNonMixingVolumeUnit = new JLabel();
         jlblNonMixingVolumeUnit.setBounds(new Rectangle(196, 164, 50, 16));
@@ -100,7 +100,7 @@ public class GradientOptions extends JXPanel
         jlblNonMixingVolumeUnit.setText("uL");
         jlblNonMixingVolumeUnit.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblNonMixingVolume = new JLabel();
-        jlblNonMixingVolume.setBounds(new Rectangle(40, 164, 77, 16));
+        jlblNonMixingVolume.setBounds(new Rectangle(24, 164, 101, 16));
         jlblNonMixingVolume.setText("Non-mixing:");
         this.setLayout(null);
         this.setSize(new Dimension(254, 224));

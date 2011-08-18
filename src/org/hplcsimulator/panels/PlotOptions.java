@@ -76,7 +76,7 @@ public class PlotOptions extends JXPanel
 	private JRadioButton getJrdoNoPlot() {
 		if (jrdoNoPlot == null) {
 			jrdoNoPlot = new JRadioButton();
-			jrdoNoPlot.setBounds(new Rectangle(8, 28, 133, 14));
+			jrdoNoPlot.setBounds(new Rectangle(8, 28, 201, 17));
 			jrdoNoPlot.setText("No plot");
 			jrdoNoPlot.setSelected(true);
 			jrdoNoPlot.setBackground(Color.white);
@@ -92,7 +92,7 @@ public class PlotOptions extends JXPanel
 	private JRadioButton getJrdoSolventBFraction() {
 		if (jrdoSolventBFraction == null) {
 			jrdoSolventBFraction = new JRadioButton();
-			jrdoSolventBFraction.setBounds(new Rectangle(8, 48, 153, 13));
+			jrdoSolventBFraction.setBounds(new Rectangle(8, 48, 201, 17));
 			jrdoSolventBFraction.setText("Solvent B fraction");
 			jrdoSolventBFraction.setActionCommand("Plot solvent B fraction");
 			jrdoSolventBFraction.setBackground(Color.white);
@@ -108,7 +108,7 @@ public class PlotOptions extends JXPanel
 	private JRadioButton getJrdoBackpressure() {
 		if (jrdoBackpressure == null) {
 			jrdoBackpressure = new JRadioButton();
-			jrdoBackpressure.setBounds(new Rectangle(8, 68, 127, 13));
+			jrdoBackpressure.setBounds(new Rectangle(8, 68, 201, 17));
 			jrdoBackpressure.setText("Backpressure");
 			jrdoBackpressure.setActionCommand("Plot backpressure");
 			jrdoBackpressure.setBackground(Color.white);
@@ -124,7 +124,7 @@ public class PlotOptions extends JXPanel
 	private JRadioButton getJrdoMobilePhaseViscosity() {
 		if (jrdoMobilePhaseViscosity == null) {
 			jrdoMobilePhaseViscosity = new JRadioButton();
-			jrdoMobilePhaseViscosity.setBounds(new Rectangle(8, 88, 169, 13));
+			jrdoMobilePhaseViscosity.setBounds(new Rectangle(8, 88, 201, 17));
 			jrdoMobilePhaseViscosity.setText("Mobile phase viscosity");
 			jrdoMobilePhaseViscosity.setActionCommand("Plot mobile phase viscosity");
 			jrdoMobilePhaseViscosity.setBackground(Color.white);
@@ -140,7 +140,7 @@ public class PlotOptions extends JXPanel
 	private JRadioButton getJrdoRetentionFactor() {
 		if (jrdoRetentionFactor == null) {
 			jrdoRetentionFactor = new JRadioButton();
-			jrdoRetentionFactor.setBounds(new Rectangle(8, 108, 156, 13));
+			jrdoRetentionFactor.setBounds(new Rectangle(8, 108, 201, 17));
 			jrdoRetentionFactor.setText("Retention factor of:");
 			jrdoRetentionFactor.setActionCommand("Plot retention factor");
 			jrdoRetentionFactor.setBackground(Color.white);
@@ -156,7 +156,7 @@ public class PlotOptions extends JXPanel
 	private JRadioButton getJrdoPosition() {
 		if (jrdoPosition == null) {
 			jrdoPosition = new JRadioButton();
-			jrdoPosition.setBounds(new Rectangle(8, 156, 233, 13));
+			jrdoPosition.setBounds(new Rectangle(8, 156, 233, 17));
 			jrdoPosition.setActionCommand("Plot position");
 			jrdoPosition.setText("Position along column of:");
 			jrdoPosition.setBackground(Color.white);
@@ -172,7 +172,7 @@ public class PlotOptions extends JXPanel
 	private JComboBox getJcboRetentionFactorCompounds() {
 		if (jcboRetentionFactorCompounds == null) {
 			jcboRetentionFactorCompounds = new JComboBox();
-			jcboRetentionFactorCompounds.setBounds(new Rectangle(32, 128, 209, 21));
+			jcboRetentionFactorCompounds.setBounds(new Rectangle(32, 128, 209, 25));
 			jcboRetentionFactorCompounds.setActionCommand("RetentionFactorCompoundChanged");
 		}
 		return jcboRetentionFactorCompounds;
@@ -186,7 +186,7 @@ public class PlotOptions extends JXPanel
 	private JComboBox getJcboPositionCompounds() {
 		if (jcboPositionCompounds == null) {
 			jcboPositionCompounds = new JComboBox();
-			jcboPositionCompounds.setBounds(new Rectangle(32, 176, 208, 21));
+			jcboPositionCompounds.setBounds(new Rectangle(32, 176, 208, 25));
 			jcboPositionCompounds.setActionCommand("PositionCompoundChanged");
 		}
 		return jcboPositionCompounds;

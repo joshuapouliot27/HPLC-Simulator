@@ -126,7 +126,7 @@ public class ChromatographyProperties extends JXPanel
         jlblInjectionVolume.setSize(new Dimension(109, 16));
         jlblInjectionVolume.setLocation(new Point(8, 72));
         jlblTemperature = new JLabel();
-        jlblTemperature.setBounds(new Rectangle(8, 8, 101, 16));
+        jlblTemperature.setBounds(new Rectangle(8, 8, 189, 16));
         jlblTemperature.setText("Temperature (°C):");
         jlblTemperature.setFont(new Font("Dialog", Font.BOLD, 12));
         this.setLayout(null);
