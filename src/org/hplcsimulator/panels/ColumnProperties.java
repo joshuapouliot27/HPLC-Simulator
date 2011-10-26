@@ -77,7 +77,7 @@ public class ColumnProperties extends JXPanel
         jlblVoidVolume3.setSize(new Dimension(45, 16));
         jlblVoidVolume3.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblParticleSize2 = new JLabel();
-        jlblParticleSize2.setText("um");
+        jlblParticleSize2.setText("\u00b5m");
         jlblParticleSize2.setLocation(new Point(196, 96));
         jlblParticleSize2.setSize(new Dimension(45, 16));
         jlblParticleSize2.setFont(new Font("Dialog", Font.PLAIN, 12));
@@ -264,7 +264,7 @@ public class ColumnProperties extends JXPanel
 	private JTextField getJtxtBTerm() {
 		if (jtxtBTerm == null) {
 			jtxtBTerm = new JTextField();
-			jtxtBTerm.setText("3");
+			jtxtBTerm.setText("5");
 			jtxtBTerm.setSize(new Dimension(57, 20));
 			jtxtBTerm.setLocation(new Point(136, 212));
 		}
@@ -294,7 +294,7 @@ public class ColumnProperties extends JXPanel
 	private JComboBox getJcboStationaryPhase() {
 		if (jcboStationaryPhase == null) {
 			jcboStationaryPhase = new JComboBox();
-			jcboStationaryPhase.addItem(new String("Generic Octadecylsilane (C18)"));
+			jcboStationaryPhase.addItem(new String("Agilent Zorbax SB-C8"));
 			jcboStationaryPhase.setSelectedIndex(0);
 			jcboStationaryPhase.setLocation(new Point(8, 26));
 			jcboStationaryPhase.setSize(new Dimension(233, 27));

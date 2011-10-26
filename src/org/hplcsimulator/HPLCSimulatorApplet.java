@@ -1,16 +1,30 @@
 package org.hplcsimulator;
 
-import org.hplcsimulator.panels.*;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.color.ColorSpace;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
+import java.awt.image.ComponentColorModel;
+import java.awt.image.ComponentSampleModel;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferByte;
+import java.awt.image.Raster;
+import java.awt.image.SampleModel;
+import java.awt.image.WritableRaster;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Random;
@@ -20,12 +34,50 @@ import javax.help.CSH;
 import javax.help.HelpSet;
 import javax.swing.JApplet;
 import javax.swing.JSlider;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+/**
+ * A Transferable able to transfer an AWT Image.
+ * Similar to the JDK StringSelection class.
+ */
+class ImageSelection implements Transferable {
+    private Image image;
+   
+    public static void copyImageToClipboard(Image image) {
+        ImageSelection imageSelection = new ImageSelection(image);
+        Toolkit toolkit = Toolkit.getDefaultToolkit();
+        toolkit.getSystemClipboard().setContents(imageSelection, null);
+    }
+   
+    public ImageSelection(Image image) {
+        this.image = image;
+    }
+   
+	@Override
+    public Object getTransferData (DataFlavor flavor) throws UnsupportedFlavorException {
+        if (flavor.equals(DataFlavor.imageFlavor) == false) {
+            throw new UnsupportedFlavorException(flavor);
+        }
+        return image;
+    }
+   
+	@Override
+    public boolean isDataFlavorSupported(DataFlavor flavor) {
+        return flavor.equals(DataFlavor.imageFlavor);
+    }
+   
+    public DataFlavor[] getTransferDataFlavors() {
+        return new DataFlavor[] {
+            DataFlavor.imageFlavor
+        };
+    }
+}
 
 class Compound
 {
@@ -91,7 +143,7 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 	public double m_dReducedPlateHeight;
 	public double m_dTheoreticalPlates;
 	public double m_dHETP;
-	public double m_dInjectionVolume = 5;
+	public double m_dInjectionVolume = 5; //(in uL)
 	public double m_dTimeConstant = 0.5;
 	public double m_dStartTime = 0;
 	public double m_dEndTime = 0;
@@ -108,10 +160,8 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 	public int m_iChromatogramPlotIndex = -1;
 	public int m_iSinglePlotIndex = -1;
 	public int m_iSecondPlotIndex = -1;
-	public double[][] m_dRetentionFactorArray = null;
-	public int m_iRetentionFactorArrayLength = 0;
-	public double[][] m_dPositionArray = null;
-	public int m_iPositionArrayLength = 0;
+	public Vector<double[]> m_vectRetentionFactorArray;
+	public Vector<double[]> m_vectPositionArray;
 	public double m_dSelectedIsocraticRetentionFactor = 0;
 	
 	/**
@@ -121,9 +171,9 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 	{
 	    super();
 	    
-		/*try {
+		try {
 	        //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-	        UIManager.setLookAndFeel("org.jdesktop.swingx.plaf.nimbus");
+	        UIManager.setLookAndFeel("org.jdesktop.swingx.plaf.metal");
 	    } 
 	    catch (UnsupportedLookAndFeelException e) {
 	       // handle exception
@@ -136,7 +186,7 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 	    }
 	    catch (IllegalAccessException e) {
 	       // handle exception
-	    }*/
+	    }
 
 		this.setPreferredSize(new Dimension(900, 650));
 	}
@@ -293,6 +343,7 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
         contentPane.jbtnAutoscaleY.addActionListener(this);
         contentPane.jbtnHelp.addActionListener(this);
         contentPane.jbtnTutorials.addActionListener(this);
+        contentPane.jbtnCopyImage.addActionListener(this);
         contentPane.m_GraphControl.addAutoScaleListener(this);
         contentPane.m_GraphControl.setSecondYAxisVisible(false);
         contentPane.m_GraphControl.setSecondYAxisRangeLimits(0, 100);
@@ -550,8 +601,8 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 		
 		if (iTemp < 2)
 			iTemp = 2;
-		if (iTemp > 10000000)
-			iTemp = 10000000;
+		if (iTemp > 100000)
+			iTemp = 100000;
 		
 		this.m_iNumPoints = iTemp;
 		contentPane.jxpanelGeneralProperties.jtxtNumPoints.setText(Integer.toString(m_iNumPoints));    	
@@ -972,6 +1023,47 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 	    	
 	    	performCalculations();  	
 	    }
+	    else if (strActionCommand == "Copy Image")
+	    {
+	    	ByteBuffer bytePixels = contentPane.m_GraphControl.getPixels();
+	    	Image image;
+	    	int h = contentPane.m_GraphControl.getHeight();
+	    	int w = contentPane.m_GraphControl.getWidth();
+	    	if (w % 4 > 0)
+        		w += 4 - (w % 4);
+	    	
+	    	byte[] flippedPixels = new byte[bytePixels.array().length];
+
+	    	for (int y = 0; y < h; y++)
+	    	{
+	    		for (int x = 0; x < w * 4; x++)
+	    		{
+	    			flippedPixels[(y * w * 4) + x] = bytePixels.array()[((h - y - 1) * w * 4) + x];
+	    		}
+	    	}
+
+	    	DataBuffer dbuf = new DataBufferByte(flippedPixels, flippedPixels.length, 0);
+
+	    	int[] bandOffsets = {0,1,2,3};
+	    	SampleModel sampleModel = new ComponentSampleModel(DataBuffer.TYPE_BYTE, contentPane.m_GraphControl.getWidth(), contentPane.m_GraphControl.getHeight(), 4, w * 4, bandOffsets);
+	    	WritableRaster raster = Raster.createWritableRaster(sampleModel, dbuf, null);
+	    	ComponentColorModel colorModel = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB),
+	    					 new int[] {8,8,8,8},
+	    					 true,
+	    					 false,
+	    					 ComponentColorModel.OPAQUE,
+	    					 DataBuffer.TYPE_BYTE);
+	    	image = new BufferedImage(colorModel, raster, false, null);
+	        
+	        new javax.swing.ImageIcon(image); // Force load.
+	        BufferedImage newImage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+	        newImage.createGraphics().drawImage(image, 0, 0, null);
+	        image = newImage;
+	        
+	        ImageSelection imageSelection = new ImageSelection(image);
+	        Toolkit toolkit = Toolkit.getDefaultToolkit();
+	        toolkit.getSystemClipboard().setContents(imageSelection, null);
+	    }
 	}
 
 	//@Override
@@ -1129,14 +1221,18 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 		DecimalFormat df = new DecimalFormat("0.000E0");
 		contentPane.jxpanelGeneralProperties.jlblDiffusionCoefficient.setText(df.format(m_dDiffusionCoefficient));
 		
+		// Determine the reduced flow velocity
 		m_dMu = ((m_dParticleSize / 10000) * m_dFlowVelocity) / m_dDiffusionCoefficient;
 		
+		// Calculate reduced plate height
 		m_dReducedPlateHeight = m_dATerm + (m_dBTerm / m_dMu) + (m_dCTerm * m_dMu);
 		contentPane.jxpanelColumnProperties.jlblReducedPlateHeight.setText(formatter.format(m_dReducedPlateHeight));
     	
+		// Calculate HETP
 		m_dHETP = (m_dParticleSize / 10000) * m_dReducedPlateHeight;
 		contentPane.jxpanelChromatographyProperties.jlblHETP.setText(df.format(m_dHETP));
 		
+		// Calculate number of theoretical plates
 		NumberFormat NFormatter = new DecimalFormat("#0");
 		m_dTheoreticalPlates = (m_dColumnLength / 10) / m_dHETP;
 		contentPane.jxpanelChromatographyProperties.jlblTheoreticalPlates.setText(NFormatter.format(m_dTheoreticalPlates));
@@ -1161,10 +1257,8 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 			
 	    	// Scale dtstep correctly for long and short runs - use the total gradient time as a reference
 			double dtstep = (m_dEndTime - m_dStartTime) / 1000;
-			m_dRetentionFactorArray = new double[1000][2];
-			m_iRetentionFactorArrayLength = 0;
-			m_dPositionArray = new double[1000][2];
-			m_iPositionArrayLength = 0;
+			this.m_vectRetentionFactorArray = new Vector<double[]>();
+			this.m_vectPositionArray = new Vector<double[]>();
 			
 			for (int iCompound = 0; iCompound < iNumCompounds; iCompound++)
 			{
@@ -1209,16 +1303,14 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 
 					if (bRecordRetentionFactor)
 					{
-						m_dRetentionFactorArray[m_iRetentionFactorArrayLength][0] = dTotalTime;
-						m_dRetentionFactorArray[m_iRetentionFactorArrayLength][1] = kprime;
-						m_iRetentionFactorArrayLength++;
+						double[] temp = {dTotalTime,kprime};
+						m_vectRetentionFactorArray.add(temp);
 					}
 
 					if (bRecordPosition)
 					{
-						m_dPositionArray[m_iPositionArrayLength][0] = dTotalTime;
-						m_dPositionArray[m_iPositionArrayLength][1] = dXPosition * m_dColumnLength;
-						m_iPositionArrayLength++;
+						double[] temp = {dTotalTime,dXPosition * m_dColumnLength};
+						m_vectPositionArray.add(temp);
 					}
 
 					if (dXPosition >= 1)
@@ -1262,13 +1354,14 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 		    	contentPane.vectChemicalRows.get(iCompound).set(3, formatter.format(dRetentionTime));
 		    	
 		    	// TODO: The following equation does not account for peak broadening due to injection volume.
+		    	// Use the final value of k to determine the peak width.
 		    	double dSigma = Math.sqrt(Math.pow((m_dVoidTime * (1 + kprime)) / Math.sqrt(m_dTheoreticalPlates), 2) + Math.pow(m_dTimeConstant, 2)/* + Math.pow(0.017 * m_dInjectionVolume / m_dFlowRate, 2)*/);
 		    	m_vectCompound.get(iCompound).dSigma = dSigma;	    	
 		    	contentPane.vectChemicalRows.get(iCompound).set(4, formatter.format(dSigma));
 		    	
-		    	double dW = m_dInjectionVolume * m_vectCompound.get(iCompound).dConcentration;
+		    	double dW = (m_dInjectionVolume / 1000000) * m_vectCompound.get(iCompound).dConcentration;
 		    	m_vectCompound.get(iCompound).dW = dW;
-		    	contentPane.vectChemicalRows.get(iCompound).set(5, formatter.format(dW));		    	
+		    	contentPane.vectChemicalRows.get(iCompound).set(5, formatter.format(dW * 1000000));		    	
 			}
 		}
 		else
@@ -1293,44 +1386,47 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 			    		m_dSelectedIsocraticRetentionFactor = kprime;	
 			    	}
 			    	
+			    	// In seconds
 			    	double dRetentionTime = m_dVoidTime * (1 + kprime);
 			    	m_vectCompound.get(i).dRetentionTime = dRetentionTime;
 			    	contentPane.vectChemicalRows.get(i).set(3, formatter.format(dRetentionTime));
 			    	
-			    	double dSigma = Math.sqrt(Math.pow(dRetentionTime / Math.sqrt(m_dTheoreticalPlates), 2) + Math.pow(m_dTimeConstant, 2) + Math.pow(0.017 * m_dInjectionVolume / m_dFlowRate, 2));
+			    	// 9/22/11 - Peak broadening due to sample injection volume is underestimated.
+			    	//double dSigma = Math.sqrt(Math.pow(dRetentionTime / Math.sqrt(m_dTheoreticalPlates), 2) + Math.pow(m_dTimeConstant, 2) + Math.pow(0.017 * m_dInjectionVolume / m_dFlowRate, 2));
+			    	double dSigma = Math.sqrt(Math.pow(dRetentionTime / Math.sqrt(m_dTheoreticalPlates), 2) + Math.pow(m_dTimeConstant, 2) + (1.0/12.0) * Math.pow((m_dInjectionVolume / 1000.0) / (m_dFlowRate / 60.0), 2));
 			    	m_vectCompound.get(i).dSigma = dSigma;	    	
 			    	contentPane.vectChemicalRows.get(i).set(4, formatter.format(dSigma));
 			    	
-			    	double dW = m_dInjectionVolume * m_vectCompound.get(i).dConcentration;
+			    	double dW = (m_dInjectionVolume / 1000000) * m_vectCompound.get(i).dConcentration;
 			    	m_vectCompound.get(i).dW = dW;
-			    	contentPane.vectChemicalRows.get(i).set(5, formatter.format(dW));
+			    	contentPane.vectChemicalRows.get(i).set(5, formatter.format(dW * 1000000));
 				}
 			}
-			
-	    	// Now calculate the time period we're going to be looking at:
-	    	if (contentPane.jxpanelGeneralProperties.jchkAutoTimeRange.isSelected() == true)
-	    	{
-		    	// Find the compound with the longest tR
-		    	double dLongestRetentionTime = 0;
-		    	
-		    	for (int i = 0; i < m_vectCompound.size(); i++)
-		    	{
-		    		if (m_vectCompound.get(i).dRetentionTime > dLongestRetentionTime)
-		    		{
-		    			dLongestRetentionTime = m_vectCompound.get(i).dRetentionTime;
-		    		}
-		    	}
-		    	
-		    	m_dEndTime = dLongestRetentionTime * 1.1;
-		    	
-		    	contentPane.jxpanelGeneralProperties.jtxtFinalTime.setText(Float.toString((float)m_dEndTime));
-		    	
-		    	contentPane.jxpanelGeneralProperties.jtxtInitialTime.setText("0");
-		    	
-		    	m_dStartTime = 0;
-	    	}
 		}
-    	
+
+    	// Now calculate the time period we're going to be looking at:
+    	if (contentPane.jxpanelGeneralProperties.jchkAutoTimeRange.isSelected() == true)
+    	{
+	    	// Find the compound with the longest tR
+	    	double dLongestRetentionTime = 0;
+	    	
+	    	for (int i = 0; i < m_vectCompound.size(); i++)
+	    	{
+	    		if (m_vectCompound.get(i).dRetentionTime > dLongestRetentionTime)
+	    		{
+	    			dLongestRetentionTime = m_vectCompound.get(i).dRetentionTime;
+	    		}
+	    	}
+	    	
+	    	m_dEndTime = dLongestRetentionTime * 1.1;
+	    	
+	    	contentPane.jxpanelGeneralProperties.jtxtFinalTime.setText(Float.toString((float)m_dEndTime));
+	    	
+	    	contentPane.jxpanelGeneralProperties.jtxtInitialTime.setText("0");
+	    	
+	    	m_dStartTime = 0;
+    	}
+
 		if (m_iSecondPlotType == 1)
 			plotGradient();
 		if (m_iSecondPlotType == 2 || m_iSecondPlotType == 3)
@@ -1364,22 +1460,23 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 	    	for (int i = 0; i < this.m_iNumPoints; i++)
 	    	{
 	    		double dTime = m_dStartTime + (double)i * ((m_dEndTime - m_dStartTime) / (double)this.m_iNumPoints);
-	    		double dNoise = random.nextGaussian() * (m_dNoise / 1000);
+	    		double dNoise = random.nextGaussian() * (m_dNoise / 1000000000);
 	    		double dCTotal = (dNoise / Math.sqrt(m_dTimeConstant)) + m_dSignalOffset;
 	    		
 	    		// Add the contribution from each compound to the peak
 	    		for (int j = 0; j < m_vectCompound.size(); j++)
 	    		{
 	    			Compound curCompound = m_vectCompound.get(j);
-	    			double dCthis = ((curCompound.dW / 1000000) / (curCompound.dSigma * (m_dFlowRate / (60 * 1000)))) * Math.exp(-(0.5 * Math.pow((dTime - curCompound.dRetentionTime) / curCompound.dSigma, 2)));
+	    			//double dCthis = ((curCompound.dW / 1000000) / (curCompound.dSigma * (m_dFlowRate / (60 * 1000)))) * Math.exp(-0.5*Math.pow((dTime - curCompound.dRetentionTime) / (curCompound.dSigma), 2));
+	    			double dCthis = ((curCompound.dW / 1000000) / (Math.sqrt(Math.PI) * 2 * curCompound.dSigma * (m_dFlowRate / (60 * 1000)))) * Math.exp(-Math.pow((dTime - curCompound.dRetentionTime) / (2 * curCompound.dSigma), 2));
 	    			dCTotal += dCthis;
 	    			
 	    			// If a compound is selected, then show it in a different color and without noise.
 	    			if (m_iSinglePlotIndex >= 0 && j == iRowSel)
-	    		    	contentPane.m_GraphControl.AddDataPoint(m_iSinglePlotIndex, dTime, (dCthis + m_dSignalOffset) / 1000);
+	    		    	contentPane.m_GraphControl.AddDataPoint(m_iSinglePlotIndex, dTime, (dCthis + m_dSignalOffset));
 	    		}
 	    		
-		    	contentPane.m_GraphControl.AddDataPoint(m_iChromatogramPlotIndex, dTime, dCTotal / 1000);
+		    	contentPane.m_GraphControl.AddDataPoint(m_iChromatogramPlotIndex, dTime, dCTotal);
 	    	}
 	    	
 	    	if (contentPane.jbtnAutoscaleX.isSelected() == true)
@@ -1407,6 +1504,8 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 		double dTempKelvin = m_dTemperature + 273.15;
 		if (this.m_bGradientMode)
 		{
+			double dFinalValue = 0;
+			
 			for (int i = 0; i < iNumPoints; i++)
 			{
 				double dViscosity = 0;
@@ -1436,13 +1535,17 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 					// See Bird, R. B.; Stewart, W. E.; Lightfoot, E. N. Transport Phenomena; Wiley & Sons: New York, 1960.
 					double dBackpressure = 500 * (dViscosity / 10) * (((m_dFlowVelocity / 100) * (m_dColumnLength / 1000)) / Math.pow(m_dParticleSize / 1000000, 2));
 				    contentPane.m_GraphControl.AddDataPoint(m_iSecondPlotIndex, m_dGradientArray[i][0] * 60, dBackpressure / 100000);
+				    dFinalValue = dBackpressure / 100000;
 				}
 				else if (this.m_iSecondPlotType == 3)
 				{
 				    contentPane.m_GraphControl.AddDataPoint(m_iSecondPlotIndex, m_dGradientArray[i][0] * 60, dViscosity);
+				    dFinalValue = dViscosity;
 				}
 			}
 			
+		    contentPane.m_GraphControl.AddDataPoint(m_iSecondPlotIndex, 9999999999d, dFinalValue);
+
 			if (this.m_iSecondPlotType == 2)
 			{
 				// Calculate backpressure (in pascals) (Darcy equation)
@@ -1531,9 +1634,15 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 			int iChangedRow = e.getFirstRow();
 			int iChangedColumn = e.getColumn();
 
-	    	Double dRowValue1 = (Double) contentPane.jxpanelGradientOptions.tmGradientProgram.getValueAt(iChangedRow, 0);
-	    	Double dRowValue2 = (Double) contentPane.jxpanelGradientOptions.tmGradientProgram.getValueAt(iChangedRow, 1);
-
+			Double dRowValue1 = 0.0;
+			Double dRowValue2 = 0.0;
+			
+			if (iChangedRow < contentPane.jxpanelGradientOptions.tmGradientProgram.getRowCount())
+			{
+				dRowValue1 = (Double) contentPane.jxpanelGradientOptions.tmGradientProgram.getValueAt(iChangedRow, 0);
+				dRowValue2 = (Double) contentPane.jxpanelGradientOptions.tmGradientProgram.getValueAt(iChangedRow, 1);
+			}
+			
 	    	if (iChangedColumn == 0)
 			{
 				// If the column changed was the first, then make sure the time falls in the right range
@@ -1670,6 +1779,8 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 	    	{
 		    	contentPane.m_GraphControl.AddDataPoint(m_iSecondPlotIndex, m_dGradientArray[i][0] * 60, m_dGradientArray[i][1]);
 	    	}
+	    	
+	    	contentPane.m_GraphControl.AddDataPoint(m_iSecondPlotIndex, 9999999999d, m_dGradientArray[m_dGradientArray.length - 1][1]);
 		}
 		else
 		{
@@ -1691,17 +1802,18 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
    	
 		if (this.m_bGradientMode)
 		{
-	    	for (int i = 0; i < m_iRetentionFactorArrayLength; i++)
+	    	for (int i = 0; i < this.m_vectRetentionFactorArray.size(); i++)
 	    	{
-	    		double dRetentionFactor = m_dRetentionFactorArray[i][1];
+	    		double dRetentionFactor = m_vectRetentionFactorArray.get(i)[1];
 	    		
 				if (dRetentionFactor < dRetentionFactorMin)
 					dRetentionFactorMin = dRetentionFactor;
 				if (dRetentionFactor > dRetentionFactorMax)
 					dRetentionFactorMax = dRetentionFactor;
 	
-		    	contentPane.m_GraphControl.AddDataPoint(m_iSecondPlotIndex, m_dRetentionFactorArray[i][0], m_dRetentionFactorArray[i][1]);
+		    	contentPane.m_GraphControl.AddDataPoint(m_iSecondPlotIndex, m_vectRetentionFactorArray.get(i)[0], m_vectRetentionFactorArray.get(i)[1]);
 	    	}
+	    	
 		}
 		else
 		{
@@ -1724,10 +1836,9 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 
 		if (this.m_bGradientMode)
 		{
-	    	for (int i = 0; i < m_iPositionArrayLength; i++)
+	    	for (int i = 0; i < m_vectPositionArray.size(); i++)
 	    	{
-	    		double dPosition = m_dPositionArray[i][1];
-	    		contentPane.m_GraphControl.AddDataPoint(m_iSecondPlotIndex, m_dPositionArray[i][0], m_dPositionArray[i][1]);
+	    		contentPane.m_GraphControl.AddDataPoint(m_iSecondPlotIndex, m_vectPositionArray.get(i)[0], m_vectPositionArray.get(i)[1]);
 	    	}
 		}
 		else

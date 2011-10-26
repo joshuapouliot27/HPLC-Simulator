@@ -10,6 +10,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.lang.Math;
+import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -117,6 +118,9 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
 	static double KILOUNITS = 1000 * UNITS;
 	static double MEGAUNITS = 1000 * KILOUNITS;
 
+	boolean m_bCopyImage = false;
+	ByteBuffer m_ByteBuffer = null;
+	
 	DRect m_drectView = new DRect();
 	DRect m_rectGraph = new DRect();
 	double m_dXMultiplier;
@@ -303,6 +307,21 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
     	gl.glDisable(GL.GL_CLIP_PLANE2);
     	gl.glDisable(GL.GL_CLIP_PLANE3);
         
+    	// If we are suppose to make a copy of the buffer, do it here:
+    	if (this.m_bCopyImage)
+    	{
+    	   	int w = this.getWidth();
+        	int h = this.getHeight();
+        	
+        	// Each line must be 32-bit aligned
+        	if (w % 4 > 0)
+        		w += 4 - (w % 4);
+        	
+        	byte[] bytes = new byte[w*h*4];
+        	this.m_ByteBuffer = ByteBuffer.wrap(bytes);
+        	gl.glReadPixels(0,0,w,h,GL.GL_RGBA,GL.GL_UNSIGNED_BYTE,m_ByteBuffer);
+        	m_ByteBuffer.rewind();
+    	}
     	
         this.swapBuffers();
     	}
@@ -2229,18 +2248,18 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
     		int j = 0;
     		
     		double dInvYMultiplier;
-    		double dRectViewTop;
+    		//double dRectViewTop;
     		double dRectViewBottom;
     		if (!m_vectDataSeries.get(i).bUseSecondScale)
     		{
     			dInvYMultiplier = m_dInvYMultiplier;
-    			dRectViewTop = m_drectView.top;
+    			//dRectViewTop = m_drectView.top;
     			dRectViewBottom = m_drectView.bottom;
     		}
     		else
     		{
     			dInvYMultiplier = m_dSecondInvYMultiplier;
-    			dRectViewTop = m_dSecondYAxisUpperLimit;
+    			//dRectViewTop = m_dSecondYAxisUpperLimit;
     			dRectViewBottom = m_dSecondYAxisLowerLimit;
     		}
     		
@@ -2964,5 +2983,14 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
     	
     	if (!bEnabled)
     		setCursor(Cursor.getDefaultCursor());
+    }
+    
+    public ByteBuffer getPixels()
+    {
+    	this.m_bCopyImage = true;
+    	// The buffer is copied in the display routine
+    	this.paint(getGraphics());
+    	
+    	return m_ByteBuffer;
     }
 }

@@ -1,11 +1,11 @@
 package org.hplcsimulator;
 
 import org.hplcsimulator.panels.*;
-import org.hplcsimulator.panels.GradientOptions.SpecialTableModel;
 import javax.swing.JPanel;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Insets;
 import java.awt.Rectangle;
 import javax.media.opengl.*;
 import java.awt.Point;
@@ -27,9 +27,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.JToggleButton;
 import javax.swing.ImageIcon;
 import javax.help.*;
-
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableModel;
 
 import org.jdesktop.swingx.*;
 
@@ -81,6 +78,7 @@ public class TopPanel extends JPanel
 
 	public PlotOptions jxpanelPlotOptions = null;
 	public JXTaskPane jxtaskPlotOptions = null;
+	public JButton jbtnCopyImage = null;
 
 	/**
 	 * This is the default constructor
@@ -110,7 +108,9 @@ public class TopPanel extends JPanel
         
 		m_GraphControl = new GraphControl(caps);
 		m_GraphControl.setBounds(new Rectangle(3, 16, 606, 421));
-		
+		m_GraphControl.setYAxisTitle("Signal");
+		m_GraphControl.setYAxisBaseUnit("moles/liter", "mol/L");
+
 	    this.add(getJpanelCompounds(), null);
 	    this.add(getJpanelSimulatedChromatogram(), null);
 	    this.add(getControlPanel(), null);
@@ -261,7 +261,7 @@ public class TopPanel extends JPanel
 			"k'",
 			"tR (s)",
 			"<html>&#x03C3<sub>total</sub> (s)</html>",
-			"W (\u03BCmol)"
+			"W (pmol)"
 			};
 			
 			for (int i = 0; i < columnNames.length; i++)
@@ -343,8 +343,9 @@ public class TopPanel extends JPanel
 			jbtnAutoscale.setIcon(new ImageIcon(getClass().getResource("/org/hplcsimulator/images/autoscale.png")));
 			jbtnAutoscale.setRolloverEnabled(false);
 			jbtnAutoscale.setSelected(true);
+			jbtnAutoscale.setMargin(new Insets(0, 0, 0, 0));
 			jbtnAutoscale.setText("Autoscale");
-			jbtnAutoscale.setBounds(new Rectangle(12, 444, 112, 25));
+			jbtnAutoscale.setBounds(new Rectangle(8, 444, 105, 25));
 			jbtnAutoscale.setToolTipText("");
 		}
 		return jbtnAutoscale;
@@ -364,7 +365,7 @@ public class TopPanel extends JPanel
 			jbtnAutoscaleX.setSelected(true);
 			jbtnAutoscaleX.setText("");
 			jbtnAutoscaleX.setActionCommand("Autoscale X");
-			jbtnAutoscaleX.setBounds(new Rectangle(132, 444, 32, 25));
+			jbtnAutoscaleX.setBounds(new Rectangle(120, 444, 33, 25));
 			jbtnAutoscaleX.setToolTipText("");
 		}
 		return jbtnAutoscaleX;
@@ -383,7 +384,7 @@ public class TopPanel extends JPanel
 			jbtnAutoscaleY.setRolloverEnabled(false);
 			jbtnAutoscaleY.setSelected(true);
 			jbtnAutoscaleY.setText("");
-			jbtnAutoscaleY.setBounds(new Rectangle(172, 444, 32, 25));
+			jbtnAutoscaleY.setBounds(new Rectangle(160, 444, 33, 25));
 			jbtnAutoscaleY.setToolTipText("");
 		}
 		return jbtnAutoscaleY;
@@ -400,8 +401,9 @@ public class TopPanel extends JPanel
 			jbtnZoomIn.setIcon(new ImageIcon(getClass().getResource("/org/hplcsimulator/images/zoomin.png")));
 			jbtnZoomIn.setRolloverEnabled(false);
 			jbtnZoomIn.setSelected(false);
+			jbtnZoomIn.setMargin(new Insets(0, 0, 0, 0));
 			jbtnZoomIn.setText("Zoom in");
-			jbtnZoomIn.setBounds(new Rectangle(372, 444, 112, 25));
+			jbtnZoomIn.setBounds(new Rectangle(312, 444, 97, 25));
 			jbtnZoomIn.setToolTipText("");
 		}
 		return jbtnZoomIn;
@@ -419,8 +421,8 @@ public class TopPanel extends JPanel
 			jbtnZoomOut.setRolloverEnabled(false);
 			jbtnZoomOut.setSelected(false);
 			jbtnZoomOut.setText("Zoom out");
-			jbtnZoomOut.setLocation(new Point(492, 444));
-			jbtnZoomOut.setSize(new Dimension(112, 25));
+			jbtnZoomOut.setMargin(new Insets(0, 0, 0, 0));
+			jbtnZoomOut.setBounds(new Rectangle(416, 444, 97, 25));
 			jbtnZoomOut.setToolTipText("");
 		}
 		return jbtnZoomOut;
@@ -440,7 +442,8 @@ public class TopPanel extends JPanel
 			jbtnPan.setRolloverEnabled(false);
 			jbtnPan.setSelected(true);
 			jbtnPan.setText("Pan");
-			jbtnPan.setBounds(new Rectangle(252, 444, 112, 25));
+			jbtnPan.setMargin(new Insets(0, 0, 0, 0));
+			jbtnPan.setBounds(new Rectangle(208, 444, 97, 25));
 			jbtnPan.setToolTipText("");
 		}
 		return jbtnPan;
@@ -493,6 +496,7 @@ public class TopPanel extends JPanel
 			jpanelSimulatedChromatogram.add(m_GraphControl, null);
 			jpanelSimulatedChromatogram.add(getJbtnZoomOut(), null);
 			jpanelSimulatedChromatogram.add(getJbtnZoomIn(), null);
+			jpanelSimulatedChromatogram.add(getJbtnCopyImage(), null);
 		}
 		return jpanelSimulatedChromatogram;
 	}
@@ -639,5 +643,26 @@ public class TopPanel extends JPanel
 			jbtnTutorials.setBounds(new Rectangle(396, 132, 93, 25));
 		}
 		return jbtnTutorials;
+	}
+
+
+	/**
+	 * This method initializes jbtnCopyImage	
+	 * 	
+	 * @return javax.swing.JToggleButton	
+	 */
+	private JButton getJbtnCopyImage() {
+		if (jbtnCopyImage == null) {
+			jbtnCopyImage = new JButton();
+			jbtnCopyImage.setBounds(new Rectangle(528, 444, 76, 25));
+			jbtnCopyImage.setActionCommand("Copy Image");
+			jbtnCopyImage.setIcon(new ImageIcon(getClass().getResource("/org/hplcsimulator/images/clipboard.png")));
+			jbtnCopyImage.setRolloverEnabled(false);
+			jbtnCopyImage.setMargin(new Insets(0, 0, 0, 0));
+			jbtnCopyImage.setSelected(false);
+			jbtnCopyImage.setText("Copy");
+			jbtnCopyImage.setToolTipText("");
+		}
+		return jbtnCopyImage;
 	}
 }  //  @jve:decl-index=0:visual-constraint="-259,126"

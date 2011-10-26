@@ -9,9 +9,6 @@ import javax.swing.JSlider;
 import java.awt.Font;
 import javax.swing.JTextField;
 import java.awt.Point;
-import javax.swing.JComboBox;
-
-import org.hplcsimulator.*;
 
 public class ChromatographyProperties extends JXPanel 
 {
@@ -116,7 +113,7 @@ public class ChromatographyProperties extends JXPanel
         jlblFlowRate.setSize(new Dimension(109, 16));
         jlblFlowRate.setLocation(new Point(8, 92));
         jlblInjectionVolume2 = new JLabel();
-        jlblInjectionVolume2.setText("uL");
+        jlblInjectionVolume2.setText("\u00b5L");
         jlblInjectionVolume2.setPreferredSize(new Dimension(50, 16));
         jlblInjectionVolume2.setLocation(new Point(188, 72));
         jlblInjectionVolume2.setSize(new Dimension(49, 16));

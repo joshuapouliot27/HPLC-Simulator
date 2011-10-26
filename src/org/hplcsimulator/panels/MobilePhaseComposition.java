@@ -5,16 +5,11 @@ import java.awt.Dimension;
 import java.awt.Color;
 import javax.swing.JLabel;
 import java.awt.Rectangle;
-import javax.swing.JSlider;
-import java.awt.Font;
-import javax.swing.JTextField;
 import java.awt.Point;
 import javax.swing.JComboBox;
 
-import org.hplcsimulator.*;
 import org.hplcsimulator.Globals;
 import javax.swing.JRadioButton;
-import javax.swing.JToggleButton;
 
 public class MobilePhaseComposition extends JXPanel 
 {

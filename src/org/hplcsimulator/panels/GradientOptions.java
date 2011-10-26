@@ -6,15 +6,8 @@ import java.awt.Dimension;
 import java.awt.Color;
 import javax.swing.JLabel;
 import java.awt.Rectangle;
-import javax.swing.JSlider;
 import java.awt.Font;
 import javax.swing.JTextField;
-import java.awt.Point;
-import javax.swing.JComboBox;
-
-import org.hplcsimulator.*;
-import javax.swing.JRadioButton;
-import javax.swing.JToggleButton;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JScrollPane;
@@ -74,7 +67,7 @@ public class GradientOptions extends JXPanel
         jlblDwellVolumeUnit = new JLabel();
         jlblDwellVolumeUnit.setBounds(new Rectangle(196, 184, 50, 16));
         jlblDwellVolumeUnit.setPreferredSize(new Dimension(50, 16));
-        jlblDwellVolumeUnit.setText("uL");
+        jlblDwellVolumeUnit.setText("\u00b5L");
         jlblDwellVolumeUnit.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblDwellVolumeIndicator = new JLabel();
         jlblDwellVolumeIndicator.setBounds(new Rectangle(128, 184, 65, 16));
@@ -89,7 +82,7 @@ public class GradientOptions extends JXPanel
         jlblMixingVolumeUnit = new JLabel();
         jlblMixingVolumeUnit.setBounds(new Rectangle(196, 144, 50, 16));
         jlblMixingVolumeUnit.setPreferredSize(new Dimension(50, 16));
-        jlblMixingVolumeUnit.setText("uL");
+        jlblMixingVolumeUnit.setText("\u00b5L");
         jlblMixingVolumeUnit.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblMixingVolume = new JLabel();
         jlblMixingVolume.setBounds(new Rectangle(24, 144, 101, 16));
@@ -97,7 +90,7 @@ public class GradientOptions extends JXPanel
         jlblNonMixingVolumeUnit = new JLabel();
         jlblNonMixingVolumeUnit.setBounds(new Rectangle(196, 164, 50, 16));
         jlblNonMixingVolumeUnit.setPreferredSize(new Dimension(50, 16));
-        jlblNonMixingVolumeUnit.setText("uL");
+        jlblNonMixingVolumeUnit.setText("\u00b5L");
         jlblNonMixingVolumeUnit.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblNonMixingVolume = new JLabel();
         jlblNonMixingVolume.setBounds(new Rectangle(24, 164, 101, 16));
@@ -140,6 +133,11 @@ public class GradientOptions extends JXPanel
 
 	public class SpecialTableModel extends DefaultTableModel 
 	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 9144486981092084762L;
+
 		public SpecialTableModel(final Object[] columnNames, final int rowCount) 
 	    {
 	        super(convertToVector(columnNames), rowCount);
@@ -168,7 +166,8 @@ public class GradientOptions extends JXPanel
 	     * then the last column would contain text ("true"/"false"),
 	     * rather than a check box.
 	     */
-	    public Class getColumnClass(int c) {
+	    @SuppressWarnings("unchecked")
+		public Class getColumnClass(int c) {
 	        return getValueAt(0, c).getClass();
 	    }
 

@@ -1,9 +1,5 @@
 package org.hplcsimulator;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.StringTokenizer;
-
 class LinearInterpolationFunction
 {
 	public double[][] dDataArray;

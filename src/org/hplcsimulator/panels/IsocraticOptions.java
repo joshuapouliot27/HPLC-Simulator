@@ -9,12 +9,6 @@ import javax.swing.JSlider;
 import java.awt.Font;
 import javax.swing.JTextField;
 import java.awt.Point;
-import javax.swing.JComboBox;
-
-import org.hplcsimulator.*;
-import org.hplcsimulator.Globals;
-import javax.swing.JRadioButton;
-import javax.swing.JToggleButton;
 
 public class IsocraticOptions extends JXPanel 
 {

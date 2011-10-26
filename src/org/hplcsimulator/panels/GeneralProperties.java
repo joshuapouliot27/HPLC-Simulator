@@ -102,7 +102,7 @@ public class GeneralProperties extends JXPanel {
         jlblEluentViscosity.setSize(new Dimension(57, 16));
         jlblEluentViscosity.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblNumPoints = new JLabel();
-        jlblNumPoints.setText("Data points:");
+        jlblNumPoints.setText("Plot points:");
         jlblNumPoints.setSize(new Dimension(120, 16));
         jlblNumPoints.setLocation(new Point(8, 168));
         jlblFinalTime = new JLabel();
@@ -188,7 +188,7 @@ public class GeneralProperties extends JXPanel {
 	private JTextField getJtxtTimeConstant() {
 		if (jtxtTimeConstant == null) {
 			jtxtTimeConstant = new JTextField();
-			jtxtTimeConstant.setText("0.5");
+			jtxtTimeConstant.setText("0.1");
 			jtxtTimeConstant.setSize(new Dimension(57, 20));
 			jtxtTimeConstant.setLocation(new Point(132, 48));
 		}
@@ -203,7 +203,7 @@ public class GeneralProperties extends JXPanel {
 	private JTextField getJtxtSignalOffset() {
 		if (jtxtSignalOffset == null) {
 			jtxtSignalOffset = new JTextField();
-			jtxtSignalOffset.setText("1");
+			jtxtSignalOffset.setText("0");
 			jtxtSignalOffset.setSize(new Dimension(57, 20));
 			jtxtSignalOffset.setLocation(new Point(132, 68));
 		}
@@ -218,7 +218,7 @@ public class GeneralProperties extends JXPanel {
 	private JTextField getJtxtNoise() {
 		if (jtxtNoise == null) {
 			jtxtNoise = new JTextField();
-			jtxtNoise.setText("40");
+			jtxtNoise.setText("2");
 			jtxtNoise.setSize(new Dimension(57, 20));
 			jtxtNoise.setLocation(new Point(132, 88));
 		}

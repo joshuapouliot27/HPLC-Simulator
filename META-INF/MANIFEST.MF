@@ -1,3 +1,4 @@
 Manifest-Version: 1.0
-Main-Class: AppletFrame
+Sealed: true
+Main-Class: org.hplcsimulator.AppletFrame
 
