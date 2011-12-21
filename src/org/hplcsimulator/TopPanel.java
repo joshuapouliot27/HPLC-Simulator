@@ -150,9 +150,17 @@ public class TopPanel extends JPanel
 	    CSH.setHelpIDString(jxpanelChromatographyProperties.jlblFlowRate, "controls.flowrate");
 	    CSH.setHelpIDString(jxpanelChromatographyProperties.jtxtFlowRate, "controls.flowrate");
 	    CSH.setHelpIDString(jxpanelChromatographyProperties.jlblFlowRate2, "controls.flowrate");
-	    CSH.setHelpIDString(jxpanelChromatographyProperties.jlblFlowVelocity, "controls.flowvelocity");
-	    CSH.setHelpIDString(jxpanelChromatographyProperties.jlblFlowVelocity2, "controls.flowvelocity");
-	    CSH.setHelpIDString(jxpanelChromatographyProperties.jlblFlowVelocity3, "controls.flowvelocity");
+	    CSH.setHelpIDString(jxpanelChromatographyProperties.jlblOpenTubeVelocity, "controls.flowvelocity");
+	    CSH.setHelpIDString(jxpanelChromatographyProperties.jlblOpenTubeVelocity2, "controls.flowvelocity");
+	    CSH.setHelpIDString(jxpanelChromatographyProperties.jlblOpenTubeVelocity3, "controls.flowvelocity");
+	    CSH.setHelpIDString(jxpanelChromatographyProperties.jlblInterstitialVelocity, "controls.flowvelocity");
+	    CSH.setHelpIDString(jxpanelChromatographyProperties.jlblInterstitialVelocity2, "controls.flowvelocity");
+	    CSH.setHelpIDString(jxpanelChromatographyProperties.jlblInterstitialVelocityUnits, "controls.flowvelocity");
+	    CSH.setHelpIDString(jxpanelChromatographyProperties.jlblChromatographicVelocity, "controls.flowvelocity");
+	    CSH.setHelpIDString(jxpanelChromatographyProperties.jlblChromatographicVelocity2, "controls.flowvelocity");
+	    CSH.setHelpIDString(jxpanelChromatographyProperties.jlblChromatographicVelocityUnits, "controls.flowvelocity");
+	    CSH.setHelpIDString(jxpanelChromatographyProperties.jlblReducedVelocity, "controls.flowvelocity");
+	    CSH.setHelpIDString(jxpanelChromatographyProperties.jlblReducedVelocity2, "controls.flowvelocity");
 	    CSH.setHelpIDString(jxpanelChromatographyProperties.jlblHETP, "controls.hetp");
 	    CSH.setHelpIDString(jxpanelChromatographyProperties.jlblHETP2, "controls.hetp");
 	    CSH.setHelpIDString(jxpanelChromatographyProperties.jlblHETP3, "controls.hetp");
@@ -196,8 +204,12 @@ public class TopPanel extends JPanel
 	    CSH.setHelpIDString(jxpanelColumnProperties.jtxtParticleSize, "controls.particlesize");
 	    CSH.setHelpIDString(jxpanelColumnProperties.jlblParticleSize, "controls.particlesize");
 	    CSH.setHelpIDString(jxpanelColumnProperties.jlblParticleSize2, "controls.particlesize");
-	    CSH.setHelpIDString(jxpanelColumnProperties.jtxtVoidFraction, "controls.voidfraction");
-	    CSH.setHelpIDString(jxpanelColumnProperties.jlblVoidFraction, "controls.voidfraction");
+	    CSH.setHelpIDString(jxpanelColumnProperties.jtxtInterparticlePorosity, "controls.interparticleporosity");
+	    CSH.setHelpIDString(jxpanelColumnProperties.jlblInterparticlePorosity, "controls.interparticleporosity");
+	    CSH.setHelpIDString(jxpanelColumnProperties.jtxtIntraparticlePorosity, "controls.intraparticleporosity");
+	    CSH.setHelpIDString(jxpanelColumnProperties.jlblIntraparticlePorosity, "controls.intraparticleporosity");
+	    CSH.setHelpIDString(jxpanelColumnProperties.jlblTotalPorosity, "controls.totalporosity");
+	    CSH.setHelpIDString(jxpanelColumnProperties.jlblTotalPorosityOut, "controls.totalporosity");
 	    CSH.setHelpIDString(jxpanelColumnProperties.jlblVoidVolume, "controls.voidvolume");
 	    CSH.setHelpIDString(jxpanelColumnProperties.jlblVoidVolume2, "controls.voidvolume");
 	    CSH.setHelpIDString(jxpanelColumnProperties.jlblVoidVolume3, "controls.voidvolume");
@@ -553,7 +565,7 @@ public class TopPanel extends JPanel
 		    ((JComponent)jxtaskChromatographyProperties.getContentPane()).setBorder(null);
 		    
 		    jxpanelChromatographyProperties = new ChromatographyProperties();
-		    jxpanelChromatographyProperties.setPreferredSize(new Dimension(254,191));
+		    jxpanelChromatographyProperties.setPreferredSize(new Dimension(254,275));
 		    jxtaskChromatographyProperties.add(jxpanelChromatographyProperties);
 		    
 		    jxtaskPlotOptions = new JXTaskPane();
@@ -583,7 +595,7 @@ public class TopPanel extends JPanel
 		    ((JComponent)jxtaskColumnProperties.getContentPane()).setBorder(null);
 
 		    jxpanelColumnProperties = new ColumnProperties();
-		    jxpanelColumnProperties.setPreferredSize(new Dimension(254,277));
+		    jxpanelColumnProperties.setPreferredSize(new Dimension(254,317));
 		    jxtaskColumnProperties.add(jxpanelColumnProperties);
 
 		    // add the task pane to the taskpanecontainer

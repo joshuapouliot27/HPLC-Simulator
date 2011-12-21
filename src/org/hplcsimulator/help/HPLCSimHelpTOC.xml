@@ -24,7 +24,10 @@
 	<tocitem text="Temperature" target="controls.temperature"/>
 	<tocitem text="Injection volume" target="controls.injectionvolume"/>
 	<tocitem text="Flow rate" target="controls.flowrate"/>
-	<tocitem text="Flow velocity" target="controls.flowvelocity"/>
+	<tocitem text="Open tube flow velocity" target="controls.flowvelocity"/>
+	<tocitem text="Interstitial flow velocity" target="controls.flowvelocity"/>
+	<tocitem text="Chromatographic flow velocity" target="controls.flowvelocity"/>
+	<tocitem text="Reduced flow velocity" target="controls.flowvelocity"/>
 	<tocitem text="HETP" target="controls.hetp"/>
 	<tocitem text="Theoretical plates" target="controls.theoreticalplates"/>
 	<tocitem text="Backpressure" target="controls.backpressure"/>
@@ -45,7 +48,9 @@
 	<tocitem text="Length" target="controls.columnlength"/>
 	<tocitem text="Diameter" target="controls.columndiameter"/>
 	<tocitem text="Particle size" target="controls.particlesize"/>
-	<tocitem text="Void fraction" target="controls.voidfraction"/>
+	<tocitem text="Interparticle porosity" target="controls.interparticleporosity"/>
+	<tocitem text="Intraparticle porosity" target="controls.intraparticleporosity"/>
+	<tocitem text="Total porosity" target="controls.totalporosity"/>
 	<tocitem text="Void volume" target="controls.voidvolume"/>
 	<tocitem text="Void time" target="controls.voidtime"/>
 	<tocitem text="Van Deemter terms" target="controls.vandeemter"/>

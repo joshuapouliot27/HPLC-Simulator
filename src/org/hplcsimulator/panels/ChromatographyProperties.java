@@ -26,9 +26,9 @@ public class ChromatographyProperties extends JXPanel
 	public JLabel jlblFlowRate = null;
 	public JTextField jtxtFlowRate = null;
 	public JLabel jlblFlowRate2 = null;
-	public JLabel jlblFlowVelocity2 = null;
-	public JLabel jlblFlowVelocity = null;
-	public JLabel jlblFlowVelocity3 = null;
+	public JLabel jlblOpenTubeVelocity2 = null;
+	public JLabel jlblOpenTubeVelocity = null;
+	public JLabel jlblOpenTubeVelocity3 = null;
 	public JLabel jlblHETP2 = null;
 	public JLabel jlblHETP = null;
 	public JLabel jlblHETP3 = null;
@@ -37,6 +37,16 @@ public class ChromatographyProperties extends JXPanel
 	public JLabel jlblBackpressure2 = null;
 	public JLabel jlblBackpressure = null;
 	public JLabel jlblBackpressure3 = null;
+	public JLabel jlblInterstitialVelocity2 = null;
+	public JLabel jlblInterstitialVelocity = null;
+	public JLabel jlblInterstitialVelocityUnits = null;
+	public JLabel jlblReducedVelocity2 = null;
+	public JLabel jlblReducedVelocity = null;
+	public JLabel jlblChromatographicVelocity2 = null;
+	public JLabel jlblChromatographicVelocity = null;
+	public JLabel jlblChromatographicVelocityUnits = null;
+
+	private JLabel jlblLabel = null;
 	/**
 	 * This method initializes 
 	 * 
@@ -51,83 +61,115 @@ public class ChromatographyProperties extends JXPanel
 	 * 
 	 */
 	private void initialize() {
+        jlblLabel = new JLabel();
+        jlblLabel.setBounds(new Rectangle(8, 112, 125, 16));
+        jlblLabel.setText("Flow velocity:");
+        jlblChromatographicVelocityUnits = new JLabel();
+        jlblChromatographicVelocityUnits.setBounds(new Rectangle(196, 172, 49, 16));
+        jlblChromatographicVelocityUnits.setText("cm/s");
+        jlblChromatographicVelocityUnits.setFont(new Font("Dialog", Font.PLAIN, 12));
+        jlblChromatographicVelocity = new JLabel();
+        jlblChromatographicVelocity.setBounds(new Rectangle(136, 172, 57, 16));
+        jlblChromatographicVelocity.setText("0.0005");
+        jlblChromatographicVelocity.setFont(new Font("Dialog", Font.PLAIN, 12));
+        jlblChromatographicVelocity2 = new JLabel();
+        jlblChromatographicVelocity2.setBounds(new Rectangle(28, 172, 105, 16));
+        jlblChromatographicVelocity2.setText("Chromatographic:");
+        jlblReducedVelocity = new JLabel();
+        jlblReducedVelocity.setBounds(new Rectangle(136, 192, 57, 16));
+        jlblReducedVelocity.setText("0.0005");
+        jlblReducedVelocity.setFont(new Font("Dialog", Font.PLAIN, 12));
+        jlblReducedVelocity2 = new JLabel();
+        jlblReducedVelocity2.setBounds(new Rectangle(28, 192, 105, 16));
+        jlblReducedVelocity2.setText("Reduced:");
+        jlblInterstitialVelocityUnits = new JLabel();
+        jlblInterstitialVelocityUnits.setBounds(new Rectangle(196, 152, 49, 16));
+        jlblInterstitialVelocityUnits.setText("cm/s");
+        jlblInterstitialVelocityUnits.setFont(new Font("Dialog", Font.PLAIN, 12));
+        jlblInterstitialVelocity = new JLabel();
+        jlblInterstitialVelocity.setBounds(new Rectangle(136, 152, 57, 16));
+        jlblInterstitialVelocity.setText("0.0005");
+        jlblInterstitialVelocity.setFont(new Font("Dialog", Font.PLAIN, 12));
+        jlblInterstitialVelocity2 = new JLabel();
+        jlblInterstitialVelocity2.setBounds(new Rectangle(28, 152, 105, 16));
+        jlblInterstitialVelocity2.setText("Interstitial:");
         jlblBackpressure3 = new JLabel();
         jlblBackpressure3.setText("bar");
-        jlblBackpressure3.setLocation(new Point(188, 172));
+        jlblBackpressure3.setLocation(new Point(196, 252));
         jlblBackpressure3.setSize(new Dimension(50, 16));
         jlblBackpressure3.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblBackpressure = new JLabel();
         jlblBackpressure.setText("400");
-        jlblBackpressure.setLocation(new Point(120, 172));
-        jlblBackpressure.setSize(new Dimension(65, 16));
+        jlblBackpressure.setLocation(new Point(136, 252));
+        jlblBackpressure.setSize(new Dimension(57, 16));
         jlblBackpressure.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblBackpressure2 = new JLabel();
         jlblBackpressure2.setText("Backpressure:");
-        jlblBackpressure2.setSize(new Dimension(109, 16));
-        jlblBackpressure2.setLocation(new Point(8, 172));
+        jlblBackpressure2.setSize(new Dimension(125, 16));
+        jlblBackpressure2.setLocation(new Point(8, 252));
         jlblTheoreticalPlates = new JLabel();
         jlblTheoreticalPlates.setText("19000");
-        jlblTheoreticalPlates.setLocation(new Point(120, 152));
-        jlblTheoreticalPlates.setSize(new Dimension(65, 16));
+        jlblTheoreticalPlates.setLocation(new Point(136, 232));
+        jlblTheoreticalPlates.setSize(new Dimension(57, 16));
         jlblTheoreticalPlates.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblTheoreticalPlates2 = new JLabel();
         jlblTheoreticalPlates2.setText("Theoretical plates:");
-        jlblTheoreticalPlates2.setSize(new Dimension(109, 16));
-        jlblTheoreticalPlates2.setLocation(new Point(8, 152));
+        jlblTheoreticalPlates2.setSize(new Dimension(125, 16));
+        jlblTheoreticalPlates2.setLocation(new Point(8, 232));
         jlblHETP3 = new JLabel();
         jlblHETP3.setText("cm");
-        jlblHETP3.setLocation(new Point(188, 132));
+        jlblHETP3.setLocation(new Point(196, 212));
         jlblHETP3.setSize(new Dimension(50, 16));
         jlblHETP3.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblHETP = new JLabel();
         jlblHETP.setText("0.0005");
-        jlblHETP.setLocation(new Point(120, 132));
-        jlblHETP.setSize(new Dimension(65, 16));
+        jlblHETP.setLocation(new Point(136, 212));
+        jlblHETP.setSize(new Dimension(57, 16));
         jlblHETP.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblHETP2 = new JLabel();
         jlblHETP2.setText("HETP:");
-        jlblHETP2.setSize(new Dimension(109, 16));
-        jlblHETP2.setLocation(new Point(8, 132));
-        jlblFlowVelocity3 = new JLabel();
-        jlblFlowVelocity3.setText("cm/s");
-        jlblFlowVelocity3.setLocation(new Point(188, 112));
-        jlblFlowVelocity3.setSize(new Dimension(50, 16));
-        jlblFlowVelocity3.setFont(new Font("Dialog", Font.PLAIN, 12));
-        jlblFlowVelocity = new JLabel();
-        jlblFlowVelocity.setText("0.0005");
-        jlblFlowVelocity.setLocation(new Point(120, 112));
-        jlblFlowVelocity.setSize(new Dimension(65, 16));
-        jlblFlowVelocity.setFont(new Font("Dialog", Font.PLAIN, 12));
-        jlblFlowVelocity2 = new JLabel();
-        jlblFlowVelocity2.setText("Flow velocity:");
-        jlblFlowVelocity2.setSize(new Dimension(109, 16));
-        jlblFlowVelocity2.setLocation(new Point(8, 112));
+        jlblHETP2.setSize(new Dimension(125, 16));
+        jlblHETP2.setLocation(new Point(8, 212));
+        jlblOpenTubeVelocity3 = new JLabel();
+        jlblOpenTubeVelocity3.setText("cm/s");
+        jlblOpenTubeVelocity3.setLocation(new Point(196, 132));
+        jlblOpenTubeVelocity3.setSize(new Dimension(50, 16));
+        jlblOpenTubeVelocity3.setFont(new Font("Dialog", Font.PLAIN, 12));
+        jlblOpenTubeVelocity = new JLabel();
+        jlblOpenTubeVelocity.setText("0.0005");
+        jlblOpenTubeVelocity.setLocation(new Point(136, 132));
+        jlblOpenTubeVelocity.setSize(new Dimension(57, 16));
+        jlblOpenTubeVelocity.setFont(new Font("Dialog", Font.PLAIN, 12));
+        jlblOpenTubeVelocity2 = new JLabel();
+        jlblOpenTubeVelocity2.setText("Open tube:");
+        jlblOpenTubeVelocity2.setSize(new Dimension(105, 16));
+        jlblOpenTubeVelocity2.setLocation(new Point(28, 132));
         jlblFlowRate2 = new JLabel();
         jlblFlowRate2.setText("mL/min");
         jlblFlowRate2.setPreferredSize(new Dimension(50, 16));
-        jlblFlowRate2.setLocation(new Point(188, 92));
+        jlblFlowRate2.setLocation(new Point(196, 92));
         jlblFlowRate2.setSize(new Dimension(50, 16));
         jlblFlowRate2.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblFlowRate = new JLabel();
         jlblFlowRate.setText("Flow rate:");
-        jlblFlowRate.setSize(new Dimension(109, 16));
+        jlblFlowRate.setSize(new Dimension(125, 16));
         jlblFlowRate.setLocation(new Point(8, 92));
         jlblInjectionVolume2 = new JLabel();
         jlblInjectionVolume2.setText("\u00b5L");
         jlblInjectionVolume2.setPreferredSize(new Dimension(50, 16));
-        jlblInjectionVolume2.setLocation(new Point(188, 72));
+        jlblInjectionVolume2.setLocation(new Point(196, 72));
         jlblInjectionVolume2.setSize(new Dimension(49, 16));
         jlblInjectionVolume2.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblInjectionVolume = new JLabel();
         jlblInjectionVolume.setText("Injection volume:");
-        jlblInjectionVolume.setSize(new Dimension(109, 16));
+        jlblInjectionVolume.setSize(new Dimension(125, 16));
         jlblInjectionVolume.setLocation(new Point(8, 72));
         jlblTemperature = new JLabel();
         jlblTemperature.setBounds(new Rectangle(8, 8, 189, 16));
         jlblTemperature.setText("Temperature (°C):");
         jlblTemperature.setFont(new Font("Dialog", Font.BOLD, 12));
         this.setLayout(null);
-        this.setSize(new Dimension(254, 191));
+        this.setSize(new Dimension(254, 275));
         this.setBackground(Color.white);
         this.add(jlblTemperature, null);
         this.add(getJsliderTemp(), null);
@@ -138,9 +180,9 @@ public class ChromatographyProperties extends JXPanel
         this.add(jlblFlowRate, null);
         this.add(getJtxtFlowRate(), null);
         this.add(jlblFlowRate2, null);
-        this.add(jlblFlowVelocity2, null);
-        this.add(jlblFlowVelocity, null);
-        this.add(jlblFlowVelocity3, null);
+        this.add(jlblOpenTubeVelocity2, null);
+        this.add(jlblOpenTubeVelocity, null);
+        this.add(jlblOpenTubeVelocity3, null);
         this.add(jlblHETP2, null);
         this.add(jlblHETP, null);
         this.add(jlblHETP3, null);
@@ -149,6 +191,15 @@ public class ChromatographyProperties extends JXPanel
         this.add(jlblBackpressure2, null);
         this.add(jlblBackpressure, null);
         this.add(jlblBackpressure3, null);
+        this.add(jlblInterstitialVelocity2, null);
+        this.add(jlblInterstitialVelocity, null);
+        this.add(jlblInterstitialVelocityUnits, null);
+        this.add(jlblReducedVelocity2, null);
+        this.add(jlblReducedVelocity, null);
+        this.add(jlblChromatographicVelocity2, null);
+        this.add(jlblChromatographicVelocity, null);
+        this.add(jlblChromatographicVelocityUnits, null);
+        this.add(jlblLabel, null);
 			
 	}
 
@@ -203,8 +254,8 @@ public class ChromatographyProperties extends JXPanel
 		if (jtxtInjectionVolume == null) {
 			jtxtInjectionVolume = new JTextField();
 			jtxtInjectionVolume.setText("5");
-			jtxtInjectionVolume.setSize(new Dimension(65, 20));
-			jtxtInjectionVolume.setLocation(new Point(120, 72));
+			jtxtInjectionVolume.setSize(new Dimension(57, 20));
+			jtxtInjectionVolume.setLocation(new Point(136, 72));
 		}
 		return jtxtInjectionVolume;
 	}
@@ -218,8 +269,8 @@ public class ChromatographyProperties extends JXPanel
 		if (jtxtFlowRate == null) {
 			jtxtFlowRate = new JTextField();
 			jtxtFlowRate.setText("2");
-			jtxtFlowRate.setSize(new Dimension(65, 20));
-			jtxtFlowRate.setLocation(new Point(120, 92));
+			jtxtFlowRate.setSize(new Dimension(57, 20));
+			jtxtFlowRate.setLocation(new Point(136, 92));
 		}
 		return jtxtFlowRate;
 	}

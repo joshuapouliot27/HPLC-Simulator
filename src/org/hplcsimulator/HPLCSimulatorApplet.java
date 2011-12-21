@@ -129,17 +129,22 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 	public double m_dNonMixingVolume = 200; /* in uL */
 	public double m_dColumnLength = 100;
 	public double m_dColumnDiameter = 4.6;
-	public double m_dVoidFraction = 0.6;
+	public double m_dInterparticlePorosity = 0.4;
+	public double m_dIntraparticlePorosity = 0.4;
+	public double m_dTotalPorosity = 0.64;
 	public double m_dFlowRate = 2; /* in mL/min */
 	public double m_dVoidVolume;
 	public double m_dVoidTime;
-	public double m_dFlowVelocity;
+	public double m_dOpenTubeVelocity;
+	public double m_dInterstitialVelocity;
+	public double m_dChromatographicVelocity;
+	public double m_dReducedVelocity;
 	public double m_dParticleSize = 5;
 	public double m_dDiffusionCoefficient = 0.00001;
 	public double m_dATerm = 1;
 	public double m_dBTerm = 5;
 	public double m_dCTerm = 0.05;
-	public double m_dMu;
+	public double m_dReducedFlowVelocity;
 	public double m_dReducedPlateHeight;
 	public double m_dTheoreticalPlates;
 	public double m_dHETP;
@@ -307,8 +312,8 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
         contentPane.jxpanelColumnProperties.jtxtColumnLength.addFocusListener(this);
         contentPane.jxpanelColumnProperties.jtxtColumnDiameter.addKeyListener(this);
         contentPane.jxpanelColumnProperties.jtxtColumnDiameter.addFocusListener(this);
-        contentPane.jxpanelColumnProperties.jtxtVoidFraction.addKeyListener(this);
-        contentPane.jxpanelColumnProperties.jtxtVoidFraction.addFocusListener(this);        
+        contentPane.jxpanelColumnProperties.jtxtInterparticlePorosity.addKeyListener(this);
+        contentPane.jxpanelColumnProperties.jtxtInterparticlePorosity.addFocusListener(this);        
         contentPane.jxpanelChromatographyProperties.jtxtFlowRate.addKeyListener(this);
         contentPane.jxpanelChromatographyProperties.jtxtFlowRate.addFocusListener(this);        
         contentPane.jxpanelColumnProperties.jtxtParticleSize.addKeyListener(this);
@@ -318,7 +323,9 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
         contentPane.jxpanelColumnProperties.jtxtBTerm.addKeyListener(this);
         contentPane.jxpanelColumnProperties.jtxtBTerm.addFocusListener(this);        
         contentPane.jxpanelColumnProperties.jtxtCTerm.addKeyListener(this);
-        contentPane.jxpanelColumnProperties.jtxtCTerm.addFocusListener(this);        
+        contentPane.jxpanelColumnProperties.jtxtCTerm.addFocusListener(this);
+        contentPane.jxpanelColumnProperties.jtxtIntraparticlePorosity.addKeyListener(this);
+        contentPane.jxpanelColumnProperties.jtxtIntraparticlePorosity.addFocusListener(this);
         contentPane.jxpanelChromatographyProperties.jtxtInjectionVolume.addKeyListener(this);
         contentPane.jxpanelChromatographyProperties.jtxtInjectionVolume.addFocusListener(this);        
         contentPane.jxpanelGeneralProperties.jtxtTimeConstant.addKeyListener(this);
@@ -439,17 +446,30 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 		contentPane.jxpanelColumnProperties.jtxtColumnDiameter.setText(Float.toString((float)m_dColumnDiameter));    	
     }    
 
-    private void validateVoidFraction()
+    private void validateInterparticlePorosity()
     {
-		double dTemp = (double)Float.valueOf(contentPane.jxpanelColumnProperties.jtxtVoidFraction.getText());
+		double dTemp = (double)Float.valueOf(contentPane.jxpanelColumnProperties.jtxtInterparticlePorosity.getText());
 		
 		if (dTemp < .001)
 			dTemp = .001;
 		if (dTemp > .999)
 			dTemp = .999;
 		
-		this.m_dVoidFraction = dTemp;
-		contentPane.jxpanelColumnProperties.jtxtVoidFraction.setText(Float.toString((float)m_dVoidFraction));    	
+		this.m_dInterparticlePorosity = dTemp;
+		contentPane.jxpanelColumnProperties.jtxtInterparticlePorosity.setText(Float.toString((float)m_dInterparticlePorosity));    	
+    }    
+
+    private void validateIntraparticlePorosity()
+    {
+		double dTemp = (double)Float.valueOf(contentPane.jxpanelColumnProperties.jtxtIntraparticlePorosity.getText());
+		
+		if (dTemp < .001)
+			dTemp = .001;
+		if (dTemp > .999)
+			dTemp = .999;
+		
+		this.m_dIntraparticlePorosity = dTemp;
+		contentPane.jxpanelColumnProperties.jtxtIntraparticlePorosity.setText(Float.toString((float)m_dIntraparticlePorosity));    	
     }    
 
     private void validateFlowRate()
@@ -944,7 +964,7 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 	    	
 	    	contentPane.m_GraphControl.setSecondYAxisVisible(true);
 	    	contentPane.m_GraphControl.setSecondYAxisTitle("Mobile Phase Viscosity");
-	    	contentPane.m_GraphControl.setSecondYAxisBaseUnit("poise", "P");
+	    	contentPane.m_GraphControl.setSecondYAxisBaseUnit("Poise", "P");
 	    	
 	    	performCalculations();
 	    }
@@ -1138,7 +1158,8 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 		validateNonMixingVolume();
 		validateColumnLength();
 		validateColumnDiameter();
-		validateVoidFraction();
+		validateInterparticlePorosity();
+		validateIntraparticlePorosity();
 		validateFlowRate();
 		validateParticleSize();
 		validateATerm();
@@ -1152,15 +1173,24 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 		validateEndTime();
 		validateNumPoints();
 		
-		m_dVoidVolume = Math.PI * Math.pow(((m_dColumnDiameter / 10) / 2), 2) * (m_dColumnLength / 10) * m_dVoidFraction;
+		m_dTotalPorosity = this.m_dInterparticlePorosity + this.m_dIntraparticlePorosity * (1 - this.m_dInterparticlePorosity);
+		contentPane.jxpanelColumnProperties.jlblTotalPorosityOut.setText(formatter.format(m_dTotalPorosity));
+		
+		m_dVoidVolume = Math.PI * Math.pow(((m_dColumnDiameter / 10) / 2), 2) * (m_dColumnLength / 10) * m_dTotalPorosity;
 		contentPane.jxpanelColumnProperties.jlblVoidVolume.setText(formatter.format(m_dVoidVolume));
 		
 		m_dVoidTime = (m_dVoidVolume / m_dFlowRate) * 60;
 		contentPane.jxpanelColumnProperties.jlblVoidTime.setText(formatter.format(m_dVoidTime));
 		
-		m_dFlowVelocity = (m_dColumnLength / 10) / m_dVoidTime;
-		contentPane.jxpanelChromatographyProperties.jlblFlowVelocity.setText(formatter.format(m_dFlowVelocity));
+		m_dOpenTubeVelocity = (m_dFlowRate / 60) / (Math.PI * Math.pow(((m_dColumnDiameter / 10) / 2), 2));
+		contentPane.jxpanelChromatographyProperties.jlblOpenTubeVelocity.setText(formatter.format(m_dOpenTubeVelocity));
+
+		m_dInterstitialVelocity = m_dOpenTubeVelocity / this.m_dInterparticlePorosity;
+		contentPane.jxpanelChromatographyProperties.jlblInterstitialVelocity.setText(formatter.format(m_dInterstitialVelocity));
 		
+		m_dChromatographicVelocity = m_dOpenTubeVelocity / this.m_dTotalPorosity;
+		contentPane.jxpanelChromatographyProperties.jlblChromatographicVelocity.setText(formatter.format(m_dChromatographicVelocity));
+			
 		NumberFormat bpFormatter = new DecimalFormat("#0.00");
 		contentPane.jxpanelGradientOptions.jlblDwellVolumeIndicator.setText(bpFormatter.format(m_dMixingVolume + m_dNonMixingVolume));
 		contentPane.jxpanelGradientOptions.jlblDwellTimeIndicator.setText(bpFormatter.format(((m_dMixingVolume + m_dNonMixingVolume) / 1000) / m_dFlowRate));
@@ -1185,14 +1215,22 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 		else
 			contentPane.jxpanelGeneralProperties.jlblEluentViscosity.setText("--");
 			
-		// Calculate backpressure (in pascals) (Darcy equation)
-		// See Bird, R. B.; Stewart, W. E.; Lightfoot, E. N. Transport Phenomena; Wiley & Sons: New York, 1960.
-		m_dBackpressure = 500 * (m_dEluentViscosity / 1000) * (((m_dFlowVelocity / 100) * (m_dColumnLength / 1000)) / Math.pow(m_dParticleSize / 1000000, 2));
+		/*m_dBackpressure = 500 * (m_dEluentViscosity / 1000) * (((m_dOpenTubeVelocity / 100) * (m_dColumnLength / 1000)) / Math.pow(m_dParticleSize / 1000000, 2));
 		if (!m_bGradientMode)
 			contentPane.jxpanelChromatographyProperties.jlblBackpressure.setText(bpFormatter.format(m_dBackpressure / 100000));
 		else
 			contentPane.jxpanelChromatographyProperties.jlblBackpressure.setText("--");
-			
+			*/
+		
+		// Calculate backpressure (in pascals) (Darcy equation)
+		// See Thompson, J. D.; Carr, P. W. Anal. Chem. 2002, 74, 4150-4159.
+		// Backpressure in units of Pa
+		m_dBackpressure = ((this.m_dOpenTubeVelocity / 100.0) * (this.m_dColumnLength / 1000.0) * (m_dEluentViscosity / 1000.0) * 180.0 * Math.pow(1 - this.m_dInterparticlePorosity, 2)) / (Math.pow(this.m_dInterparticlePorosity, 3) * Math.pow(m_dParticleSize / 1000000, 2));
+		if (!m_bGradientMode)
+			contentPane.jxpanelChromatographyProperties.jlblBackpressure.setText(bpFormatter.format(m_dBackpressure / 100000));
+		else
+			contentPane.jxpanelChromatographyProperties.jlblBackpressure.setText("--");
+		
 		// Calculate the average diffusion coefficient using Wilke-Chang empirical determination
 		// See Wilke, C. R.; Chang, P. AICHE J. 1955, 1, 264-270.
 		
@@ -1222,10 +1260,11 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 		contentPane.jxpanelGeneralProperties.jlblDiffusionCoefficient.setText(df.format(m_dDiffusionCoefficient));
 		
 		// Determine the reduced flow velocity
-		m_dMu = ((m_dParticleSize / 10000) * m_dFlowVelocity) / m_dDiffusionCoefficient;
+		m_dReducedFlowVelocity = ((m_dParticleSize / 10000) * m_dInterstitialVelocity) / m_dDiffusionCoefficient;
+		contentPane.jxpanelChromatographyProperties.jlblReducedVelocity.setText(formatter.format(m_dReducedFlowVelocity));
 		
 		// Calculate reduced plate height
-		m_dReducedPlateHeight = m_dATerm + (m_dBTerm / m_dMu) + (m_dCTerm * m_dMu);
+		m_dReducedPlateHeight = m_dATerm + (m_dBTerm / m_dReducedFlowVelocity) + (m_dCTerm * m_dReducedFlowVelocity);
 		contentPane.jxpanelColumnProperties.jlblReducedPlateHeight.setText(formatter.format(m_dReducedPlateHeight));
     	
 		// Calculate HETP
@@ -1515,13 +1554,13 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 				{
 					// This formula is for acetonitrile/water mixtures:
 					// See Chen, H.; Horvath, C. Anal. Methods Instrum. 1993, 1, 213-222.
-					dViscosity = .01 * Math.exp((dSolventBFraction * (-3.476 + (726 / dTempKelvin))) + ((1 - dSolventBFraction) * (-5.414 + (1566 / dTempKelvin))) + (dSolventBFraction * (1 - dSolventBFraction) * (-1.762 + (929 / dTempKelvin))));
+					dViscosity = Math.exp((dSolventBFraction * (-3.476 + (726 / dTempKelvin))) + ((1 - dSolventBFraction) * (-5.414 + (1566 / dTempKelvin))) + (dSolventBFraction * (1 - dSolventBFraction) * (-1.762 + (929 / dTempKelvin))));
 				}
 				else if (m_iSolventB == 1)
 				{
 					// This formula is for methanol/water mixtures:
 					// Based on fit of data (at 1 bar) in Journal of Chromatography A, 1210 (2008) 30–44.
-					dViscosity = .01 * Math.exp((dSolventBFraction * (-4.597 + (1211 / dTempKelvin))) + ((1 - dSolventBFraction) * (-5.961 + (1736 / dTempKelvin))) + (dSolventBFraction * (1 - dSolventBFraction) * (-6.215 + (2809 / dTempKelvin))));
+					dViscosity = Math.exp((dSolventBFraction * (-4.597 + (1211 / dTempKelvin))) + ((1 - dSolventBFraction) * (-5.961 + (1736 / dTempKelvin))) + (dSolventBFraction * (1 - dSolventBFraction) * (-6.215 + (2809 / dTempKelvin))));
 				}
 				
 				if (dViscosity < dViscosityMin)
@@ -1532,15 +1571,16 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 				if (this.m_iSecondPlotType == 2)
 				{
 					// Calculate backpressure (in pascals) (Darcy equation)
-					// See Bird, R. B.; Stewart, W. E.; Lightfoot, E. N. Transport Phenomena; Wiley & Sons: New York, 1960.
-					double dBackpressure = 500 * (dViscosity / 10) * (((m_dFlowVelocity / 100) * (m_dColumnLength / 1000)) / Math.pow(m_dParticleSize / 1000000, 2));
+					// See Thompson, J. D.; Carr, P. W. Anal. Chem. 2002, 74, 4150-4159.
+					// Backpressure in units of Pa
+					double dBackpressure = ((this.m_dOpenTubeVelocity / 100.0) * (this.m_dColumnLength / 1000.0) * (dViscosity / 1000.0) * 180.0 * Math.pow(1 - this.m_dInterparticlePorosity, 2)) / (Math.pow(this.m_dInterparticlePorosity, 3) * Math.pow(m_dParticleSize / 1000000, 2));
 				    contentPane.m_GraphControl.AddDataPoint(m_iSecondPlotIndex, m_dGradientArray[i][0] * 60, dBackpressure / 100000);
 				    dFinalValue = dBackpressure / 100000;
 				}
 				else if (this.m_iSecondPlotType == 3)
 				{
-				    contentPane.m_GraphControl.AddDataPoint(m_iSecondPlotIndex, m_dGradientArray[i][0] * 60, dViscosity);
-				    dFinalValue = dViscosity;
+				    contentPane.m_GraphControl.AddDataPoint(m_iSecondPlotIndex, m_dGradientArray[i][0] * 60, dViscosity / 100);
+				    dFinalValue = dViscosity / 100;
 				}
 			}
 			
@@ -1550,13 +1590,13 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 			{
 				// Calculate backpressure (in pascals) (Darcy equation)
 				// See Bird, R. B.; Stewart, W. E.; Lightfoot, E. N. Transport Phenomena; Wiley & Sons: New York, 1960.
-				double dBackpressureMin = 500 * (dViscosityMin / 10) * (((m_dFlowVelocity / 100) * (m_dColumnLength / 1000)) / Math.pow(m_dParticleSize / 1000000, 2));
-				double dBackpressureMax = 500 * (dViscosityMax / 10) * (((m_dFlowVelocity / 100) * (m_dColumnLength / 1000)) / Math.pow(m_dParticleSize / 1000000, 2));
+				double dBackpressureMin = ((this.m_dOpenTubeVelocity / 100.0) * (this.m_dColumnLength / 1000.0) * (dViscosityMin / 1000.0) * 180.0 * Math.pow(1 - this.m_dInterparticlePorosity, 2)) / (Math.pow(this.m_dInterparticlePorosity, 3) * Math.pow(m_dParticleSize / 1000000, 2));
+				double dBackpressureMax = ((this.m_dOpenTubeVelocity / 100.0) * (this.m_dColumnLength / 1000.0) * (dViscosityMax / 1000.0) * 180.0 * Math.pow(1 - this.m_dInterparticlePorosity, 2)) / (Math.pow(this.m_dInterparticlePorosity, 3) * Math.pow(m_dParticleSize / 1000000, 2));
 				contentPane.m_GraphControl.setSecondYAxisRangeLimits(dBackpressureMin / 100000, dBackpressureMax / 100000);
 			}
 			else if (this.m_iSecondPlotType == 3)
 			{
-				contentPane.m_GraphControl.setSecondYAxisRangeLimits(dViscosityMin, dViscosityMax);
+				contentPane.m_GraphControl.setSecondYAxisRangeLimits(dViscosityMin / 100, dViscosityMax / 100);
 			}	
 		}
 		else
@@ -1572,11 +1612,11 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 			}
 			else if (this.m_iSecondPlotType == 3)
 			{
-			    contentPane.m_GraphControl.AddDataPoint(m_iSecondPlotIndex, m_dStartTime, m_dEluentViscosity);
-			    contentPane.m_GraphControl.AddDataPoint(m_iSecondPlotIndex, m_dEndTime, m_dEluentViscosity);
+			    contentPane.m_GraphControl.AddDataPoint(m_iSecondPlotIndex, m_dStartTime, m_dEluentViscosity / 100);
+			    contentPane.m_GraphControl.AddDataPoint(m_iSecondPlotIndex, m_dEndTime, m_dEluentViscosity / 100);
 		    	dViscosityMin = m_dEluentViscosity - (m_dEluentViscosity * 0.2);
 		    	dViscosityMax = m_dEluentViscosity + (m_dEluentViscosity * 0.2);
-				contentPane.m_GraphControl.setSecondYAxisRangeLimits(dViscosityMin, dViscosityMax);
+				contentPane.m_GraphControl.setSecondYAxisRangeLimits(dViscosityMin / 100, dViscosityMax / 100);
 			}
 
 		}

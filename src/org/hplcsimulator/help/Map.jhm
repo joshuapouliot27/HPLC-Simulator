@@ -41,7 +41,9 @@
 	<mapID target="controls.columnlength" url="helpfiles/columnlength.htm" />
 	<mapID target="controls.columndiameter" url="helpfiles/columndiameter.htm" />
 	<mapID target="controls.particlesize" url="helpfiles/particlesize.htm" />
-	<mapID target="controls.voidfraction" url="helpfiles/voidfraction.htm" />
+	<mapID target="controls.interparticleporosity" url="helpfiles/interparticleporosity.htm" />
+	<mapID target="controls.intraparticleporosity" url="helpfiles/intraparticleporosity.htm" />
+	<mapID target="controls.totalporosity" url="helpfiles/totalporosity.htm" />
 	<mapID target="controls.voidvolume" url="helpfiles/voidvolume.htm" />
 	<mapID target="controls.voidtime" url="helpfiles/voidtime.htm" />
 	<mapID target="controls.vandeemter" url="helpfiles/vandeemter.htm" />

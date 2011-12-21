@@ -20,7 +20,7 @@ public class ColumnProperties extends JXPanel
 	public JLabel jlblColumnLength = null;
 	public JLabel jlblColumnDiameter = null;
 	public JLabel jlblParticleSize = null;
-	public JLabel jlblVoidFraction = null;
+	public JLabel jlblInterparticlePorosity = null;
 	public JLabel jlblVoidVolume2 = null;
 	public JLabel jlblVoidTime2 = null;
 	public JLabel jlblVanDeemter = null;
@@ -32,7 +32,7 @@ public class ColumnProperties extends JXPanel
 	public JTextField jtxtColumnLength = null;
 	public JTextField jtxtColumnDiameter = null;
 	public JTextField jtxtParticleSize = null;
-	public JTextField jtxtVoidFraction = null;
+	public JTextField jtxtInterparticlePorosity = null;
 	public JLabel jlblVoidVolume = null;
 	public JLabel jlblVoidTime = null;
 	public JTextField jtxtATerm = null;
@@ -43,10 +43,12 @@ public class ColumnProperties extends JXPanel
 	public JLabel jlblParticleSize2 = null;
 	public JLabel jlblVoidVolume3 = null;
 	public JLabel jlblVoidTime3 = null;
-
-	private JLabel jlblStationaryPhase = null;
-
-	private JComboBox jcboStationaryPhase = null;
+	public JLabel jlblStationaryPhase = null;
+	public JComboBox jcboStationaryPhase = null;
+	public JLabel jlblIntraparticlePorosity = null;
+	public JTextField jtxtIntraparticlePorosity = null;
+	public JLabel jlblTotalPorosity = null;
+	public JLabel jlblTotalPorosityOut = null;
 
 	/**
 	 * This method initializes 
@@ -62,18 +64,28 @@ public class ColumnProperties extends JXPanel
 	 * 
 	 */
 	private void initialize() {
+        jlblTotalPorosityOut = new JLabel();
+        jlblTotalPorosityOut.setBounds(new Rectangle(136, 156, 57, 17));
+        jlblTotalPorosityOut.setText("0.64");
+        jlblTotalPorosityOut.setFont(new Font("Dialog", Font.PLAIN, 12));
+        jlblTotalPorosity = new JLabel();
+        jlblTotalPorosity.setBounds(new Rectangle(8, 156, 125, 16));
+        jlblTotalPorosity.setText("Total porosity:");
+        jlblIntraparticlePorosity = new JLabel();
+        jlblIntraparticlePorosity.setBounds(new Rectangle(8, 136, 125, 16));
+        jlblIntraparticlePorosity.setText("Intraparticle porosity:");
         jlblStationaryPhase = new JLabel();
         jlblStationaryPhase.setText("Stationary phase:");
         jlblStationaryPhase.setSize(new Dimension(125, 16));
         jlblStationaryPhase.setLocation(new Point(8, 8));
         jlblVoidTime3 = new JLabel();
         jlblVoidTime3.setText("s");
-        jlblVoidTime3.setLocation(new Point(196, 156));
+        jlblVoidTime3.setLocation(new Point(196, 196));
         jlblVoidTime3.setSize(new Dimension(45, 16));
         jlblVoidTime3.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblVoidVolume3 = new JLabel();
         jlblVoidVolume3.setText("mL");
-        jlblVoidVolume3.setLocation(new Point(196, 136));
+        jlblVoidVolume3.setLocation(new Point(196, 176));
         jlblVoidVolume3.setSize(new Dimension(45, 16));
         jlblVoidVolume3.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblParticleSize2 = new JLabel();
@@ -93,54 +105,54 @@ public class ColumnProperties extends JXPanel
         jlblColumnLength2.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblVoidTime = new JLabel();
         jlblVoidTime.setText("29.987");
-        jlblVoidTime.setLocation(new Point(136, 156));
+        jlblVoidTime.setLocation(new Point(136, 196));
         jlblVoidTime.setSize(new Dimension(57, 16));
         jlblVoidTime.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblVoidVolume = new JLabel();
         jlblVoidVolume.setText("0.9987");
-        jlblVoidVolume.setLocation(new Point(136, 136));
+        jlblVoidVolume.setLocation(new Point(136, 176));
         jlblVoidVolume.setSize(new Dimension(57, 16));
         jlblVoidVolume.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblReducedPlateHeight = new JLabel();
         jlblReducedPlateHeight.setText("0.9987");
-        jlblReducedPlateHeight.setLocation(new Point(136, 256));
+        jlblReducedPlateHeight.setLocation(new Point(136, 296));
         jlblReducedPlateHeight.setSize(new Dimension(57, 16));
         jlblReducedPlateHeight.setFont(new Font("Dialog", Font.PLAIN, 12));
         jlblReducedPlateHeight2 = new JLabel();
         jlblReducedPlateHeight2.setText("Reduced plate height:");
         jlblReducedPlateHeight2.setSize(new Dimension(125, 16));
-        jlblReducedPlateHeight2.setLocation(new Point(8, 256));
+        jlblReducedPlateHeight2.setLocation(new Point(8, 296));
         jlblCTerm = new JLabel();
-        jlblCTerm.setBounds(new Rectangle(96, 236, 37, 16));
+        jlblCTerm.setBounds(new Rectangle(96, 276, 37, 16));
         jlblCTerm.setText("C:");
         jlblBTerm = new JLabel();
-        jlblBTerm.setBounds(new Rectangle(96, 216, 37, 16));
+        jlblBTerm.setBounds(new Rectangle(96, 256, 37, 16));
         jlblBTerm.setText("B:");
         jlblATerm = new JLabel();
-        jlblATerm.setBounds(new Rectangle(96, 196, 37, 16));
+        jlblATerm.setBounds(new Rectangle(96, 236, 37, 16));
         jlblATerm.setText("A:");
         jlblVanDeemter = new JLabel();
-        jlblVanDeemter.setBounds(new Rectangle(8, 176, 181, 16));
+        jlblVanDeemter.setBounds(new Rectangle(8, 216, 181, 16));
         jlblVanDeemter.setText("Reduced Van Deemter terms:");
         jlblVanDeemter.setName("");
         jlblVoidTime2 = new JLabel();
         jlblVoidTime2.setText("Void time:");
         jlblVoidTime2.setSize(new Dimension(125, 16));
-        jlblVoidTime2.setLocation(new Point(8, 156));
+        jlblVoidTime2.setLocation(new Point(8, 196));
         jlblVoidVolume2 = new JLabel();
         jlblVoidVolume2.setText("Void volume:");
         jlblVoidVolume2.setSize(new Dimension(125, 16));
-        jlblVoidVolume2.setLocation(new Point(8, 136));
-        jlblVoidFraction = new JLabel();
-        jlblVoidFraction.setText("Void fraction:");
-        jlblVoidFraction.setSize(new Dimension(125, 16));
-        jlblVoidFraction.setLocation(new Point(8, 116));
+        jlblVoidVolume2.setLocation(new Point(8, 176));
+        jlblInterparticlePorosity = new JLabel();
+        jlblInterparticlePorosity.setText("Interparticle porosity:");
+        jlblInterparticlePorosity.setSize(new Dimension(125, 16));
+        jlblInterparticlePorosity.setLocation(new Point(8, 116));
         jlblParticleSize = new JLabel();
         jlblParticleSize.setText("Particle size:");
         jlblParticleSize.setSize(new Dimension(125, 16));
         jlblParticleSize.setLocation(new Point(8, 96));
         jlblColumnDiameter = new JLabel();
-        jlblColumnDiameter.setText("Diameter:");
+        jlblColumnDiameter.setText("Inner diameter:");
         jlblColumnDiameter.setSize(new Dimension(125, 16));
         jlblColumnDiameter.setLocation(new Point(8, 76));
         jlblColumnLength = new JLabel();
@@ -148,12 +160,12 @@ public class ColumnProperties extends JXPanel
         jlblColumnLength.setSize(new Dimension(125, 16));
         jlblColumnLength.setLocation(new Point(8, 56));
         this.setLayout(null);
-        this.setSize(new Dimension(254, 277));
+        this.setSize(new Dimension(254, 317));
         this.setBackground(Color.white);
         this.add(jlblColumnLength, null);
         this.add(jlblColumnDiameter, null);
         this.add(jlblParticleSize, null);
-        this.add(jlblVoidFraction, null);
+        this.add(jlblInterparticlePorosity, null);
         this.add(jlblVoidVolume2, null);
         this.add(jlblVoidTime2, null);
         this.add(jlblVanDeemter, null);
@@ -178,6 +190,10 @@ public class ColumnProperties extends JXPanel
         this.add(jlblVoidTime3, null);
         this.add(jlblStationaryPhase, null);
         this.add(getJcboStationaryPhase(), null);
+        this.add(jlblIntraparticlePorosity, null);
+        this.add(getJtxtIntraparticlePorosity(), null);
+        this.add(jlblTotalPorosity, null);
+        this.add(jlblTotalPorosityOut, null);
 			
 	}
 
@@ -232,13 +248,13 @@ public class ColumnProperties extends JXPanel
 	 * @return javax.swing.JTextField	
 	 */
 	private JTextField getJtxtVoidFraction() {
-		if (jtxtVoidFraction == null) {
-			jtxtVoidFraction = new JTextField();
-			jtxtVoidFraction.setText("0.6");
-			jtxtVoidFraction.setSize(new Dimension(57, 20));
-			jtxtVoidFraction.setLocation(new Point(136, 116));
+		if (jtxtInterparticlePorosity == null) {
+			jtxtInterparticlePorosity = new JTextField();
+			jtxtInterparticlePorosity.setText("0.4");
+			jtxtInterparticlePorosity.setSize(new Dimension(57, 20));
+			jtxtInterparticlePorosity.setLocation(new Point(136, 116));
 		}
-		return jtxtVoidFraction;
+		return jtxtInterparticlePorosity;
 	}
 
 	/**
@@ -251,7 +267,7 @@ public class ColumnProperties extends JXPanel
 			jtxtATerm = new JTextField();
 			jtxtATerm.setText("1");
 			jtxtATerm.setSize(new Dimension(57, 20));
-			jtxtATerm.setLocation(new Point(136, 192));
+			jtxtATerm.setLocation(new Point(136, 232));
 		}
 		return jtxtATerm;
 	}
@@ -266,7 +282,7 @@ public class ColumnProperties extends JXPanel
 			jtxtBTerm = new JTextField();
 			jtxtBTerm.setText("5");
 			jtxtBTerm.setSize(new Dimension(57, 20));
-			jtxtBTerm.setLocation(new Point(136, 212));
+			jtxtBTerm.setLocation(new Point(136, 252));
 		}
 		return jtxtBTerm;
 	}
@@ -281,7 +297,7 @@ public class ColumnProperties extends JXPanel
 			jtxtCTerm = new JTextField();
 			jtxtCTerm.setText("0.05");
 			jtxtCTerm.setSize(new Dimension(57, 20));
-			jtxtCTerm.setLocation(new Point(136, 232));
+			jtxtCTerm.setLocation(new Point(136, 272));
 		}
 		return jtxtCTerm;
 	}
@@ -300,6 +316,20 @@ public class ColumnProperties extends JXPanel
 			jcboStationaryPhase.setSize(new Dimension(233, 27));
 		}
 		return jcboStationaryPhase;
+	}
+
+	/**
+	 * This method initializes jtxtIntraparticlePorosity	
+	 * 	
+	 * @return javax.swing.JTextField	
+	 */
+	private JTextField getJtxtIntraparticlePorosity() {
+		if (jtxtIntraparticlePorosity == null) {
+			jtxtIntraparticlePorosity = new JTextField();
+			jtxtIntraparticlePorosity.setBounds(new Rectangle(136, 136, 57, 20));
+			jtxtIntraparticlePorosity.setText("0.4");
+		}
+		return jtxtIntraparticlePorosity;
 	}
 
 }  //  @jve:decl-index=0:visual-constraint="-34,10"
