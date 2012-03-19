@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0+" codebase="http://www.retentionprediction.org/gc/" href="gcretentionpredictorapp.jnlp">
+  <information>
+    <title>GC Retention Predictor</title>
+    <vendor>retentionprediction.org</vendor>
+    <homepage href="http://www.retentionprediction.org/"/>
+    <description>GC Retention predictor</description>
+    <description kind="short">GC Retention Predictor is a web-based gas chromatography retention prediction tool.</description>
+    <offline-allowed/> 
+  </information>
+  <security>
+      <all-permissions/>
+  </security>
+  
+  <resources>
+      <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+      <property name="sun.java2d.noddraw" value="true"/>
+      <jar href="GCRetentionPredictor.jar" main="true"/>
+      <extension name="jogl" href="http://www.retentionprediction.org/gc/jogl/jsr-231-1.1.1/webstart/jogl.jnlp" />
+  	  <jar href="swingx-core-1.6.2.jar"/>
+  	  <jar href="jhall.jar"/>
+  	  <jar href="jh.jar"/>
+  	  <jar href="jhbasic.jar"/>
+  	  <jar href="jsearch.jar"/>
+  </resources>
+
+  <application-desc main-class="org.retentionprediction.AppletFrame"/>
+  
+</jnlp>

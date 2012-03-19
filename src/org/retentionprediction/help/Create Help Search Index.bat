@@ -1,0 +1,1 @@
+c:\Progra~1\Java\jh2.0\javahelp\bin\jhindexer -c config.txt "C:\Documents and Settings\Paul\My Documents\Eclipse Workspaces\HPLC Simulator\src\org\hplcsimulator\help\helpfiles"

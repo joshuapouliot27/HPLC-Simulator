@@ -1,0 +1,52 @@
+<html>
+
+<head>
+	<title>Predicting retention accurately with chemically diverse solutes</title>
+	<link rel="stylesheet" type="text/css" href="default.css" title="Style">
+    <meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+</head>
+
+<body lang=EN-US>
+
+
+<h2>Predicting retention accurately with chemically diverse
+solutes</h2>
+
+<p>One of the
+major difficulties in predicting the retention of chemically-diverse compounds
+in gradient elution is that their retention dependence on solvent composition can
+differ dramatically. For example, the following figure [insert figure here] shows the isocratic
+retention behavior of three different compounds at a range of solvent
+compositions. You clearly can't assume that the retention vs. solvent composition
+relationships all have the same shape - you can't even assume that they're
+linear.</p>
+
+<p>However, many
+other approaches at retention prediction like retention indexing and peak
+alignment schemes like non-linear retention time warping assume that the
+retention vs. solvent composition relationships all have the same general shape.
+Because of this <i>very rough</i> assumption, these techniques cannot
+accurately predict retention when the gradient program or flow rate is changed.
+In fact, even the relatively small differences in the gradient and flow rate
+profiles produced by different HPLC pumps are enough to significantly lower
+retention prediction accuracy with these schemes.</p>
+
+<p>To give an
+idea of how big these errors can be, consider that the isocratic retention
+index of aspirin was measured at 10% methanol to be 302. However, when the mobile
+phase composition changed to 30%, <i>the retention index of aspirin dropped to
+8!</i></p>
+
+<p>We avoid this
+problem by making no assumption about the retention vs. solvent composition
+relationship of each solute. We measure the isocratic retention of each solute
+at a range of solvent compositions and store that information in a retention
+database that is used to calculate gradient retention times.</p>
+
+
+<br></br>
+<br></br>
+
+</body>
+
+</html>

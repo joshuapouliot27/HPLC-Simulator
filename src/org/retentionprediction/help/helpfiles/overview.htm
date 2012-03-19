@@ -1,0 +1,202 @@
+<html>
+
+<head>
+	<title>Retention Predictor Overview</title>
+	<link rel="stylesheet" type="text/css" href="default.css" title="Style">
+    <meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+</head>
+
+<body lang=EN-US>
+
+<h1>Retention Prediction Software Overview</h1>
+
+<h2>Purpose</h2>
+
+<p>The purpose of this software is to predict HPLC retention very accurately...</p>
+
+<ul>
+<li><a href="features1.htm">among different HPLC/UHPLC instruments</a></li>
+<li><a href="features3.htm">with different gradients</a></li>
+<li><a href="features3.htm">with different flow rates</a></li>
+<li><a href="features2.htm">and with chemically diverse solutes</a></li>
+</ul>
+
+<p>...subject to the following constraints:</p>
+
+<ul>
+<li>standard experimental conditions must be used (see below)</li>
+<li>retention may only be predicted for compounds in the <a href="database.htm">retention database</a></li>
+<li>the retention times of a set of standard solutes (what we call &quot;instrument calibration solutes&quot;) must be measured in the same run as the retention predictions are to be made.</li>
+</ul>
+
+<h2>How it works</h2>
+
+<p>There are two key features of this retention
+prediction system that distinguish it from others: 1) it makes use of an
+<a href="database.htm">interpolated isocratic retention vs. solvent composition database</a> and 2) it
+uses a novel &quot;back-calculation&quot; approach to precisely and easily
+account for differences between HPLC instruments.</p>
+
+<p><b>1) Interpolated isocratic retention vs. solvent
+composition database</b></p>
+
+<p>The heart of this retention prediction system
+is a <a href="database.htm">database</a> containing isocratic retention vs. solvent composition
+relationships of each solute. Data points are spaced closely together (at 10% B
+intervals) and interpolated to precisely determine retention as a function of
+solvent composition. This is absolutely critical for accurate
+retention prediction under varying gradient and flow rate conditions (and to a
+lesser degree, even between different HPLC instruments, see above).</p>
+
+<p>In this
+demonstration version of the retention prediction software, the <a href="database.htm">retention
+database</a> holds data that was measured for 35 solutes. These 35 solutes were
+specially selected for demonstration purposes because they represent all of the
+5 types of interaction that control retention on reversed-phase alkylsilica columns.</p>
+
+<p>Of course, the retention data in this
+<a href="database.htm">database</a> is highly dependent on the specific stationary phase used, the
+temperature of the column during the run, the mobile phase solvent A and B, the
+mobile phase buffer, and the mobile phase pH. That's why we've defined a set of
+standard conditions, which are the same as the conditions we used to measure
+the isocratic retention data in our database. The standard conditions we used
+for the existing database are:</p>
+
+<ul>
+<li>Standard stationary phase: Waters Acquity BEH C18 (2.1 x 100 mm, 1.7&#956;m)</li>
+<li>Standard column temperature: 35 °C</li>
+<li>Standard solvent A: pH 2.80 30 mM ammonium formate buffer in water</li>
+<li>Standard solvent B: 100% acetonitrile</li>
+</ul>
+
+<p>These standard conditions must be used in
+order for the software to be able to accurately predict retention. However, in
+the future, we plan to explore the use of other standard conditions that may further
+improve retention prediction accuracy.</p>
+
+<p><b>2) &quot;Back-calculation&quot; of gradient and flow rate profiles</b></p>
+
+<p>Armed with the isocratic retention vs.
+solvent composition database, you could theoretically predict gradient
+retention on virtually any HPLC system under a range of gradient programs and
+flow rates <i>so long as you know two additional important pieces of
+information</i>:</p>
+
+<p>1) The precise gradient profile (solvent
+composition vs. time) <i>actually produced</i> by your HPLC </p>
+
+<p>2) The precise flow rate profile (flow rate
+vs. time) <i>actually produced</i> by your HPLC</p>
+
+<p>Together, these profiles fully define the
+output of the HPLC instrument (and therefore fully characterize differences
+between HPLC instruments).</p>
+
+<p>In our previous work, we attempted to
+directly measure the gradient profile as accurately as possible for just this
+purpose. Unfortunately, it was an extraordinarily tedious process and the profile was very difficult
+to measure accurately. Nevertheless, we were able to significantly improve retention
+prediction accuracy this way. But it was clear that the accuracy (or lack
+of accuracy) in our profile measurements was limiting accuracy in our retention
+predictions.</p>
+
+<p>To circumvent this problem, we devised a
+system in which the gradient and flow rate profiles aren't measured directly,
+but instead are <i>back-calculated</i> from a) the gradient retention times of a set
+of standard solutes (which we call the "gradient calibration solutes") and b) their isocratic retention vs. solvent composition relationships.
+Since we provide the <a href="database.htm">isocratic retention vs. solvent composition relationships</a>,
+the only pieces of information a user must provide are the retention
+times of the gradient calibration solutes in their run. From those, effective gradient and
+flow rate profiles may be back-calculated and used to accurately predict
+retention of any other compound in the retention database. <i>In other words,
+the user-supplied retention times of a set of standard compounds are used to back-calculate what the gradient and flow rate profiles <b>must have been</b>
+to give those retention times.</i></p>
+
+<p>The following figure shows a flow chart of
+this retention prediction process:</p>
+<p><img src="images/flowchart.jpg"/></p>
+
+<h2>Before you use this tool</h2>
+
+<p>This retention prediction tool is fully
+functional, but in order for it to be at all useful to you, we need to expand
+the <a href="database.htm">retention database</a>. Right now, it only contains 35 compounds. The 35
+compounds fully represent all of the 5 types of interactions that control retention on
+reversed-phase alkylsilica columns, making them a good set of solutes to test the system, but 
+they aren't useful for any practical purpose because there are so few of them.</p>
+
+<p>Assuming we had more compounds in the
+database, which we plan to add soon, you would need to do the following before
+you inject your sample:</p>
+
+<p><b>1) Spike the sample with gradient calibration
+solutes</b></p>
+
+<p>The gradient calibration solutes must be
+compounds with known retention vs. solvent composition relationships under our
+standard conditions. In other words, they must be in the retention database.
+There is nothing else special about the gradient calibration solutes except
+that they must elute over a wide range of retention times and they should elute
+over evenly-spaced intervals.</p>
+
+<p>Of the 35 compounds in the <a href="database.htm">retention
+database</a>, we chose 1) adenosine, 2) <i>N</i>,<i>N</i>-dimethylacetamide, 3) <i>p</i>-toluenesulfonic
+acid, 4) <i>N</i>,<i>N</i>-diethylacetamide, 5) indole-3-acetic acid, 6)
+dimethyl phthalate, 7) indole, 8) diethyl phthalate, 9) diallyl phthalate, 10)
+di-<i>n</i>-propyl phthalate, 11) di-<i>n</i>-butyl phthalate, 12) di-<i>n</i>-pentyl
+phthalate, 13) di-<i>n</i>-hexyl phthalate, 14) di-<i>n</i>-heptyl phthalate,
+and 15) di-<i>n</i>-octyl phthalate</p>
+
+<p>We chose to use 15 compounds because they
+allowed accurate back-calculation. If your gradient or flow profile has more
+features to capture, it would be wise to use more calibration solutes. On the
+other hand, if your gradient and flow profiles have less features to capture,
+you could go with less, but the minimum number of gradient calibration solutes
+allowed is 6.</p>
+
+<p><b>2) Set up the standard chromatographic
+conditions</b></p>
+
+<p>In order for the retention vs. solvent
+composition relationships in the <a href="database.htm">database</a> to be accurate, the standard
+chromatographic conditions must be strictly adhered to:</p>
+
+<p>a) You must use one of the standard columns
+on which the database data was measured (right now there's only one).</p>
+
+<p>b) Solvent A must be pH 2.80 30 mM ammonium
+formate buffer in water and solvent B must be 100% acetonitrile</p>
+
+<p>c) The column temperature must be kept at 35
+°C</p>
+
+<p>One big advantage of this retention
+prediction system is that these standard conditions are relatively
+unrestrictive. You may change the gradient program and flow rate however you like!</p>
+
+<p>However, one note of caution about flow
+rates:</p>
+
+<p>The <a href="database.htm">isocratic retention data</a> was measured on the
+standard column at a flow rate of 200 &#956;L/min. We tested the retention
+prediction accuracy of the system at flow rates of 100 &#956;L/min, 200
+&#956;L/min, and 400 &#956;L/min, and found virtually no difference in the
+accuracy of retention predictions. Still, one could imagine that viscous
+frictional heating caused by the mobile phase moving through the stationary phase could
+significantly change the retention behavior of compounds. Therefore, changing
+the flow rate more dramatically than we did could reduce retention prediction
+accuracy, but that's still something that must be tested.</p>
+
+<p>Once you've run your sample under the
+standard conditions and determined the retention times of the gradient
+calibration solutes, you can begin using this software to predict retention of
+any other compound in the database.</p>
+
+<h2>Try it out!</h2>
+
+<p>Go through the <a href="step-by-step.htm">step-by-step tutorial</a> to see first-hand how gradient and flow rate profiles can be back-calculated and then applied to predict the retention of other compounds.</p>
+<br></br>
+<br></br>
+</body>
+
+</html>

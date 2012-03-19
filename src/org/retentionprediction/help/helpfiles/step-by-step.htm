@@ -1,0 +1,495 @@
+<html>
+
+<head>
+	<title>Step-by-Step Tutorial</title>
+	<link rel="stylesheet" type="text/css" href="default.css" title="Style">
+    <meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+</head>
+
+<body lang=EN-US>
+
+<h1>Step-by-Step Tutorial</h1>
+
+<p><b>Important:</b> Before going through this tutorial,
+we recommend that you read the <a href="overview.htm">Retention Predictor Overview.</a></p>
+
+<p>The following are step-by-step instructions on how to
+predict retention times with this software using the built-in <a href="database.htm">isocratic retention database</a>:</p>
+
+<h2>Step #1 - Select Standard Column</h2>
+
+<p>We collected our data on the Waters Acquity
+BEH C18 (2.1 x 100 mm, 1.7 um) column, so make sure it is
+selected.</p>
+
+<p><i>In the &quot;Standard column:&quot; box, select
+&quot;Waters Acquity BEH C18 (2.1 x 100 mm, 1.7 um)&quot;</i></p>
+
+<p>(At this point, there is only one standard column
+for which we have any data.)</p>
+
+<h2>Step #2 - Enter Approximate Gradient Conditions</h2>
+
+<p>Enter the following values in the text boxes:</p>
+
+<p><i>In the &quot;Initial solvent composition:&quot;
+box, enter &quot;10&quot;</i></p>
+
+<p><i>In the &quot;Final solvent composition:&quot;
+box, enter &quot;100&quot;</i></p>
+
+<p><i>In the &quot;Gradient time:&quot; box, enter
+    &quot;20&quot;</i></p>
+
+<p><i>In the &quot;Flow rate:&quot; box, enter &quot;0.2&quot;</i></p>
+
+<p>These are the values that were programmed
+into the HPLC for the run. These values are used only as starting points for
+optimization, so they do not need to be very accurate.</p>
+
+<h2>Step #3 - Select Gradient Calibration Solutes</h2>
+
+<p>The first list box (the one right under
+&quot;Step #3: Select Gradient Calibration Solutes&quot;) contains a list of
+all 35 compounds in the <a href="database.htm">retention database</a>. Checking the box next to a
+compound indicates that you wish to use it as a gradient calibration solute. As mentioned in the <a href="overview.htm">overview</a>, there
+is nothing special about gradient calibration solutes. However, you must select a set of compounds to be used as gradient calibration solutes that 
+elute at evenly-spaced intervals over a wide range of retention time.</p>
+
+<p>Of the 35 compounds in the retention
+database, we chose <br/>1) adenosine, <br/>2) N,N-dimethylacetamide, <br/>3) p-toluenesulfonic
+acid, <br/>4) N,N-diethylacetamide, <br/>5) indole-3-acetic acid, <br/>6) dimethyl phthalate,
+<br/>7) indole, <br/>8) diethyl phthalate, <br/>9) diallyl phthalate, <br/>10) di-n-propyl
+phthalate, <br/>11) di-n-butyl phthalate, <br/>12) di-n-pentyl phthalate, <br/>13) di-n-hexyl
+phthalate, <br/>14) di-n-heptyl phthalate, <br/>and 15) di-n-octyl phthalate</p>
+
+<p><i>Check the box next to each of the above compounds to indicate that they should be used 
+as gradient calibration solutes</i></p>
+
+<h2>Step #4 - Enter Their Measured Retention Times</h2>
+
+<p>Now that you've selected your gradient
+calibration solutes, you must enter each of their measured retention times.</p>
+
+<p><i>Double-click the box next to the each
+compound in the table and enter the following retention times:</i></p>
+
+<p><b>(If you get tired of entering all of these numbers manually, skip ahead a couple paragraphs to the section labeled, "Shortcut:")</b></p>
+
+<p><i>adenosine: 1.407</i></p>
+<p><i>N,N-dimethylacetamide: 2.018</i></p>
+<p><i>p-toluenesulfonic acid: 3.684</i></p>
+<p><i>N,N-diethylacetamide: 4.701</i></p>
+<p><i>indole-3-acetic acid: 7.302</i></p>
+<p><i>dimethyl phthalate: 9.475</i></p>
+<p><i>indole: 10.243</i></p>
+<p><i>diethyl phthalate: 12.276</i></p>
+<p><i>diallyl phthalate: 13.642</i></p>
+<p><i>di-n-propyl phthalate: 15.001</i></p>
+<p><i>di-n-butyl phthalate: 17.337</i></p>
+<p><i>di-n-pentyl phthalate: 19.383</i></p>
+<p><i>di-n-hexyl phthalate: 21.22</i></p>
+<p><i>di-n-heptyl phthalate: 22.961</i></p>
+<p><i>di-n-octyl phthalate: 25.051</i></p>
+
+<p>There are actually 10 sets of measured
+retention times preloaded into this software. To automatically load these data
+sets, click on the button at the bottom of the window called &quot;Use
+Preloaded Values...&quot;. This brings up a window that lets you choose one of
+5 different experiments, each run on two different HPLC systems. After selecting
+one of them, you may click the &quot;OK&quot; button to have the gradient
+calibration solutes selected and their measured retention times entered in for
+you.</p>
+
+<p>If, by trying this out, you accidently
+replaced all the data you worked so hard to enter, you can quickly get it back
+by doing the following:</p>
+
+<p><b>Shortcut:</b></p>
+
+<p><i>Click the &quot;Use Preloaded Values...&quot;
+button</i></p>
+
+<p><i>Under &quot;HPLC Instrument:&quot;, choose
+&quot;Primary Instrument: Thermo Fisher Scientific Inc. Accela UHPLC Pump&quot;</i></p>
+
+<p><i>Under &quot;Gradient and flow rate:&quot;,
+choose &quot;10% B to 100% B in 20 min at 200 uL/min&quot;</i></p>
+
+<p><i>Click the &quot;OK&quot; button</i></p>
+
+<p>Once you've entered in the retention times of
+each of the gradient calibration solutes (either manually or with the &quot;Use
+Preloaded Values...&quot; dialog), click on the &quot;Next Step&quot; button in
+the lower right corner of the window.</p>
+
+<h2>Step #5 - Back-Calculate Gradient And Flow Profiles</h2>
+
+<p>In this step, we back-calculate the effective
+gradient and flow rate profiles based on the measured retention times of the
+gradient calibration solutes.</p>
+
+<p>The table on the top right-hand side shows
+the gradient calibration solutes and their measured retention times. The graph
+on the top-left shows the ideal gradient profile (black line) and the
+&quot;working&quot; gradient profile (red line). At this point, the working
+gradient profile mirrors the ideal gradient profile because it has not yet been
+optimized. The graph on the bottom-left shows the ideal flow rate profile
+(black line) and the &quot;working&quot; flow rate profile (red line)</p>
+
+<p><i>Click the &quot;Back-Calculate Profiles&quot;
+button to begin the back-calculation process</i></p>
+
+<p>Back-calculation takes approximately 5 min. During
+this time, the gradient and flow rate profiles are adjusted to minimize the
+difference between the measured retention times of the gradient calibration
+solutes and their calculated retention times (which are calculated from their
+<a href="database.htm">isocratic retention vs. solvent composition relationships in the
+database</a> along with the gradient and flow profiles).</p>
+
+<p>After each gradient or flow rate profile
+adjustment, the variance in the retention calculations is determined (look for
+the &quot;Variance (&#963;<sup>2</sup>):&quot; indicator). If an adjustment is
+made that lowers the variance, the change is accepted, if an adjustment is made
+that increases the variance, the change is rejected.</p>
+
+<p>Watch how the variance drops as adjustments
+are made to gradient and flow rate profiles. You'll also notice that in the
+table, the calculated retention times are getting closer and closer to the
+measured retention times.</p>
+
+<p>Optimization of the gradient and flow rate
+profiles is actually performed in two phases. In Phase I, only the gradient
+profile is optimized. In Phase II, both the gradient profile and flow rate
+profiles are optimized. This two phase approach makes it less likely that the
+profiles will get stuck in a local minimum.</p>
+
+<p>Notice two other indicators:</p>
+
+<p>&quot;Last
+iteration variance:&quot; shows the variance in retention calculations after
+the last iteration</p>
+
+<p>&quot;%
+improvement:&quot; shows the percent decrease in variance after the last
+iteration of optimization.</p>
+
+<p>A large % improvement indicates that the
+variance dropped substantially during the last iteration. This also indicates
+that it could probably still be improved a great deal. On the other hand, a
+very small % improvement indicates that there probably isn't much more to gain
+from further optimization of the profiles</p>
+
+<p>Back-calculation begins in Phase I. After the
+% improvement in the variance drops below 10% (not much more is gained from
+further optimization of the gradient profile alone), the process moves on to
+Phase II. In Phase II,  when the % improvement in variance drops below 1%, the
+back-calculation process stops.</p>
+
+<p>The &quot;Status&quot; indicator will then read,
+&quot;Optimization complete! Continue to next step.&quot; At that point, the
+gradient and flow rate profiles shown in the two graphs <i>are</i> the
+back-calculated profiles. They may then be applied to predict retention of
+other compounds in the retention database.</p>
+
+<p>If you wish to see the back-calculation
+process again, you can click on the &quot;Previous Step&quot; button, then
+click on the &quot;Next Step&quot; button, and then click again on the &quot;Back-Calculate
+Profiles&quot; button.</p>
+
+<p><i>Click on the &quot;Next Step&quot; button to
+continue</i></p>
+
+<h2>Step #6 - Predict Retention of Other Database Compounds</h2>
+
+<p>The back-calculated profiles are still visible
+on the left-hand side of the window, but now the table holds a different set of
+compounds. These are all the compounds in the <a href="database.htm">database</a> that were <i>not</i>
+used as gradient calibration solutes - there will be 20 of them (35 - 15 = 20).</p>
+
+<p><i>Click the &quot;Predict Retention Times&quot;
+button</i></p>
+
+<p>This calculates their retention times using
+the newly determined, back-calculated profiles along with their isocratic retention
+vs. solvent composition relationships in the <a href="database.htm">retention database</a>. One they're
+calculated (it should only take about a second), take a moment to compare the
+predicted retention times with those that were actually measured:</p>
+
+<p>The measured retention times of these 20
+compounds were as follows:</p>
+
+<table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 width=463
+ style='width:347.25pt;margin-left:4.65pt;border-collapse:collapse'>
+ <tr>
+  <td width=181 valign=bottom style='width:135.75pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><b><span style='font-size:
+  11.0pt;font-family:"Arial","sans-serif";color:black'>Compound</span></b></p>
+  </td>
+  <td width=282 nowrap valign=bottom style='width:211.5pt;border:none;
+  border-bottom:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><b><span style='font-size:
+  11.0pt;font-family:"Arial","sans-serif";color:black'>Measured Retention Time
+  (tR, min)</span></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=181 valign=bottom style='width:135.75pt;border:none;border-right:
+  solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>acetophenone</span></p>
+  </td>
+  <td width=282 nowrap valign=bottom style='width:211.5pt;border:none;
+  padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>8.697</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=181 valign=bottom style='width:135.75pt;border:none;border-right:
+  solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>propiophenone</span></p>
+  </td>
+  <td width=282 nowrap valign=bottom style='width:211.5pt;border:none;
+  padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>11.004</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=181 valign=bottom style='width:135.75pt;border:none;border-right:
+  solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>butyrophenone</span></p>
+  </td>
+  <td width=282 nowrap valign=bottom style='width:211.5pt;border:none;
+  padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>12.772</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=181 valign=bottom style='width:135.75pt;border:none;border-right:
+  solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>valerophenone</span></p>
+  </td>
+  <td width=282 nowrap valign=bottom style='width:211.5pt;border:none;
+  padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>14.364</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=181 valign=bottom style='width:135.75pt;border:none;border-right:
+  solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>hexanophenone</span></p>
+  </td>
+  <td width=282 nowrap valign=bottom style='width:211.5pt;border:none;
+  padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>15.82</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=181 valign=bottom style='width:135.75pt;border:none;border-right:
+  solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>heptanophenone</span></p>
+  </td>
+  <td width=282 nowrap valign=bottom style='width:211.5pt;border:none;
+  padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>17.161</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=181 valign=bottom style='width:135.75pt;border:none;border-right:
+  solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>octanophenone</span></p>
+  </td>
+  <td width=282 nowrap valign=bottom style='width:211.5pt;border:none;
+  padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>18.407</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=181 valign=bottom style='width:135.75pt;border:none;border-right:
+  solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>nonanophenone</span></p>
+  </td>
+  <td width=282 nowrap valign=bottom style='width:211.5pt;border:none;
+  padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>19.565</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=181 valign=bottom style='width:135.75pt;border:none;border-right:
+  solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>decanophenone</span></p>
+  </td>
+  <td width=282 nowrap valign=bottom style='width:211.5pt;border:none;
+  padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>20.645</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=181 valign=bottom style='width:135.75pt;border:none;border-right:
+  solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>undecanophenone</span></p>
+  </td>
+  <td width=282 nowrap valign=bottom style='width:211.5pt;border:none;
+  padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>21.668</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=181 valign=bottom style='width:135.75pt;border:none;border-right:
+  solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>dodecanophenone</span></p>
+  </td>
+  <td width=282 nowrap valign=bottom style='width:211.5pt;border:none;
+  padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>22.663</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=181 valign=bottom style='width:135.75pt;border:none;border-right:
+  solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>1-pentanesulfonic acid</span></p>
+  </td>
+  <td width=282 nowrap valign=bottom style='width:211.5pt;border:none;
+  padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>3.795</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=181 valign=bottom style='width:135.75pt;border:none;border-right:
+  solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>p-coumaric acid</span></p>
+  </td>
+  <td width=282 nowrap valign=bottom style='width:211.5pt;border:none;
+  padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>5.52</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=181 valign=bottom style='width:135.75pt;border:none;border-right:
+  solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>4-n-hexylaniline</span></p>
+  </td>
+  <td width=282 nowrap valign=bottom style='width:211.5pt;border:none;
+  padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>13.214</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=181 valign=bottom style='width:135.75pt;border:none;border-right:
+  solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>indole-3-propionic acid</span></p>
+  </td>
+  <td width=282 nowrap valign=bottom style='width:211.5pt;border:none;
+  padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>8.556</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=181 valign=bottom style='width:135.75pt;border:none;border-right:
+  solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>indole-3-butyric acid</span></p>
+  </td>
+  <td width=282 nowrap valign=bottom style='width:211.5pt;border:none;
+  padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>9.481</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=181 valign=bottom style='width:135.75pt;border:none;border-right:
+  solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>nortriptyline</span></p>
+  </td>
+  <td width=282 nowrap valign=bottom style='width:211.5pt;border:none;
+  padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>9.657</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=181 valign=bottom style='width:135.75pt;border:none;border-right:
+  solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>amitriptyline</span></p>
+  </td>
+  <td width=282 nowrap valign=bottom style='width:211.5pt;border:none;
+  padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>9.834</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=181 valign=bottom style='width:135.75pt;border:none;border-right:
+  solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>chlorogenic acid</span></p>
+  </td>
+  <td width=282 nowrap valign=bottom style='width:211.5pt;border:none;
+  padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>3.628</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=181 valign=bottom style='width:135.75pt;border:none;border-right:
+  solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>cortisone</span></p>
+  </td>
+  <td width=282 nowrap valign=bottom style='width:211.5pt;border:none;
+  padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:11.0pt;
+  font-family:"Arial","sans-serif";color:black'>8.409</span></p>
+  </td>
+ </tr>
+</table>
+<br></br>
+<p>You'll find that the standard deviation of your retention predictions is
+approximately ±4 s among all 20 solutes.</p>
+
+<p>Feel free to check the accuracy of the
+system with the other 9 preloaded conditions. You can find the measured
+retention times of the 20 solutes under each condition <a href="retentiontimes.htm">here</a>.</p>
+
+<p>If you're really feeling ambitious (and I
+mean <i>really</i> ambitious), you could even run the same 35 solutes on your
+own HPLC system with your own Waters Acquity BEH C18 (2.1 x 100 mm, 1.7 um) column
+and check the accuracy of retention predictions with this tool.</p>
+<br></br>
+<br></br>
+</body>
+
+</html>
