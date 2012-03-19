@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry including="org/retentionprediction/|org/retentionprediction/AppletFrame.java|org/retentionprediction/AutoScaleEvent.java|org/retentionprediction/AutoScaleListener.java|org/retentionprediction/Globals.java|org/retentionprediction/GraphControl.java|org/retentionprediction/RetentionProjectorApplet.java|org/retentionprediction/TopPanel.java|org/retentionprediction/panels/|org/retentionprediction/panels/ChromatographyProperties.java|org/retentionprediction/panels/ColumnProperties.java|org/retentionprediction/panels/GeneralProperties.java" kind="src" path="src"/>
+	<classpathentry including="org/hplcsimulator/*.*" kind="src" path="src"/>
 	<classpathentry kind="lib" path="C:/Program Files (x86)/Java/javahelp2_0_05/jh2.0/javahelp/lib/jh.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files (x86)/Java/javahelp2_0_05/jh2.0/javahelp/lib/jhall.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files (x86)/Java/javahelp2_0_05/jh2.0/javahelp/lib/jhbasic.jar"/>

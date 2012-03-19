@@ -1,1 +1,0 @@
-IndexRemove C:\Documents and Settings\Paul\My Documents\Eclipse Workspaces\Retention Projector\src\org\retentionprediction\help\
