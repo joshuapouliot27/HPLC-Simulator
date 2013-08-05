@@ -18,11 +18,15 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
 import java.awt.Font;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JViewport;
 import javax.swing.ListSelectionModel;
+import javax.swing.Scrollable;
 
 import javax.swing.JToggleButton;
 import javax.swing.ImageIcon;
@@ -30,7 +34,7 @@ import javax.help.*;
 
 import org.jdesktop.swingx.*;
 
-public class TopPanel extends JPanel
+public class TopPanel extends JPanel implements Scrollable, ComponentListener
 {
 	private static final long serialVersionUID = 1L;
 	public GraphControl m_GraphControl = null;
@@ -78,6 +82,10 @@ public class TopPanel extends JPanel
 
 	public PlotOptions jxpanelPlotOptions = null;
 	public JXTaskPane jxtaskPlotOptions = null;
+	
+	public ExtraColumnTubing jxpanelExtraColumnTubing = null;
+	public JXTaskPane jxtaskExtraColumnTubing = null;
+	
 	public JButton jbtnCopyImage = null;
 
 	/**
@@ -99,10 +107,12 @@ public class TopPanel extends JPanel
 		this.setLayout(null);
 		
 		this.setVisible(true);
-		this.setBounds(new Rectangle(0, 0, 900, 650));
 		this.setBackground(Color.white);
+		this.setPreferredSize(new Dimension(900, 500));
+        this.setMinimumSize(new Dimension(900, 500));
+		this.setSize(new Dimension(900, 650));
 		
-        GLCapabilities caps = new GLCapabilities();
+        GLCapabilities caps = new GLCapabilities(GLProfile.get(GLProfile.GL2));
         caps.setDoubleBuffered(true);
         caps.setHardwareAccelerated(true);
         
@@ -225,6 +235,8 @@ public class TopPanel extends JPanel
 	    CSH.setHelpIDString(jxpanelColumnProperties.jtxtCTerm, "controls.vandeemter");
 	    CSH.setHelpIDString(jxpanelColumnProperties.jlblReducedPlateHeight, "controls.reducedplateheight");
 	    CSH.setHelpIDString(jxpanelColumnProperties.jlblReducedPlateHeight2, "controls.reducedplateheight");
+	
+	    this.addComponentListener(this);
 	}
 
 	/**
@@ -243,7 +255,7 @@ public class TopPanel extends JPanel
 		return jScrollPane;
 	}
 	
-	public class JChemicalTable extends JTable
+	public class JChemicalTable extends JTable implements Scrollable
 	{
 		private static final long serialVersionUID = 1L;
 		
@@ -254,6 +266,12 @@ public class TopPanel extends JPanel
 		public boolean isCellEditable(int row, int column)
 		{
 			return false;
+		}
+		
+		@Override
+		public boolean getScrollableTracksViewportWidth() 
+		{
+			return true;
 		}
 	}
 
@@ -501,11 +519,12 @@ public class TopPanel extends JPanel
 			jpanelSimulatedChromatogram.setBackground(Color.white);
 			jpanelSimulatedChromatogram.setPreferredSize(new Dimension(615, 477));
 			
+			jpanelSimulatedChromatogram.add(m_GraphControl, null);
+			
 			jpanelSimulatedChromatogram.add(getJbtnAutoscale(), null);
 			jpanelSimulatedChromatogram.add(getJbtnPan(), null);
 			jpanelSimulatedChromatogram.add(getJbtnAutoscaleX(), null);
 			jpanelSimulatedChromatogram.add(getJbtnAutoscaleY(), null);
-			jpanelSimulatedChromatogram.add(m_GraphControl, null);
 			jpanelSimulatedChromatogram.add(getJbtnZoomOut(), null);
 			jpanelSimulatedChromatogram.add(getJbtnZoomIn(), null);
 			jpanelSimulatedChromatogram.add(getJbtnCopyImage(), null);
@@ -598,6 +617,16 @@ public class TopPanel extends JPanel
 		    jxpanelColumnProperties.setPreferredSize(new Dimension(254,317));
 		    jxtaskColumnProperties.add(jxpanelColumnProperties);
 
+		    jxtaskExtraColumnTubing = new JXTaskPane();
+		    jxtaskExtraColumnTubing.setAnimated(false);
+		    jxtaskExtraColumnTubing.setTitle("Other");
+		    jxtaskExtraColumnTubing.getContentPane().setBackground(new Color(255,255,255));
+		    ((JComponent)jxtaskExtraColumnTubing.getContentPane()).setBorder(null);
+
+		    jxpanelExtraColumnTubing = new ExtraColumnTubing();
+		    jxpanelExtraColumnTubing.setPreferredSize(new Dimension(254,93));
+		    jxtaskExtraColumnTubing.add(jxpanelExtraColumnTubing);
+
 		    // add the task pane to the taskpanecontainer
 		    taskpanecontainer.add(jxtaskMobilePhaseComposition, null);
 		    taskpanecontainer.add(jxtaskPlotOptions,null);
@@ -605,6 +634,7 @@ public class TopPanel extends JPanel
 		    taskpanecontainer.add(jxtaskChromatographyProperties, null);
 		    taskpanecontainer.add(jxtaskGeneralProperties, null);
 		    taskpanecontainer.add(jxtaskColumnProperties, null);
+		    taskpanecontainer.add(jxtaskExtraColumnTubing, null);
 		    	
 		    JScrollPane jsclControlPanel = new JScrollPane(taskpanecontainer);
 		    jControlPanel.add(jsclControlPanel);
@@ -676,5 +706,135 @@ public class TopPanel extends JPanel
 			jbtnCopyImage.setToolTipText("");
 		}
 		return jbtnCopyImage;
+	}
+
+
+	@Override
+	public Dimension getPreferredScrollableViewportSize() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public int getScrollableBlockIncrement(Rectangle arg0, int arg1, int arg2) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
+	@Override
+	public boolean getScrollableTracksViewportHeight() {
+		Dimension minSize = this.getMinimumSize();
+		Dimension portSize = null;
+		if (getParent() instanceof JViewport) 
+		{
+			JViewport port = (JViewport)getParent();
+			portSize = port.getSize();
+		}
+		else
+			return false;
+		
+		if (portSize.height < minSize.height)
+			return false;
+		else
+			return true;
+	}
+
+
+	@Override
+	public boolean getScrollableTracksViewportWidth() {
+		Dimension minSize = this.getMinimumSize();
+		Dimension portSize = null;
+		if (getParent() instanceof JViewport) 
+		{
+			JViewport port = (JViewport)getParent();
+			portSize = port.getSize();
+		}
+		else
+			return false;
+		
+		if (portSize.width < minSize.width)
+			return false;
+		else
+			return true;
+	}
+
+
+	@Override
+	public int getScrollableUnitIncrement(Rectangle arg0, int arg1, int arg2) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
+	@Override
+	public void componentHidden(ComponentEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void componentMoved(ComponentEvent arg0) {
+		this.revalidate();
+	}
+
+
+	@Override
+	public void componentResized(ComponentEvent arg0) {
+		// Respond to window resize
+		if (arg0.getComponent() == this)
+		{
+			Dimension size = this.getSize();
+			this.jControlPanel.setSize(280, size.height);
+			int divide = (size.height * 3) / 4;
+			this.jpanelSimulatedChromatogram.setSize(size.width - 284, divide);
+			this.m_GraphControl.setSize(jpanelSimulatedChromatogram.getWidth() - 10, jpanelSimulatedChromatogram.getHeight() - 60);
+			this.jpanelCompounds.setLocation(284, divide);
+			this.jpanelCompounds.setSize(size.width - 284, size.height - divide);
+			this.jbtnAutoscale.setLocation(jbtnAutoscale.getLocation().x, jpanelSimulatedChromatogram.getHeight() - 37);
+			this.jbtnAutoscaleX.setLocation(jbtnAutoscaleX.getLocation().x, jpanelSimulatedChromatogram.getHeight() - 37);
+			this.jbtnAutoscaleY.setLocation(jbtnAutoscaleY.getLocation().x, jpanelSimulatedChromatogram.getHeight() - 37);
+			this.jbtnPan.setLocation(jbtnPan.getLocation().x, jpanelSimulatedChromatogram.getHeight() - 37);
+			this.jbtnZoomIn.setLocation(jbtnZoomIn.getLocation().x, jpanelSimulatedChromatogram.getHeight() - 37);
+			this.jbtnZoomOut.setLocation(jbtnZoomOut.getLocation().x, jpanelSimulatedChromatogram.getHeight() - 37);
+			this.jbtnCopyImage.setLocation(jbtnCopyImage.getLocation().x, jpanelSimulatedChromatogram.getHeight() - 37);
+			this.jScrollPane.setSize(jpanelCompounds.getWidth() - 23, jpanelCompounds.getHeight() - 65);
+			this.jbtnAddChemical.setLocation(jbtnAddChemical.getLocation().x, jpanelCompounds.getHeight() - 37);
+			this.jbtnEditChemical.setLocation(jbtnEditChemical.getLocation().x, jpanelCompounds.getHeight() - 37);
+			this.jbtnRemoveChemical.setLocation(jbtnRemoveChemical.getLocation().x, jpanelCompounds.getHeight() - 37);
+			this.jbtnTutorials.setLocation(jpanelCompounds.getWidth() - 220, jpanelCompounds.getHeight() - 37);
+			this.jbtnContextHelp.setLocation(jpanelCompounds.getWidth() - 120, jpanelCompounds.getHeight() - 37);
+			this.jbtnHelp.setLocation(jpanelCompounds.getWidth() - 80, jpanelCompounds.getHeight() - 37);
+
+			int xpos = 0;
+			int diff;
+			diff = ((jScrollPane.getViewport().getWidth() - 10) * 170) / 575;
+			xpos += diff;
+			jtableChemicals.getColumnModel().getColumn(0).setPreferredWidth(diff);
+			diff = ((jScrollPane.getViewport().getWidth() - 10) * 85) / 575;
+			xpos += diff;
+			jtableChemicals.getColumnModel().getColumn(1).setPreferredWidth(diff);
+			diff = ((jScrollPane.getViewport().getWidth() - 10) * 80) / 575;
+			xpos += diff;
+			jtableChemicals.getColumnModel().getColumn(2).setPreferredWidth(diff);
+			diff = ((jScrollPane.getViewport().getWidth() - 10) * 80) / 575;
+			xpos += diff;
+			jtableChemicals.getColumnModel().getColumn(3).setPreferredWidth(diff);
+			diff = ((jScrollPane.getViewport().getWidth() - 10) * 80) / 575;
+			xpos += diff;
+			jtableChemicals.getColumnModel().getColumn(4).setPreferredWidth(diff);
+			jtableChemicals.getColumnModel().getColumn(5).setPreferredWidth(jScrollPane.getViewport().getWidth() - xpos);
+			jtableChemicals.revalidate();
+			this.m_GraphControl.repaint();
+		}
+	}
+
+
+	@Override
+	public void componentShown(ComponentEvent arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 }  //  @jve:decl-index=0:visual-constraint="-259,126"

@@ -1,9 +1,12 @@
 package org.hplcsimulator;
 
 import javax.media.opengl.*;
+import javax.media.opengl.awt.GLCanvas;
 import javax.media.opengl.glu.GLU;
 
-import com.sun.opengl.util.j2d.*;
+import com.jogamp.opengl.util.awt.TextRenderer;
+
+//import com.sun.opengl.util.j2d.*;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -227,27 +230,7 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
 		m_drectView.top = 800 * MILLIUNITS;
 		m_drectView.right = 15 * SECONDS;
 		m_drectView.bottom = -800 * MILLIUNITS;
-	}
-	
-    public void init(GLAutoDrawable drawable)
-    {
-        GL gl = drawable.getGL();
-
-        gl.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-        gl.glMatrixMode(GL.GL_PROJECTION);
-        gl.glLoadIdentity();
-        gl.glOrtho(0, 1, 0, 1, -1, 1);
-        
-  		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-   		gl.glEnable(GL.GL_BLEND);
-   		gl.glEnable(GL.GL_LINE_SMOOTH);
-   		gl.glHint(GL.GL_LINE_SMOOTH_HINT, GL.GL_NICEST);
-   		
-   	    m_rendererXAxisLabel = new TextRenderer(m_fontXAxisLabel, true, false);
-   	    m_rendererYAxisLabel = new TextRenderer(m_fontYAxisLabel, true, false);
-   	    m_rendererXAxisDivision = new TextRenderer(m_fontXAxisDivision, true, false);
-   	    m_rendererYAxisDivision = new TextRenderer(m_fontYAxisDivision, true, false);
-
+		
         Toolkit toolkit = Toolkit.getDefaultToolkit();
         Image imgOpenHand = toolkit.getImage(getClass().getResource("/org/hplcsimulator/images/openhand.gif"));
         m_curOpenHand = toolkit.createCustomCursor(imgOpenHand, new Point(7,7), "openhand");
@@ -260,25 +243,45 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
         
         if (m_bControlsEnabled)
         	setCursor(m_curOpenHand);
+	}
+	
+    public void init(GLAutoDrawable drawable)
+    {
+        GL2 gl2 = drawable.getGL().getGL2();
+
+        gl2.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+        gl2.glMatrixMode(GL2.GL_PROJECTION);
+        gl2.glLoadIdentity();
+        gl2.glOrtho(0, 1, 0, 1, -1, 1);
+        
+  		gl2.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
+   		gl2.glEnable(GL2.GL_BLEND);
+   		gl2.glEnable(GL2.GL_LINE_SMOOTH);
+   		gl2.glHint(GL2.GL_LINE_SMOOTH_HINT, GL2.GL_NICEST);
+   		
+   	    m_rendererXAxisLabel = new TextRenderer(m_fontXAxisLabel, true, false);
+   	    m_rendererYAxisLabel = new TextRenderer(m_fontYAxisLabel, true, false);
+   	    m_rendererXAxisDivision = new TextRenderer(m_fontXAxisDivision, true, false);
+   	    m_rendererYAxisDivision = new TextRenderer(m_fontYAxisDivision, true, false);
     }
 		
     public void display(GLAutoDrawable drawable)
     {
     	synchronized(this.lockObject)
     	{
-        GL gl = drawable.getGL();
+        GL2 gl2 = drawable.getGL().getGL2();
 
-        gl.glViewport(0, 0, this.getWidth(), this.getHeight());
-    	gl.glMatrixMode(GL.GL_PROJECTION);
-    	gl.glLoadIdentity( );
+        gl2.glViewport(0, 0, this.getWidth(), this.getHeight());
+    	gl2.glMatrixMode(GL2.GL_PROJECTION);
+    	gl2.glLoadIdentity( );
     	glu.gluOrtho2D(0, this.getWidth(), 0, this.getHeight());
-    	gl.glMatrixMode(GL.GL_MODELVIEW);
-    	gl.glLoadIdentity( );
-    	gl.glTranslatef(0.375f, 0.375f, 0.0f);
+    	gl2.glMatrixMode(GL2.GL_MODELVIEW);
+    	gl2.glLoadIdentity( );
+    	gl2.glTranslatef(0.375f, 0.375f, 0.0f);
     	
-        gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+        gl2.glClear(GL.GL_COLOR_BUFFER_BIT);
         
-    	gl.glLineWidth(1.0f);
+    	gl2.glLineWidth(1.0f);
 
         DrawGraph();
 
@@ -288,24 +291,24 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
         double[] upperYBoundPlane = {0.0, -1.0, 0.0, m_rectGraph.top};
         double[] lowerYBoundPlane = {0.0, 1.0, 0.0, -m_rectGraph.bottom - 1};
 
-        gl.glClipPlane(GL.GL_CLIP_PLANE0, DoubleBuffer.wrap(upperXBoundPlane));
-    	gl.glEnable(GL.GL_CLIP_PLANE0);
-    	gl.glClipPlane(GL.GL_CLIP_PLANE1, DoubleBuffer.wrap(lowerXBoundPlane));
-    	gl.glEnable(GL.GL_CLIP_PLANE1);
-    	gl.glClipPlane(GL.GL_CLIP_PLANE2, DoubleBuffer.wrap(upperYBoundPlane));
-    	gl.glEnable(GL.GL_CLIP_PLANE2);
-    	gl.glClipPlane(GL.GL_CLIP_PLANE3, DoubleBuffer.wrap(lowerYBoundPlane));
-    	gl.glEnable(GL.GL_CLIP_PLANE3);
+        gl2.glClipPlane(GL2.GL_CLIP_PLANE0, DoubleBuffer.wrap(upperXBoundPlane));
+    	gl2.glEnable(GL2.GL_CLIP_PLANE0);
+    	gl2.glClipPlane(GL2.GL_CLIP_PLANE1, DoubleBuffer.wrap(lowerXBoundPlane));
+    	gl2.glEnable(GL2.GL_CLIP_PLANE1);
+    	gl2.glClipPlane(GL2.GL_CLIP_PLANE2, DoubleBuffer.wrap(upperYBoundPlane));
+    	gl2.glEnable(GL2.GL_CLIP_PLANE2);
+    	gl2.glClipPlane(GL2.GL_CLIP_PLANE3, DoubleBuffer.wrap(lowerYBoundPlane));
+    	gl2.glEnable(GL2.GL_CLIP_PLANE3);
 
         DrawChannelLines();
         drawLineLabels();
     	drawZoomBox();
         
     	//Remove the clipping region
-    	gl.glDisable(GL.GL_CLIP_PLANE0);
-    	gl.glDisable(GL.GL_CLIP_PLANE1);
-    	gl.glDisable(GL.GL_CLIP_PLANE2);
-    	gl.glDisable(GL.GL_CLIP_PLANE3);
+    	gl2.glDisable(GL2.GL_CLIP_PLANE0);
+    	gl2.glDisable(GL2.GL_CLIP_PLANE1);
+    	gl2.glDisable(GL2.GL_CLIP_PLANE2);
+    	gl2.glDisable(GL2.GL_CLIP_PLANE3);
         
     	// If we are suppose to make a copy of the buffer, do it here:
     	if (this.m_bCopyImage)
@@ -319,7 +322,7 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
         	
         	byte[] bytes = new byte[w*h*4];
         	this.m_ByteBuffer = ByteBuffer.wrap(bytes);
-        	gl.glReadPixels(0,0,w,h,GL.GL_RGBA,GL.GL_UNSIGNED_BYTE,m_ByteBuffer);
+        	gl2.glReadPixels(0,0,w,h,GL2.GL_RGBA,GL2.GL_UNSIGNED_BYTE,m_ByteBuffer);
         	m_ByteBuffer.rewind();
     	}
     	
@@ -859,7 +862,7 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
 
     public void DrawGraph()
     {
-    	GL gl = this.getGL();
+    	GL2 gl2 = this.getGL().getGL2();
     	
     	int MINOR_LINE_LENGTH = 2;
     	int MAJOR_LINE_LENGTH = 6;
@@ -1160,11 +1163,11 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
     			{//Greater than a major graduation
 
     				//Draw the increment line
-    		   		gl.glColor3f(51f/255f, 51f/255f, 51f/255f);
-    				gl.glBegin(GL.GL_LINES);
-    					gl.glVertex2i(xpos, (int)(m_rectGraph.bottom - GREAT_LINE_LENGTH));
-    					gl.glVertex2i(xpos, (int)m_rectGraph.bottom);
-    				gl.glEnd();
+    		   		gl2.glColor3f(51f/255f, 51f/255f, 51f/255f);
+    				gl2.glBegin(GL2.GL_LINES);
+    					gl2.glVertex2i(xpos, (int)(m_rectGraph.bottom - GREAT_LINE_LENGTH));
+    					gl2.glVertex2i(xpos, (int)m_rectGraph.bottom);
+    				gl2.glEnd();
     									
     				//Draw the text underneath the increment graduations
     				//Find the highest unit that is at an increment point and use that
@@ -1189,23 +1192,23 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
     				}
 
     				//Draw the major line
-    		   		gl.glColor3f(51f/255f, 51f/255f, 51f/255f);
-    				gl.glBegin(GL.GL_LINES);
-    					gl.glVertex2i(xpos, (int)(m_rectGraph.bottom - MAJOR_LINE_LENGTH));
-    					gl.glVertex2i(xpos, (int)m_rectGraph.bottom);
-    				gl.glEnd();
+    		   		gl2.glColor3f(51f/255f, 51f/255f, 51f/255f);
+    				gl2.glBegin(GL2.GL_LINES);
+    					gl2.glVertex2i(xpos, (int)(m_rectGraph.bottom - MAJOR_LINE_LENGTH));
+    					gl2.glVertex2i(xpos, (int)m_rectGraph.bottom);
+    				gl2.glEnd();
     			}
 
     			//Draw the vertical lines that form the grid of the graph
-    			gl.glColor3f((float)220/(float)255,(float)220/(float)255,(float)220/(float)255); //Light grey
-    			gl.glBegin(GL.GL_LINES);
-    				gl.glVertex2i(xpos, (int)m_rectGraph.bottom);
-    				gl.glVertex2i(xpos, (int)m_rectGraph.top);
-    			gl.glEnd();
+    			gl2.glColor3f((float)220/(float)255,(float)220/(float)255,(float)220/(float)255); //Light grey
+    			gl2.glBegin(GL2.GL_LINES);
+    				gl2.glVertex2i(xpos, (int)m_rectGraph.bottom);
+    				gl2.glVertex2i(xpos, (int)m_rectGraph.top);
+    			gl2.glEnd();
     		}
 
     		//Draw the minor graduations
-       		gl.glColor3f(51f/255f, 51f/255f, 51f/255f);
+       		gl2.glColor3f(51f/255f, 51f/255f, 51f/255f);
 
     		for (j = 1; j < 5; j++)
     		{		
@@ -1214,10 +1217,10 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
     			if (xpos + extraxpos <= m_rectGraph.right
     				&& xpos + extraxpos >= m_rectGraph.left)
     			{
-    				gl.glBegin(GL.GL_LINES);
-    					gl.glVertex2i(xpos + extraxpos, (int)(m_rectGraph.bottom - MINOR_LINE_LENGTH));
-    					gl.glVertex2i(xpos + extraxpos, (int)m_rectGraph.bottom);
-    				gl.glEnd();
+    				gl2.glBegin(GL2.GL_LINES);
+    					gl2.glVertex2i(xpos + extraxpos, (int)(m_rectGraph.bottom - MINOR_LINE_LENGTH));
+    					gl2.glVertex2i(xpos + extraxpos, (int)m_rectGraph.bottom);
+    				gl2.glEnd();
     			}
     		}
     	}
@@ -1616,11 +1619,11 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
     			{//Greater than a major graduation
 
     				//Draw the increment line
-    		   		gl.glColor3f(51f/255f, 51f/255f, 51f/255f);
-    				gl.glBegin(GL.GL_LINES);
-    					gl.glVertex2i((int)(m_rectGraph.left - GREAT_LINE_LENGTH), ypos);
-    					gl.glVertex2i((int)m_rectGraph.left, ypos);
-    				gl.glEnd();
+    		   		gl2.glColor3f(51f/255f, 51f/255f, 51f/255f);
+    				gl2.glBegin(GL2.GL_LINES);
+    					gl2.glVertex2i((int)(m_rectGraph.left - GREAT_LINE_LENGTH), ypos);
+    					gl2.glVertex2i((int)m_rectGraph.left, ypos);
+    				gl2.glEnd();
     					
     				//Draw the text to the left of the increment graduations
     				String str = decformat.format(dNextDisplayValue);
@@ -1645,23 +1648,23 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
     				}
 
     				//Draw the major line
-    		   		gl.glColor3f(51f/255f, 51f/255f, 51f/255f);
-    				gl.glBegin(GL.GL_LINES);
-    					gl.glVertex2i((int)(m_rectGraph.left - MAJOR_LINE_LENGTH), ypos);
-    					gl.glVertex2i((int)m_rectGraph.left, ypos);
-    				gl.glEnd();
+    		   		gl2.glColor3f(51f/255f, 51f/255f, 51f/255f);
+    				gl2.glBegin(GL2.GL_LINES);
+    					gl2.glVertex2i((int)(m_rectGraph.left - MAJOR_LINE_LENGTH), ypos);
+    					gl2.glVertex2i((int)m_rectGraph.left, ypos);
+    				gl2.glEnd();
     			}
 
     			//Draw the vertical lines that form the grid of the graph
-    			gl.glColor3f((float)220/(float)255,(float)220/(float)255,(float)220/(float)255); //Light grey
-    			gl.glBegin(GL.GL_LINES);
-    				gl.glVertex2i((int)m_rectGraph.left, ypos);
-    				gl.glVertex2i((int)m_rectGraph.right, ypos);
-    			gl.glEnd();
+    			gl2.glColor3f((float)220/(float)255,(float)220/(float)255,(float)220/(float)255); //Light grey
+    			gl2.glBegin(GL2.GL_LINES);
+    				gl2.glVertex2i((int)m_rectGraph.left, ypos);
+    				gl2.glVertex2i((int)m_rectGraph.right, ypos);
+    			gl2.glEnd();
     		}
 
     		//Draw the minor graduations
-       		gl.glColor3f(51f/255f, 51f/255f, 51f/255f);
+       		gl2.glColor3f(51f/255f, 51f/255f, 51f/255f);
 
     		for (j = 1; j < 5; j++)
     		{
@@ -1669,10 +1672,10 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
     			if (ypos + extraypos >= m_rectGraph.bottom
     				&& ypos + extraypos <= m_rectGraph.top)
     			{
-    				gl.glBegin(GL.GL_LINES);
-    					gl.glVertex2i((int)(m_rectGraph.left - MINOR_LINE_LENGTH), ypos + extraypos);
-    					gl.glVertex2i((int)m_rectGraph.left, ypos + extraypos);
-    				gl.glEnd();
+    				gl2.glBegin(GL2.GL_LINES);
+    					gl2.glVertex2i((int)(m_rectGraph.left - MINOR_LINE_LENGTH), ypos + extraypos);
+    					gl2.glVertex2i((int)m_rectGraph.left, ypos + extraypos);
+    				gl2.glEnd();
     			}
     		}
     	}
@@ -2009,11 +2012,11 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
 	    			{//Greater than a major graduation
 	
 	    				//Draw the increment line
-	    		   		gl.glColor3f(51f/255f, 51f/255f, 51f/255f);
-	    				gl.glBegin(GL.GL_LINES);
-	    					gl.glVertex2i((int)(m_rectGraph.right + GREAT_LINE_LENGTH), ypos);
-	    					gl.glVertex2i((int)m_rectGraph.right, ypos);
-	    				gl.glEnd();
+	    		   		gl2.glColor3f(51f/255f, 51f/255f, 51f/255f);
+	    				gl2.glBegin(GL2.GL_LINES);
+	    					gl2.glVertex2i((int)(m_rectGraph.right + GREAT_LINE_LENGTH), ypos);
+	    					gl2.glVertex2i((int)m_rectGraph.right, ypos);
+	    				gl2.glEnd();
 	    					
 	    				//Draw the text to the left of the increment graduations
 	    				String str = decformat.format(dNextDisplayValue);
@@ -2038,11 +2041,11 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
 	    				}
 	
 	    				//Draw the major line
-	    		   		gl.glColor3f(51f/255f, 51f/255f, 51f/255f);
-	    				gl.glBegin(GL.GL_LINES);
-	    					gl.glVertex2i((int)(m_rectGraph.right + MAJOR_LINE_LENGTH), ypos);
-	    					gl.glVertex2i((int)m_rectGraph.right, ypos);
-	    				gl.glEnd();
+	    		   		gl2.glColor3f(51f/255f, 51f/255f, 51f/255f);
+	    				gl2.glBegin(GL2.GL_LINES);
+	    					gl2.glVertex2i((int)(m_rectGraph.right + MAJOR_LINE_LENGTH), ypos);
+	    					gl2.glVertex2i((int)m_rectGraph.right, ypos);
+	    				gl2.glEnd();
 	    			}
 	
 	    			//Draw the vertical lines that form the grid of the graph
@@ -2054,7 +2057,7 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
 	    		}
 	
 	    		//Draw the minor graduations
-	       		gl.glColor3f(51f/255f, 51f/255f, 51f/255f);
+	       		gl2.glColor3f(51f/255f, 51f/255f, 51f/255f);
 	
 	    		for (j = 1; j < 5; j++)
 	    		{
@@ -2062,10 +2065,10 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
 	    			if (ypos + extraypos >= m_rectGraph.bottom
 	    				&& ypos + extraypos <= m_rectGraph.top)
 	    			{
-	    				gl.glBegin(GL.GL_LINES);
-	    					gl.glVertex2i((int)(m_rectGraph.right + MINOR_LINE_LENGTH), ypos + extraypos);
-	    					gl.glVertex2i((int)m_rectGraph.right, ypos + extraypos);
-	    				gl.glEnd();
+	    				gl2.glBegin(GL2.GL_LINES);
+	    					gl2.glVertex2i((int)(m_rectGraph.right + MINOR_LINE_LENGTH), ypos + extraypos);
+	    					gl2.glVertex2i((int)m_rectGraph.right, ypos + extraypos);
+	    				gl2.glEnd();
 	    			}
 	    		}
 	    	}
@@ -2172,14 +2175,14 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
     /**************Finished drawing the Second Y-Axis***************/
     	
     	//Draw Axes
-   		gl.glColor3f(51f/255f, 51f/255f, 51f/255f);
-    	gl.glBegin(GL.GL_LINE_STRIP);
-    		gl.glVertex2i((int)m_rectGraph.left, (int)m_rectGraph.top);
-    		gl.glVertex2i((int)m_rectGraph.left, (int)m_rectGraph.bottom);
-    		gl.glVertex2i((int)m_rectGraph.right, (int)m_rectGraph.bottom);
+   		gl2.glColor3f(51f/255f, 51f/255f, 51f/255f);
+    	gl2.glBegin(GL2.GL_LINE_STRIP);
+    		gl2.glVertex2i((int)m_rectGraph.left, (int)m_rectGraph.top);
+    		gl2.glVertex2i((int)m_rectGraph.left, (int)m_rectGraph.bottom);
+    		gl2.glVertex2i((int)m_rectGraph.right, (int)m_rectGraph.bottom);
     		if (m_bSecondYAxisVisible)
-        		gl.glVertex2i((int)m_rectGraph.right, (int)m_rectGraph.top);
-    	gl.glEnd();
+        		gl2.glVertex2i((int)m_rectGraph.right, (int)m_rectGraph.top);
+    	gl2.glEnd();
 
     	String str;
 
@@ -2209,7 +2212,7 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
 
     public void DrawChannelLines()
     {
-    	GL gl = this.getGL();
+    	GL2 gl2 = this.getGL().getGL2();
 
     	DPoint dLastPoint = new DPoint();
     	DPoint dCurrentPoint = new DPoint();
@@ -2233,7 +2236,7 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
     	for (i = 0; i < this.m_vectDataSeries.size(); i++)
     	{
     		//Set up the line
-    		gl.glLineWidth((float)m_vectDataSeries.get(i).iLineThickness);
+    		gl2.glLineWidth((float)m_vectDataSeries.get(i).iLineThickness);
     		//Slows things WAY down to have the line stippling
     		//SetLineStyle(pChannel->m_iLineStyle, pChannel->m_fLineWidth);
 
@@ -2431,32 +2434,32 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
 			    		if (m_vectDataSeries.get(i).bOnlyMarkers == false)
 			    		{
 			    			// Draw the line
-			    			gl.glColor3f(linercolor, linegcolor, linebcolor);
-			    			gl.glBegin(GL.GL_LINES);
-								gl.glVertex2i(x1, y1);
-								gl.glVertex2i(x2, y2);
-								gl.glEnd();
+			    			gl2.glColor3f(linercolor, linegcolor, linebcolor);
+			    			gl2.glBegin(GL2.GL_LINES);
+								gl2.glVertex2i(x1, y1);
+								gl2.glVertex2i(x2, y2);
+								gl2.glEnd();
 			    		}
 			    		else
 			    		{
 			    			// Draw the marker
-			    			gl.glColor3f(markerrcolor, markergcolor, markerbcolor);
-			    			gl.glBegin(GL.GL_TRIANGLE_FAN);
-			    				gl.glVertex2i(x1, y1);
+			    			gl2.glColor3f(markerrcolor, markergcolor, markerbcolor);
+			    			gl2.glBegin(GL2.GL_TRIANGLE_FAN);
+			    				gl2.glVertex2i(x1, y1);
 			    				for (double dAngle = 0; dAngle <= 360; dAngle += 5)
 			    				{
-			    					gl.glVertex2d(x1 + Math.sin(dAngle) * 2, y1 + Math.cos(dAngle) * 2);
+			    					gl2.glVertex2d(x1 + Math.sin(dAngle) * 2, y1 + Math.cos(dAngle) * 2);
 			    				}
-			    			gl.glEnd();
+			    			gl2.glEnd();
 			    			if (j == m_vectDataSeries.get(i).vectDataArray.size() - 1)
 			    			{
-				    			gl.glBegin(GL.GL_TRIANGLE_FAN);
-			    				gl.glVertex2i(x2, y2);
+				    			gl2.glBegin(GL.GL_TRIANGLE_FAN);
+			    				gl2.glVertex2i(x2, y2);
 			    				for (double dAngle = 0; dAngle <= 360; dAngle += 5)
 			    				{
-			    					gl.glVertex2d(x2 + Math.sin(dAngle) * 2, y2 + Math.cos(dAngle) * 2);
+			    					gl2.glVertex2d(x2 + Math.sin(dAngle) * 2, y2 + Math.cos(dAngle) * 2);
 			    				}
-			    				gl.glEnd();
+			    				gl2.glEnd();
 			    			}
 			    		}
 					}
@@ -2470,12 +2473,12 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
 //    		glDisable(GL_LINE_STIPPLE);
     	}
 
-    	gl.glLineWidth(1.0f); //Return the line width back to 1;
+    	gl2.glLineWidth(1.0f); //Return the line width back to 1;
     }
     
     private void drawZoomBox()
     {
-    	GL gl = this.getGL();
+    	GL2 gl2 = this.getGL().getGL2();
     	
     	if (m_iMode != 1 && m_iMode != 2)
     		return;
@@ -2484,13 +2487,13 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
     	{
     	//	glEnable(GL_LINE_STIPPLE);
     	//	glLineStipple(1,(WORD)0x5555);
-    		gl.glColor3f(0.3f, 0.3f, 0.3f);
-    		gl.glBegin(GL.GL_LINE_LOOP);
-    			gl.glVertex2d(m_ZoomSelRect.left, m_ZoomSelRect.top);
-    			gl.glVertex2d(m_ZoomSelRect.right, m_ZoomSelRect.top);
-    			gl.glVertex2d(m_ZoomSelRect.right, m_ZoomSelRect.bottom);
-    			gl.glVertex2d(m_ZoomSelRect.left, m_ZoomSelRect.bottom);
-    		gl.glEnd();
+    		gl2.glColor3f(0.3f, 0.3f, 0.3f);
+    		gl2.glBegin(GL2.GL_LINE_LOOP);
+    			gl2.glVertex2d(m_ZoomSelRect.left, m_ZoomSelRect.top);
+    			gl2.glVertex2d(m_ZoomSelRect.right, m_ZoomSelRect.top);
+    			gl2.glVertex2d(m_ZoomSelRect.right, m_ZoomSelRect.bottom);
+    			gl2.glVertex2d(m_ZoomSelRect.left, m_ZoomSelRect.bottom);
+    		gl2.glEnd();
     	//	glDisable(GL_LINE_STIPPLE);
     	}
 
@@ -2498,21 +2501,21 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
     
     private void drawLineLabels()
     {
-    	GL gl = this.getGL();
+    	GL2 gl2 = this.getGL().getGL2();
     	
-		gl.glEnable(GL.GL_LINE_STIPPLE);
-		gl.glLineStipple(1,(short)0xF0F0);
-		gl.glColor3f(0.3f, 0.3f, 0.3f);
+		gl2.glEnable(GL2.GL_LINE_STIPPLE);
+		gl2.glLineStipple(1,(short)0xF0F0);
+		gl2.glColor3f(0.3f, 0.3f, 0.3f);
     	for (int i = 0; i < m_vectLineMarkers.size(); i++)
     	{
-			gl.glBegin(GL.GL_LINES);
-	    		gl.glVertex2d(m_rectGraph.left + (m_dInvXMultiplier * ((m_vectLineMarkers.get(i).dTime * MINUTES) - m_drectView.left)), m_rectGraph.top);
-				gl.glVertex2d(m_rectGraph.left + (m_dInvXMultiplier * ((m_vectLineMarkers.get(i).dTime * MINUTES) - m_drectView.left)), m_rectGraph.bottom);
-			gl.glEnd();
+			gl2.glBegin(GL.GL_LINES);
+	    		gl2.glVertex2d(m_rectGraph.left + (m_dInvXMultiplier * ((m_vectLineMarkers.get(i).dTime * MINUTES) - m_drectView.left)), m_rectGraph.top);
+				gl2.glVertex2d(m_rectGraph.left + (m_dInvXMultiplier * ((m_vectLineMarkers.get(i).dTime * MINUTES) - m_drectView.left)), m_rectGraph.bottom);
+			gl2.glEnd();
 			
 			printGLColor(m_rendererYAxisDivision, (int)(m_rectGraph.left + (m_dInvXMultiplier * ((m_vectLineMarkers.get(i).dTime * MINUTES) - m_drectView.left))) - 1, (int)(m_rectGraph.bottom + 3), JUSTIFY_LEFT, 90, m_vectLineMarkers.get(i).strMarkerName, 0.3f, 0.3f, 0.3f, 1.0f);
     	}
-		gl.glDisable(GL.GL_LINE_STIPPLE);
+		gl2.glDisable(GL2.GL_LINE_STIPPLE);
 		
     }
     
@@ -2523,28 +2526,28 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
 
     private void printGLColor(TextRenderer renderer, int x, int y, int iJustification, float fAngle, String str, float R, float G, float B, float A)
     {
-    	GL gl = this.getGL();
+    	GL2 gl2 = this.getGL().getGL2();
 
     	Graphics graphics = this.getGraphics();
     	FontMetrics metrics;
     	metrics = graphics.getFontMetrics(renderer.getFont());
 
         renderer.beginRendering(this.getWidth(), this.getHeight());
-        gl.glMatrixMode(GL.GL_MODELVIEW);
+        gl2.glMatrixMode(GL2.GL_MODELVIEW);
 
     	renderer.setColor(R, G, B, A);
 
-    	gl.glLoadIdentity();
-    	gl.glTranslatef((float)x, (float)y, 0f);
-        gl.glRotatef(fAngle, 0, 0, 1.0f);
+    	gl2.glLoadIdentity();
+    	gl2.glTranslatef((float)x, (float)y, 0f);
+        gl2.glRotatef(fAngle, 0, 0, 1.0f);
     	
     	if (iJustification == JUSTIFY_CENTER)
     	{
-            gl.glTranslatef((float)(0 - (metrics.stringWidth(str) / 2)), 0, 0);
+            gl2.glTranslatef((float)(0 - (metrics.stringWidth(str) / 2)), 0, 0);
     	}
     	else if (iJustification == JUSTIFY_RIGHT)
     	{
-            gl.glTranslatef((float)(0 - metrics.stringWidth(str)), 0, 0);
+            gl2.glTranslatef((float)(0 - metrics.stringWidth(str)), 0, 0);
     	}
     	
 		renderer.draw(str, 0, 0);
@@ -2993,4 +2996,10 @@ public class GraphControl extends GLCanvas implements GLEventListener, MouseList
     	
     	return m_ByteBuffer;
     }
+
+	@Override
+	public void dispose(GLAutoDrawable arg0) {
+		// TODO Auto-generated method stub
+		
+	}
 }

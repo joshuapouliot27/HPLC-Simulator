@@ -192,6 +192,9 @@ public class GradientOptions extends JXPanel
 
 			jtableGradientProgram.getTableHeader().setPreferredSize(new Dimension(22, 22));
 			jtableGradientProgram.getColumnModel().getColumn(0).setPreferredWidth(150);
+
+			jtableGradientProgram.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
+
 		}
 		return jtableGradientProgram;
 	}

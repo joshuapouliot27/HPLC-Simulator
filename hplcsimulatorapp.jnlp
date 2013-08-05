@@ -16,7 +16,7 @@
       <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
       <property name="sun.java2d.noddraw" value="true"/>
       <jar href="HPLCSimulator.jar" main="true"/>
-      <extension name="jogl" href="http://www.hplcsimulator.org/jogl/jsr-231-1.1.1/webstart/jogl.jnlp" />
+      <extension name="jogl" href="http://www.hplcsimulator.org/jogl/jogl-all-awt.jnlp" />
   	  <jar href="swingx-core-1.6.2.jar"/>
   	  <jar href="jhall.jar"/>
   	  <jar href="jh.jar"/>

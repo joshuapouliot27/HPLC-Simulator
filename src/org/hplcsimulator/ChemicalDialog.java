@@ -125,7 +125,7 @@ public class ChemicalDialog extends JDialog implements ActionListener{
 			jLabel4.setText("Slope:");
 			jLabel4.setBounds(new Rectangle(16, 72, 38, 16));
 			jLabel3 = new JLabel();
-			jLabel3.setText("ln(k'w) vs T");
+			jLabel3.setText("log(k'w) vs T");
 			jLabel3.setBounds(new Rectangle(16, 52, 94, 16));
 			jLabel2 = new JLabel();
 			jLabel2.setBounds(new Rectangle(212, 144, 38, 16));
@@ -232,7 +232,7 @@ public class ChemicalDialog extends JDialog implements ActionListener{
 		m_dSvsTSlope = thisCompound.dSvsTSlope;
 		m_dSvsTIntercept = thisCompound.dSvsTIntercept;
 		m_dMolarVolume = thisCompound.dMolarVolume;
-		m_dConcentration = thisCompound.dConcentration;
+		m_dConcentration = 50;
 
 		NumberFormat formatter = new DecimalFormat("#0.0000");
 

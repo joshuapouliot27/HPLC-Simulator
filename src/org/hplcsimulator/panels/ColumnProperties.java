@@ -310,7 +310,7 @@ public class ColumnProperties extends JXPanel
 	private JComboBox getJcboStationaryPhase() {
 		if (jcboStationaryPhase == null) {
 			jcboStationaryPhase = new JComboBox();
-			jcboStationaryPhase.addItem(new String("Agilent Zorbax SB-C8"));
+			jcboStationaryPhase.addItem(new String("Agilent Zorbax SB-C18"));
 			jcboStationaryPhase.setSelectedIndex(0);
 			jcboStationaryPhase.setLocation(new Point(8, 26));
 			jcboStationaryPhase.setSize(new Dimension(233, 27));

@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.color.ColorSpace;
 import java.awt.datatransfer.DataFlavor;
@@ -23,6 +24,13 @@ import java.awt.image.DataBufferByte;
 import java.awt.image.Raster;
 import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
@@ -33,7 +41,16 @@ import java.util.Vector;
 import javax.help.CSH;
 import javax.help.HelpSet;
 import javax.swing.JApplet;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFileChooser;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JScrollPane;
 import javax.swing.JSlider;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ChangeEvent;
@@ -42,6 +59,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
 /**
  * A Transferable able to transfer an AWT Image.
  * Similar to the JDK StringSelection class.
@@ -79,8 +98,10 @@ class ImageSelection implements Transferable {
     }
 }
 
-class Compound
+class Compound implements Serializable
 {
+	private static final long serialVersionUID = 1L;
+	
 	String strCompoundName;
 	double dConcentration;
 	double dLogkwvsTSlope;
@@ -93,11 +114,6 @@ class Compound
 	double dSigma;
 	double dW;
 	int iCompoundIndex;
-
-	static public int getCompoundNum()
-	{
-		return 22;
-	}
 	
 	public boolean loadCompoundInfo(int iIndex, int iOrganicModifier)
 	{
@@ -117,10 +133,12 @@ class Compound
 public class HPLCSimulatorApplet extends JApplet implements ActionListener, ChangeListener, KeyListener, FocusListener, ListSelectionListener, AutoScaleListener, TableModelListener
 {
 	private static final long serialVersionUID = 1L;
+	double dFileVersion = 1.13;
 
 	private boolean m_bSliderUpdate;
 
 	TopPanel contentPane = null;
+	public JScrollPane jMainScrollPane = null;
 	public int m_iSecondPlotType = 0;
 	public double m_dTemperature = 25;
 	public boolean m_bGradientMode = false;
@@ -168,7 +186,46 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 	public Vector<double[]> m_vectRetentionFactorArray;
 	public Vector<double[]> m_vectPositionArray;
 	public double m_dSelectedIsocraticRetentionFactor = 0;
+	public double m_dTubingLength = 0; /* in cm */
+	public double m_dTubingDiameter = 5; /* in mil */
 	
+	// Menu items
+    JMenuItem menuLoadSettingsAction = new JMenuItem("Load Settings");
+    JMenuItem menuSaveSettingsAction = new JMenuItem("Save Settings");
+    JMenuItem menuSaveSettingsAsAction = new JMenuItem("Save Settings As...");
+    JMenuItem menuResetToDefaultValuesAction = new JMenuItem("Reset To Default Settings");
+    JMenuItem menuExitAction = new JMenuItem("Exit");
+    
+    JMenuItem menuHelpTopicsAction = new JMenuItem("Help Topics");
+    JMenuItem menuAboutAction = new JMenuItem("About HPLC Simulator");
+    
+    File m_currentFile = null;
+    boolean m_bDocumentChangedFlag = false;
+
+    public class JFileChooser2 extends JFileChooser
+    {
+		@Override
+		public void approveSelection()
+		{
+		    File f = getSelectedFile();
+		    if(f.exists() && getDialogType() == SAVE_DIALOG)
+		    {
+		        int result = JOptionPane.showConfirmDialog(this,"The file exists, overwrite?","Existing file",JOptionPane.YES_NO_CANCEL_OPTION);
+		        switch(result){
+		            case JOptionPane.YES_OPTION:
+		                super.approveSelection();
+		                return;
+		            case JOptionPane.NO_OPTION:
+		                return;
+		            case JOptionPane.CANCEL_OPTION:
+		                cancelSelection();
+		                return;
+		        }
+		    }
+		    super.approveSelection();
+		}
+	}
+    
 	/**
 	 * This is the xxx default constructor
 	 */
@@ -193,7 +250,7 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 	       // handle exception
 	    }
 
-		this.setPreferredSize(new Dimension(900, 650));
+		this.setPreferredSize(new Dimension(910, 650));
 	}
 
 	/**
@@ -281,10 +338,51 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
     
     private void createGUI()
     {
-        //Create and set up the content pane.
-        contentPane = new TopPanel();
-        contentPane.setOpaque(true); 
-        setContentPane(contentPane);  
+    	// Creates a menubar for a JFrame
+        JMenuBar menuBar = new JMenuBar();
+        
+        // Add the menubar to the frame
+        setJMenuBar(menuBar);
+        
+        // Define and add two drop down menu to the menubar
+        JMenu fileMenu = new JMenu("File");
+        JMenu helpMenu = new JMenu("Help");
+        
+        menuBar.add(fileMenu);
+        menuBar.add(helpMenu);
+        
+        // Create and add simple menu item to one of the drop down menu
+        menuLoadSettingsAction.addActionListener(this);
+        menuSaveSettingsAction.addActionListener(this);
+        menuSaveSettingsAsAction.addActionListener(this);
+        menuResetToDefaultValuesAction.addActionListener(this);
+        menuExitAction.addActionListener(this);
+
+        menuHelpTopicsAction.addActionListener(this);
+        menuAboutAction.addActionListener(this);
+        
+        fileMenu.add(menuLoadSettingsAction);
+        fileMenu.add(menuSaveSettingsAction);
+        fileMenu.add(menuSaveSettingsAsAction);
+        fileMenu.addSeparator();
+        fileMenu.add(menuResetToDefaultValuesAction);
+        fileMenu.addSeparator();
+        fileMenu.add(menuExitAction);
+        
+        helpMenu.add(menuHelpTopicsAction);
+        helpMenu.addSeparator();
+        helpMenu.add(menuAboutAction);
+
+        //Create and set up the content pane
+    	jMainScrollPane = new JScrollPane();
+    	jMainScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    	jMainScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+    	contentPane = new TopPanel();
+        contentPane.setOpaque(true);
+        jMainScrollPane.setViewportView(contentPane);
+    	setContentPane(jMainScrollPane);
+    	jMainScrollPane.revalidate();
         
         contentPane.jbtnAddChemical.addActionListener(this);
         contentPane.jbtnEditChemical.addActionListener(this);
@@ -360,10 +458,17 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
         contentPane.jxpanelGradientOptions.jbtnRemoveRow.addActionListener(this);
         contentPane.jbtnContextHelp.addActionListener(new CSH.DisplayHelpAfterTracking(Globals.hbMainHelpBroker));
         contentPane.jxpanelGradientOptions.tmGradientProgram.addTableModelListener(this);
+        contentPane.jxpanelExtraColumnTubing.jtxtTubingDiameter.addKeyListener(this);
+        contentPane.jxpanelExtraColumnTubing.jtxtTubingDiameter.addFocusListener(this);
+        contentPane.jxpanelExtraColumnTubing.jtxtTubingLength.addKeyListener(this);
+        contentPane.jxpanelExtraColumnTubing.jtxtTubingLength.addFocusListener(this);        
     }
 
     private void validateTemp()
     {
+    	if (contentPane.jxpanelChromatographyProperties.jtxtTemp.getText().length() == 0)
+    		contentPane.jxpanelChromatographyProperties.jtxtTemp.setText("0");
+
 		double dTemp = (double)Float.valueOf(contentPane.jxpanelChromatographyProperties.jtxtTemp.getText());
 		dTemp = Math.floor(dTemp);
 		
@@ -380,6 +485,9 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
     
     private void validateSolventBFraction()
     {
+    	if (contentPane.jxpanelIsocraticOptions.jtxtSolventBFraction.getText().length() == 0)
+    		contentPane.jxpanelIsocraticOptions.jtxtSolventBFraction.setText("0");
+    	
 		double dTemp = (double)Float.valueOf(contentPane.jxpanelIsocraticOptions.jtxtSolventBFraction.getText());
 		dTemp = Math.floor(dTemp);
 		
@@ -396,7 +504,10 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
  
     private void validateMixingVolume()
     {
-		double dTemp = (double)Float.valueOf(contentPane.jxpanelGradientOptions.jtxtMixingVolume.getText());
+    	if (contentPane.jxpanelGradientOptions.jtxtMixingVolume.getText().length() == 0)
+    		contentPane.jxpanelGradientOptions.jtxtMixingVolume.setText("0");
+
+    	double dTemp = (double)Float.valueOf(contentPane.jxpanelGradientOptions.jtxtMixingVolume.getText());
 		
 		if (dTemp < 0.01)
 			dTemp = 0.01;
@@ -409,7 +520,10 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 
     private void validateNonMixingVolume()
     {
-		double dTemp = (double)Float.valueOf(contentPane.jxpanelGradientOptions.jtxtNonMixingVolume.getText());
+    	if (contentPane.jxpanelGradientOptions.jtxtNonMixingVolume.getText().length() == 0)
+    		contentPane.jxpanelGradientOptions.jtxtNonMixingVolume.setText("0");
+
+    	double dTemp = (double)Float.valueOf(contentPane.jxpanelGradientOptions.jtxtNonMixingVolume.getText());
 		
 		if (dTemp < 0.01)
 			dTemp = 0.01;
@@ -422,7 +536,10 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
     
     private void validateColumnLength()
     {
-		double dTemp = (double)Float.valueOf(contentPane.jxpanelColumnProperties.jtxtColumnLength.getText());
+    	if (contentPane.jxpanelColumnProperties.jtxtColumnLength.getText().length() == 0)
+    		contentPane.jxpanelColumnProperties.jtxtColumnLength.setText("0");
+
+    	double dTemp = (double)Float.valueOf(contentPane.jxpanelColumnProperties.jtxtColumnLength.getText());
 		
 		if (dTemp < .01)
 			dTemp = .01;
@@ -435,7 +552,10 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 
     private void validateColumnDiameter()
     {
-		double dTemp = (double)Float.valueOf(contentPane.jxpanelColumnProperties.jtxtColumnDiameter.getText());
+    	if (contentPane.jxpanelColumnProperties.jtxtColumnDiameter.getText().length() == 0)
+    		contentPane.jxpanelColumnProperties.jtxtColumnDiameter.setText("0");
+
+    	double dTemp = (double)Float.valueOf(contentPane.jxpanelColumnProperties.jtxtColumnDiameter.getText());
 		
 		if (dTemp < .001)
 			dTemp = .001;
@@ -448,7 +568,10 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 
     private void validateInterparticlePorosity()
     {
-		double dTemp = (double)Float.valueOf(contentPane.jxpanelColumnProperties.jtxtInterparticlePorosity.getText());
+    	if (contentPane.jxpanelColumnProperties.jtxtInterparticlePorosity.getText().length() == 0)
+    		contentPane.jxpanelColumnProperties.jtxtInterparticlePorosity.setText("0");
+
+    	double dTemp = (double)Float.valueOf(contentPane.jxpanelColumnProperties.jtxtInterparticlePorosity.getText());
 		
 		if (dTemp < .001)
 			dTemp = .001;
@@ -461,7 +584,10 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 
     private void validateIntraparticlePorosity()
     {
-		double dTemp = (double)Float.valueOf(contentPane.jxpanelColumnProperties.jtxtIntraparticlePorosity.getText());
+    	if (contentPane.jxpanelColumnProperties.jtxtIntraparticlePorosity.getText().length() == 0)
+    		contentPane.jxpanelColumnProperties.jtxtIntraparticlePorosity.setText("0");
+
+    	double dTemp = (double)Float.valueOf(contentPane.jxpanelColumnProperties.jtxtIntraparticlePorosity.getText());
 		
 		if (dTemp < .001)
 			dTemp = .001;
@@ -474,7 +600,10 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 
     private void validateFlowRate()
     {
-		double dTemp = (double)Float.valueOf(contentPane.jxpanelChromatographyProperties.jtxtFlowRate.getText());
+    	if (contentPane.jxpanelChromatographyProperties.jtxtFlowRate.getText().length() == 0)
+    		contentPane.jxpanelChromatographyProperties.jtxtFlowRate.setText("0");
+
+    	double dTemp = (double)Float.valueOf(contentPane.jxpanelChromatographyProperties.jtxtFlowRate.getText());
 		
 		if (dTemp < .000001)
 			dTemp = .000001;
@@ -487,7 +616,10 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 
     private void validateParticleSize()
     {
-		double dTemp = (double)Float.valueOf(contentPane.jxpanelColumnProperties.jtxtParticleSize.getText());
+    	if (contentPane.jxpanelColumnProperties.jtxtParticleSize.getText().length() == 0)
+    		contentPane.jxpanelColumnProperties.jtxtParticleSize.setText("0");
+
+    	double dTemp = (double)Float.valueOf(contentPane.jxpanelColumnProperties.jtxtParticleSize.getText());
 		
 		if (dTemp < .000001)
 			dTemp = .000001;
@@ -500,7 +632,10 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 
     private void validateATerm()
     {
-		double dTemp = (double)Float.valueOf(contentPane.jxpanelColumnProperties.jtxtATerm.getText());
+    	if (contentPane.jxpanelColumnProperties.jtxtATerm.getText().length() == 0)
+    		contentPane.jxpanelColumnProperties.jtxtATerm.setText("0");
+
+    	double dTemp = (double)Float.valueOf(contentPane.jxpanelColumnProperties.jtxtATerm.getText());
 		
 		if (dTemp < .000001)
 			dTemp = .000001;
@@ -513,7 +648,10 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 
     private void validateBTerm()
     {
-		double dTemp = (double)Float.valueOf(contentPane.jxpanelColumnProperties.jtxtBTerm.getText());
+    	if (contentPane.jxpanelColumnProperties.jtxtBTerm.getText().length() == 0)
+    		contentPane.jxpanelColumnProperties.jtxtBTerm.setText("0");
+
+    	double dTemp = (double)Float.valueOf(contentPane.jxpanelColumnProperties.jtxtBTerm.getText());
 		
 		if (dTemp < .000001)
 			dTemp = .000001;
@@ -526,7 +664,10 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
     
     private void validateCTerm()
     {
-		double dTemp = (double)Float.valueOf(contentPane.jxpanelColumnProperties.jtxtCTerm.getText());
+    	if (contentPane.jxpanelColumnProperties.jtxtCTerm.getText().length() == 0)
+    		contentPane.jxpanelColumnProperties.jtxtCTerm.setText("0");
+
+    	double dTemp = (double)Float.valueOf(contentPane.jxpanelColumnProperties.jtxtCTerm.getText());
 		
 		if (dTemp < .000001)
 			dTemp = .000001;
@@ -539,7 +680,10 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 
     private void validateInjectionVolume()
     {
-		double dTemp = (double)Float.valueOf(contentPane.jxpanelChromatographyProperties.jtxtInjectionVolume.getText());
+    	if (contentPane.jxpanelChromatographyProperties.jtxtInjectionVolume.getText().length() == 0)
+    		contentPane.jxpanelChromatographyProperties.jtxtInjectionVolume.setText("0");
+
+    	double dTemp = (double)Float.valueOf(contentPane.jxpanelChromatographyProperties.jtxtInjectionVolume.getText());
 		
 		if (dTemp < .000001)
 			dTemp = .000001;
@@ -552,7 +696,10 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 
     private void validateTimeConstant()
     {
-		double dTemp = (double)Float.valueOf(contentPane.jxpanelGeneralProperties.jtxtTimeConstant.getText());
+    	if (contentPane.jxpanelGeneralProperties.jtxtTimeConstant.getText().length() == 0)
+    		contentPane.jxpanelGeneralProperties.jtxtTimeConstant.setText("0");
+
+    	double dTemp = (double)Float.valueOf(contentPane.jxpanelGeneralProperties.jtxtTimeConstant.getText());
 		
 		if (dTemp < .000001)
 			dTemp = .000001;
@@ -565,7 +712,10 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 
     private void validateNoise()
     {
-		double dTemp = (double)Float.valueOf(contentPane.jxpanelGeneralProperties.jtxtNoise.getText());
+    	if (contentPane.jxpanelGeneralProperties.jtxtNoise.getText().length() == 0)
+    		contentPane.jxpanelGeneralProperties.jtxtNoise.setText("0");
+
+    	double dTemp = (double)Float.valueOf(contentPane.jxpanelGeneralProperties.jtxtNoise.getText());
 		
 		if (dTemp < .000001)
 			dTemp = .000001;
@@ -578,7 +728,10 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 
     private void validateSignalOffset()
     {
-		double dTemp = (double)Float.valueOf(contentPane.jxpanelGeneralProperties.jtxtSignalOffset.getText());
+    	if (contentPane.jxpanelGeneralProperties.jtxtSignalOffset.getText().length() == 0)
+    		contentPane.jxpanelGeneralProperties.jtxtSignalOffset.setText("0");
+
+    	double dTemp = (double)Float.valueOf(contentPane.jxpanelGeneralProperties.jtxtSignalOffset.getText());
 		
 		if (dTemp < 0)
 			dTemp = 0;
@@ -591,7 +744,10 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 
     private void validateStartTime()
     {
-		double dTemp = (double)Float.valueOf(contentPane.jxpanelGeneralProperties.jtxtInitialTime.getText());
+    	if (contentPane.jxpanelGeneralProperties.jtxtInitialTime.getText().length() == 0)
+    		contentPane.jxpanelGeneralProperties.jtxtInitialTime.setText("0");
+
+    	double dTemp = (double)Float.valueOf(contentPane.jxpanelGeneralProperties.jtxtInitialTime.getText());
 		
 		if (dTemp < 0)
 			dTemp = 0;
@@ -604,7 +760,10 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 
     private void validateEndTime()
     {
-		double dTemp = (double)Float.valueOf(contentPane.jxpanelGeneralProperties.jtxtFinalTime.getText());
+    	if (contentPane.jxpanelGeneralProperties.jtxtFinalTime.getText().length() == 0)
+    		contentPane.jxpanelGeneralProperties.jtxtFinalTime.setText("0");
+
+    	double dTemp = (double)Float.valueOf(contentPane.jxpanelGeneralProperties.jtxtFinalTime.getText());
 		
 		if (dTemp < m_dStartTime)
 			dTemp = m_dStartTime + .000001;
@@ -617,7 +776,10 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 
     private void validateNumPoints()
     {
-		int iTemp = Integer.valueOf(contentPane.jxpanelGeneralProperties.jtxtNumPoints.getText());
+    	if (contentPane.jxpanelGeneralProperties.jtxtNumPoints.getText().length() == 0)
+    		contentPane.jxpanelGeneralProperties.jtxtNumPoints.setText("0");
+
+    	int iTemp = Integer.valueOf(contentPane.jxpanelGeneralProperties.jtxtNumPoints.getText());
 		
 		if (iTemp < 2)
 			iTemp = 2;
@@ -628,6 +790,407 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 		contentPane.jxpanelGeneralProperties.jtxtNumPoints.setText(Integer.toString(m_iNumPoints));    	
     } 
 
+    private void validateTubingLength()
+    {
+    	if (contentPane.jxpanelExtraColumnTubing.jtxtTubingLength.getText().length() == 0)
+    		contentPane.jxpanelExtraColumnTubing.jtxtTubingLength.setText("0");
+
+    	double dTemp = (double)Float.valueOf(contentPane.jxpanelExtraColumnTubing.jtxtTubingLength.getText());
+		
+		if (dTemp < 0)
+			dTemp = 0;
+		if (dTemp > 99999999)
+			dTemp = 99999999;
+		
+		this.m_dTubingLength = dTemp;
+		contentPane.jxpanelExtraColumnTubing.jtxtTubingLength.setText(Float.toString((float)m_dTubingLength));    	
+    } 
+    
+    private void validateTubingDiameter()
+    {
+    	if (contentPane.jxpanelExtraColumnTubing.jtxtTubingDiameter.getText().length() == 0)
+    		contentPane.jxpanelExtraColumnTubing.jtxtTubingDiameter.setText("0");
+
+    	double dTemp = (double)Float.valueOf(contentPane.jxpanelExtraColumnTubing.jtxtTubingDiameter.getText());
+		
+		if (dTemp < 0)
+			dTemp = 0;
+		if (dTemp > 99999999)
+			dTemp = 99999999;
+		
+		this.m_dTubingDiameter = dTemp;
+		contentPane.jxpanelExtraColumnTubing.jtxtTubingDiameter.setText(Float.toString((float)m_dTubingDiameter));    	
+    } 
+    
+    public boolean writeToOutputStream()
+    {
+    	try 
+		{
+            FileOutputStream fos = new FileOutputStream(m_currentFile);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+	    	oos.writeDouble(dFileVersion);
+	    	oos.writeObject(contentPane.jxpanelGradientOptions.tmGradientProgram.getDataVector());
+            oos.writeBoolean(m_bGradientMode);
+	    	oos.writeBoolean(contentPane.jxpanelGeneralProperties.jchkAutoTimeRange.isSelected());
+	        oos.writeDouble(m_dTemperature);
+	        oos.writeDouble(m_dSolventBFraction);
+	        oos.writeDouble(m_dMixingVolume);
+	        oos.writeDouble(m_dNonMixingVolume);
+	        oos.writeDouble(m_dColumnLength);
+	        oos.writeDouble(m_dColumnDiameter);
+	        oos.writeDouble(m_dInterparticlePorosity);
+	        oos.writeDouble(m_dIntraparticlePorosity);
+	        oos.writeDouble(m_dFlowRate);
+	        oos.writeDouble(m_dParticleSize);
+	        oos.writeDouble(m_dATerm);
+	        oos.writeDouble(m_dBTerm);
+	        oos.writeDouble(m_dCTerm);
+	        oos.writeDouble(m_dInjectionVolume);
+	        oos.writeDouble(m_dTimeConstant);
+	        oos.writeDouble(m_dStartTime);
+	        oos.writeDouble(m_dEndTime);
+	        oos.writeDouble(m_dNoise);
+	        oos.writeDouble(m_dSignalOffset);
+	        oos.writeInt(m_iNumPoints);
+	        oos.writeInt(m_iSolventB);
+	        oos.writeObject(m_vectCompound);
+	        oos.writeDouble(m_dTubingLength);
+	        oos.writeDouble(m_dTubingDiameter);
+	        
+            oos.flush();
+			oos.close();
+			this.m_bDocumentChangedFlag = false;
+    	}
+    	catch (IOException e) 
+		{
+			e.printStackTrace();
+	        JOptionPane.showMessageDialog(this, "The file could not be saved.", "Error saving file", JOptionPane.ERROR_MESSAGE);
+	        return false;
+		}
+    	
+    	return true;
+    }
+    
+    public boolean saveFile(boolean bSaveAs)
+    {
+		if (bSaveAs == false && m_currentFile != null)
+		{
+			if (writeToOutputStream())
+				return true;
+		}
+		else
+		{	
+			JFileChooser2 fc = new JFileChooser2();
+			
+			FileNameExtensionFilter filter = new FileNameExtensionFilter("HPLC Simulator Files (*.hplcsim)", "hplcsim");
+			fc.setFileFilter(filter);
+			fc.setDialogTitle("Save As...");
+			int returnVal = fc.showSaveDialog(this);
+            if (returnVal == JFileChooser.APPROVE_OPTION) 
+            {
+                m_currentFile = fc.getSelectedFile();
+                String path = m_currentFile.getAbsolutePath();
+                if (path.lastIndexOf(".") >= 0)
+                	path = path.substring(0, path.lastIndexOf("."));
+                	
+                m_currentFile = new File(path + ".hplcsim");
+
+               	if (writeToOutputStream())
+               		return true;
+				
+            }
+		}
+		return false;
+    }
+    
+    public boolean loadFile(File fileToLoad)
+    {
+    	// Set all variables to default values here
+    	
+    	int iNumRows = contentPane.jxpanelGradientOptions.tmGradientProgram.getRowCount();
+    	for (int i = 0; i < iNumRows; i++)
+    	{
+    		m_bDoNotChangeTable = true;
+    		contentPane.jxpanelGradientOptions.tmGradientProgram.removeRow(0);
+    	}
+
+		m_bDoNotChangeTable = true;
+    	contentPane.jxpanelGradientOptions.tmGradientProgram.addRow(new Double[] {0.0, 5.0});
+		m_bDoNotChangeTable = true;
+    	contentPane.jxpanelGradientOptions.tmGradientProgram.addRow(new Double[] {5.0, 95.0});
+    	
+    	m_bGradientMode = false;
+    	boolean bAutomaticTimeRange = true;
+    	m_dTemperature = 25;
+    	m_dSolventBFraction = 0.5;
+    	m_dMixingVolume = 200; /* in uL */
+    	m_dNonMixingVolume = 200; /* in uL */
+    	m_dColumnLength = 100;
+    	m_dColumnDiameter = 4.6;
+    	m_dInterparticlePorosity = 0.4;
+    	m_dIntraparticlePorosity = 0.4;
+    	m_dFlowRate = 2; /* in mL/min */
+    	m_dParticleSize = 3.0;
+    	m_dATerm = 1;
+    	m_dBTerm = 5;
+    	m_dCTerm = 0.05;
+    	m_dInjectionVolume = 5; //(in uL)
+    	m_dTimeConstant = 0.1;
+    	m_dStartTime = 0;
+    	m_dEndTime = 277;
+    	m_dNoise = 2.0;
+    	m_dSignalOffset = 0;
+    	m_iNumPoints = 3000;
+    	m_iSolventB = 0; // 0 = Acetonitrile, 1 = Methanol
+    	m_vectCompound.clear();
+    	Compound compound1 = new Compound();
+    	compound1.loadCompoundInfo(2, m_iSolventB);
+    	compound1.dConcentration = 5;
+    	this.m_vectCompound.add(compound1);
+    	
+    	Compound compound2 = new Compound();
+    	compound2.loadCompoundInfo(3, m_iSolventB);
+    	compound2.dConcentration = 25;
+    	this.m_vectCompound.add(compound2);
+    	
+    	Compound compound3 = new Compound();
+    	compound3.loadCompoundInfo(4, m_iSolventB);
+    	compound3.dConcentration = 40;
+    	this.m_vectCompound.add(compound3);
+
+    	Compound compound4 = new Compound();
+    	compound4.loadCompoundInfo(6, m_iSolventB);
+    	compound4.dConcentration = 15;
+    	this.m_vectCompound.add(compound4);
+
+    	Compound compound5 = new Compound();
+    	compound5.loadCompoundInfo(11, m_iSolventB);
+    	compound5.dConcentration = 10;
+    	this.m_vectCompound.add(compound5);
+    	
+    	m_dTubingLength = 0; /* in cm */
+    	m_dTubingDiameter = 5; /* in mil */
+    	
+    	if (fileToLoad != null)
+    	{
+    		try 
+            {
+                FileInputStream fis = new FileInputStream(m_currentFile);
+                ObjectInputStream ois = new ObjectInputStream(fis);
+                
+                double dFileVersion = ois.readDouble();
+                if (dFileVersion >= 1.13)
+                {
+                	iNumRows = contentPane.jxpanelGradientOptions.tmGradientProgram.getRowCount();
+                	for (int i = 0; i < iNumRows; i++)
+                	{
+                		m_bDoNotChangeTable = true;
+                		contentPane.jxpanelGradientOptions.tmGradientProgram.removeRow(0);
+                	}
+              
+                	Vector<Vector<Double>> rowVector = (Vector<Vector<Double>>)ois.readObject();
+
+                	for (int i = 0; i < rowVector.size(); i++)
+                	{
+                		if (rowVector.elementAt(i) != null)
+                		{
+                    		m_bDoNotChangeTable = true;
+                			contentPane.jxpanelGradientOptions.tmGradientProgram.addRow(rowVector.elementAt(i));
+                		}
+                	}
+                	m_bGradientMode = ois.readBoolean();
+                	bAutomaticTimeRange = ois.readBoolean();
+                	m_dTemperature = ois.readDouble();
+                	m_dSolventBFraction = ois.readDouble();
+                	m_dMixingVolume = ois.readDouble();
+                	m_dNonMixingVolume = ois.readDouble();
+                	m_dColumnLength = ois.readDouble();
+                	m_dColumnDiameter = ois.readDouble();
+                	m_dInterparticlePorosity = ois.readDouble();
+                	m_dIntraparticlePorosity = ois.readDouble();
+                	m_dFlowRate = ois.readDouble();
+                	m_dParticleSize = ois.readDouble();
+                	m_dATerm = ois.readDouble();
+                	m_dBTerm = ois.readDouble();
+                	m_dCTerm = ois.readDouble();
+                	m_dInjectionVolume = ois.readDouble();
+                	m_dTimeConstant = ois.readDouble();
+                	m_dStartTime = ois.readDouble();
+                	m_dEndTime = ois.readDouble();
+                	m_dNoise = ois.readDouble();
+                	m_dSignalOffset = ois.readDouble();
+                	m_iNumPoints = ois.readInt();
+                	m_iSolventB = ois.readInt();
+                	m_vectCompound = (Vector<Compound>) ois.readObject();
+                	m_dTubingLength = ois.readDouble();
+                	m_dTubingDiameter = ois.readDouble();
+                }
+    	        
+                ois.close();
+			} 
+            catch (IOException e) 
+            {
+				e.printStackTrace();
+		        JOptionPane.showMessageDialog(this, "The file is not a valid HPLC Simulator file.", "Error opening file", JOptionPane.ERROR_MESSAGE);
+		        m_currentFile = null;
+		        return false;
+			} 
+            catch (ClassNotFoundException e) 
+            {
+				e.printStackTrace();
+		        JOptionPane.showMessageDialog(this, "The file is not a valid HPLC Simulator file.", "Error opening file", JOptionPane.ERROR_MESSAGE);
+		        m_currentFile = null;
+		        return false;
+            }
+    	}
+    	
+    	// Now set each parameter in the controls
+    	if (m_bGradientMode)
+	    {
+    		contentPane.jxpanelMobilePhaseComposition.jrdoIsocraticElution.setSelected(false);
+	    	contentPane.jxpanelMobilePhaseComposition.jrdoGradientElution.setSelected(true);
+
+	    	contentPane.jxtaskMobilePhaseComposition.remove(contentPane.jxpanelIsocraticOptions);
+	    	contentPane.jxtaskMobilePhaseComposition.add(contentPane.jxpanelGradientOptions);
+
+	    	contentPane.jxpanelMobilePhaseComposition.validate();
+	    	contentPane.jControlPanel.validate();
+	    }
+	    else
+	    {
+	    	contentPane.jxpanelMobilePhaseComposition.jrdoGradientElution.setSelected(false);
+	    	contentPane.jxpanelMobilePhaseComposition.jrdoIsocraticElution.setSelected(true);
+	    	
+	    	contentPane.jxtaskMobilePhaseComposition.remove(contentPane.jxpanelGradientOptions);
+	    	contentPane.jxtaskMobilePhaseComposition.add(contentPane.jxpanelIsocraticOptions);
+
+	    	contentPane.jxpanelMobilePhaseComposition.validate();
+	    	contentPane.jControlPanel.validate();
+	    }
+    	
+    	m_bSliderUpdate = false;
+    	contentPane.jxpanelChromatographyProperties.jtxtTemp.setText(Integer.toString((int)m_dTemperature));
+		contentPane.jxpanelChromatographyProperties.jsliderTemp.setValue((int)m_dTemperature);
+		m_bSliderUpdate = false;
+		contentPane.jxpanelIsocraticOptions.jsliderSolventBFraction.setValue((int)(m_dSolventBFraction * 100));
+		contentPane.jxpanelIsocraticOptions.jtxtSolventBFraction.setText(Integer.toString((int)(m_dSolventBFraction * 100)));    	
+		contentPane.jxpanelChromatographyProperties.jtxtFlowRate.setText(Float.toString((float)m_dFlowRate));    	
+		contentPane.jxpanelChromatographyProperties.jtxtInjectionVolume.setText(Float.toString((float)m_dInjectionVolume));    	
+		contentPane.jxpanelColumnProperties.jtxtATerm.setText(Float.toString((float)m_dATerm));    	
+		contentPane.jxpanelColumnProperties.jtxtBTerm.setText(Float.toString((float)m_dBTerm));    	
+		contentPane.jxpanelColumnProperties.jtxtCTerm.setText(Float.toString((float)m_dCTerm));    	
+		contentPane.jxpanelColumnProperties.jtxtColumnDiameter.setText(Float.toString((float)m_dColumnDiameter));    	
+		contentPane.jxpanelColumnProperties.jtxtColumnLength.setText(Float.toString((float)m_dColumnLength));    	
+		contentPane.jxpanelColumnProperties.jtxtInterparticlePorosity.setText(Float.toString((float)m_dInterparticlePorosity));    	
+		contentPane.jxpanelColumnProperties.jtxtIntraparticlePorosity.setText(Float.toString((float)m_dIntraparticlePorosity));    	
+		contentPane.jxpanelGeneralProperties.jtxtInitialTime.setText(Float.toString((float)m_dStartTime));    	
+		contentPane.jxpanelGeneralProperties.jtxtFinalTime.setText(Float.toString((float)m_dEndTime));    	
+		contentPane.jxpanelGradientOptions.jtxtMixingVolume.setText(Float.toString((float)m_dMixingVolume));    	
+		contentPane.jxpanelGradientOptions.jtxtNonMixingVolume.setText(Float.toString((float)m_dNonMixingVolume));    	
+		contentPane.jxpanelGeneralProperties.jtxtNoise.setText(Float.toString((float)m_dNoise));    	
+		contentPane.jxpanelGeneralProperties.jtxtNumPoints.setText(Integer.toString(m_iNumPoints));    	
+		contentPane.jxpanelColumnProperties.jtxtParticleSize.setText(Float.toString((float)m_dParticleSize));    	
+		contentPane.jxpanelGeneralProperties.jtxtSignalOffset.setText(Float.toString((float)m_dSignalOffset));    	
+		contentPane.jxpanelGeneralProperties.jtxtTimeConstant.setText(Float.toString((float)m_dTimeConstant));    	
+		contentPane.jxpanelExtraColumnTubing.jtxtTubingDiameter.setText(Float.toString((float)m_dTubingDiameter));    	
+		contentPane.jxpanelExtraColumnTubing.jtxtTubingLength.setText(Float.toString((float)m_dTubingLength));    	
+		contentPane.jxpanelMobilePhaseComposition.jcboSolventA.setSelectedIndex(0);
+		contentPane.jxpanelMobilePhaseComposition.jcboSolventB.setSelectedIndex(m_iSolventB);
+		
+		
+    	// Add the table space for the compound. Fill it in later with performCalculations().
+		contentPane.vectChemicalRows.clear();
+		for (int i = 0; i < m_vectCompound.size(); i++)
+		{
+			Vector<String> vectNewRow = new Vector<String>();
+	    	vectNewRow.add(Globals.CompoundNameArray[m_vectCompound.get(i).iCompoundIndex]);
+	    	vectNewRow.add(Float.toString((float)m_vectCompound.get(i).dConcentration));
+	    	vectNewRow.add("");
+	    	vectNewRow.add("");
+	    	vectNewRow.add("");
+	    	vectNewRow.add("");
+	    	vectNewRow.add("");
+	    	contentPane.vectChemicalRows.add(vectNewRow);
+		}
+    	updateCompoundComboBoxes();
+    	
+		contentPane.jxpanelGeneralProperties.jchkAutoTimeRange.setSelected(bAutomaticTimeRange);
+    	if (bAutomaticTimeRange)
+    	{
+    		contentPane.jxpanelGeneralProperties.jtxtInitialTime.setEnabled(false);
+    		contentPane.jxpanelGeneralProperties.jtxtFinalTime.setEnabled(false);
+    	}
+    	else
+    	{
+    		contentPane.jxpanelGeneralProperties.jtxtInitialTime.setEnabled(true);
+    		contentPane.jxpanelGeneralProperties.jtxtFinalTime.setEnabled(true);	    		
+    	}
+    	
+		performCalculations();
+		/*
+    	m_iSecondPlotType = 0;
+    	m_dTemperature = 25;
+    	m_bGradientMode = false;
+    	m_dSolventBFraction = 0.5;
+    	m_dMixingVolume = 200;
+    	m_dNonMixingVolume = 200;
+    	m_dColumnLength = 100;
+    	m_dColumnDiameter = 4.6;
+    	m_dInterparticlePorosity = 0.4;
+    	m_dIntraparticlePorosity = 0.4;
+    	m_dTotalPorosity = 0.64;
+    	m_dFlowRate = 2;
+    	m_dParticleSize = 5;
+    	m_dDiffusionCoefficient = 0.00001;
+    	m_dATerm = 1;
+    	m_dBTerm = 5;
+    	m_dCTerm = 0.05;
+    	m_dInjectionVolume = 5; //(in uL)
+    	m_dTimeConstant = 0.5;
+    	m_dStartTime = 0;
+    	m_dEndTime = 0;
+    	m_dNoise = 3;
+    	m_dSignalOffset = 30;
+    	m_iNumPoints = 3000;
+    	m_dEluentViscosity = 1;
+    	m_dBackpressure = 400;
+    	m_iSolventB = 0; // 0 = Acetonitrile, 1 = Methanol
+    	m_vectCompound.clear();
+    	Compound compound1 = new Compound();
+    	compound1.loadCompoundInfo(2, m_iSolventB);
+    	compound1.dConcentration = 5;
+    	this.m_vectCompound.add(compound1);
+    	
+    	Compound compound2 = new Compound();
+    	compound2.loadCompoundInfo(3, m_iSolventB);
+    	compound2.dConcentration = 25;
+    	this.m_vectCompound.add(compound2);
+    	
+    	Compound compound3 = new Compound();
+    	compound3.loadCompoundInfo(4, m_iSolventB);
+    	compound3.dConcentration = 40;
+    	this.m_vectCompound.add(compound3);
+
+    	Compound compound4 = new Compound();
+    	compound4.loadCompoundInfo(6, m_iSolventB);
+    	compound4.dConcentration = 15;
+    	this.m_vectCompound.add(compound4);
+
+    	Compound compound5 = new Compound();
+    	compound5.loadCompoundInfo(11, m_iSolventB);
+    	compound5.dConcentration = 10;
+    	this.m_vectCompound.add(compound5);
+    	
+    	m_iChromatogramPlotIndex = -1;
+    	m_iSinglePlotIndex = -1;
+    	m_iSecondPlotIndex = -1;
+    	m_dTubingLength = 0;
+    	m_dTubingDiameter = 5;*/
+    	
+    	return true;
+    }
+    
     public void actionPerformed(ActionEvent evt) 
 	{
 	    String strActionCommand = evt.getActionCommand();
@@ -1084,6 +1647,98 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 	        Toolkit toolkit = Toolkit.getDefaultToolkit();
 	        toolkit.getSystemClipboard().setContents(imageSelection, null);
 	    }
+	    else if (evt.getSource() == this.menuResetToDefaultValuesAction)
+		{
+			if (this.m_bDocumentChangedFlag)
+			{
+				String fileName;
+				if (this.m_currentFile == null)
+					fileName = "Untitled";
+				else
+					fileName = m_currentFile.getName();
+				
+		        int result = JOptionPane.showConfirmDialog(this,"Do you want to save changes to " + fileName + "?", "HPLC Simulator", JOptionPane.YES_NO_CANCEL_OPTION);
+		        
+		        if (result == JOptionPane.YES_OPTION)
+		        {
+		        	if (!saveFile(false))
+		        		return;
+		        }
+		        else if (result == JOptionPane.CANCEL_OPTION)
+		        {
+		        	return;
+		        }
+			}
+			m_currentFile = null;
+			
+			loadFile(null);
+		}
+		else if (evt.getSource() == this.menuLoadSettingsAction)
+		{
+			JFileChooser fc = new JFileChooser();
+			FileNameExtensionFilter filter = new FileNameExtensionFilter("HPLC Simulator Files (*.hplcsim)", "hplcsim");
+			fc.setFileFilter(filter);
+			fc.setDialogTitle("Open");
+			int returnVal = fc.showOpenDialog(this);
+            if (returnVal == JFileChooser.APPROVE_OPTION) 
+            {
+                m_currentFile = fc.getSelectedFile();
+
+                loadFile(m_currentFile);
+            }
+		}
+		else if (evt.getSource() == this.menuSaveSettingsAction)
+		{
+			saveFile(false);
+		}
+		else if (evt.getSource() == this.menuSaveSettingsAsAction)
+		{
+			saveFile(true);
+		}
+		else if (evt.getSource() == this.menuExitAction)
+		{
+			if (this.m_bDocumentChangedFlag)
+			{
+				String fileName;
+				if (this.m_currentFile == null)
+					fileName = "Untitled";
+				else
+					fileName = m_currentFile.getName();
+				
+		        int result = JOptionPane.showConfirmDialog(this,"Do you want to save changes to " + fileName + "?", "HPLC Simulator", JOptionPane.YES_NO_CANCEL_OPTION);
+		        
+		        if (result == JOptionPane.YES_OPTION)
+		        {
+		        	if (!saveFile(false))
+		        		return;
+		        }
+		        else if (result == JOptionPane.CANCEL_OPTION)
+		        {
+		        	return;
+		        }
+			}
+			
+			this.setVisible(false);
+			System.exit(0); 
+		}
+		else if (evt.getSource() == this.menuAboutAction)
+		{
+			Frame[] frames = Frame.getFrames();
+			AboutDialog aboutDialog = new AboutDialog(frames[0]);
+	    	Point dialogPosition = new Point(this.getSize().width / 2, this.getSize().height / 2);
+	    	dialogPosition.x -= aboutDialog.getWidth() / 2;
+	    	dialogPosition.y -= aboutDialog.getHeight() / 2;
+	    	aboutDialog.setLocation(dialogPosition);
+	    	
+	    	// Show the dialog.
+	    	aboutDialog.setVisible(true);
+
+		}
+		else if (evt.getSource() == this.menuHelpTopicsAction)
+		{
+			Globals.hbMainHelpBroker.setCurrentID("getting_started");
+			Globals.hbMainHelpBroker.setDisplayed(true);
+		}
 	}
 
 	//@Override
@@ -1172,6 +1827,8 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 		validateStartTime();
 		validateEndTime();
 		validateNumPoints();
+		validateTubingDiameter();
+		validateTubingLength();
 		
 		m_dTotalPorosity = this.m_dInterparticlePorosity + this.m_dIntraparticlePorosity * (1 - this.m_dInterparticlePorosity);
 		contentPane.jxpanelColumnProperties.jlblTotalPorosityOut.setText(formatter.format(m_dTotalPorosity));
@@ -1276,6 +1933,26 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 		m_dTheoreticalPlates = (m_dColumnLength / 10) / m_dHETP;
 		contentPane.jxpanelChromatographyProperties.jlblTheoreticalPlates.setText(NFormatter.format(m_dTheoreticalPlates));
 
+		// Calculate post-column tubing volume
+		double dTubingVolume = (this.m_dTubingLength / 100) * (Math.PI * Math.pow((this.m_dTubingDiameter * 0.0000254) / 2, 2) * 1000000000);
+		this.contentPane.jxpanelExtraColumnTubing.jlblTubingVolume.setText(formatter.format(dTubingVolume));
+
+		// Get extra-column tubing radius in units of cm
+		double dTubingRadius = (this.m_dTubingDiameter * 0.00254) / 2;
+
+		// Open tube velocity in cm/s
+		double dTubingOpenTubeVelocity = (m_dFlowRate / 60) / (Math.PI * Math.pow(dTubingRadius, 2));
+
+		// Calculate dispersion that will result from extra-column tubing
+		// in cm^2
+		double dTubingZBroadening = (2 * m_dDiffusionCoefficient * this.m_dTubingLength / dTubingOpenTubeVelocity) + ((Math.pow(dTubingRadius, 2) * m_dTubingLength * dTubingOpenTubeVelocity) / (24 * m_dDiffusionCoefficient));
+		
+		// convert to mL^2
+		double dTubingVolumeBroadening = Math.pow(Math.sqrt(dTubingZBroadening) * Math.PI * Math.pow(dTubingRadius, 2), 2);
+		
+		// convert to s^2
+		double dTubingTimeBroadening = Math.pow((Math.sqrt(dTubingVolumeBroadening) / m_dFlowRate) * 60, 2);
+		
 		// Calculate retention factors
 		int iNumCompounds = m_vectCompound.size();
 		
@@ -1394,7 +2071,7 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 		    	
 		    	// TODO: The following equation does not account for peak broadening due to injection volume.
 		    	// Use the final value of k to determine the peak width.
-		    	double dSigma = Math.sqrt(Math.pow((m_dVoidTime * (1 + kprime)) / Math.sqrt(m_dTheoreticalPlates), 2) + Math.pow(m_dTimeConstant, 2)/* + Math.pow(0.017 * m_dInjectionVolume / m_dFlowRate, 2)*/);
+		    	double dSigma = Math.sqrt(Math.pow((m_dVoidTime * (1 + kprime)) / Math.sqrt(m_dTheoreticalPlates), 2) + Math.pow(m_dTimeConstant, 2)/* + Math.pow(0.017 * m_dInjectionVolume / m_dFlowRate, 2)*/ + dTubingTimeBroadening);
 		    	m_vectCompound.get(iCompound).dSigma = dSigma;	    	
 		    	contentPane.vectChemicalRows.get(iCompound).set(4, formatter.format(dSigma));
 		    	
@@ -1412,12 +2089,12 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 			{
 				for (int i = 0; i < iNumCompounds; i++)
 				{
-			    	// Calculate lnk'w1
-			    	double lnkprimew1 = (m_vectCompound.get(i).dLogkwvsTSlope * this.m_dTemperature) + m_vectCompound.get(i).dLogkwvsTIntercept;
+			    	// Calculate logk'w1
+			    	double logkprimew1 = (m_vectCompound.get(i).dLogkwvsTSlope * this.m_dTemperature) + m_vectCompound.get(i).dLogkwvsTIntercept;
 			    	// Calculate S1
 			    	double S1 = -1 * ((m_vectCompound.get(i).dSvsTSlope * this.m_dTemperature) + m_vectCompound.get(i).dSvsTIntercept);
 					// Calculate k'
-			    	double kprime = Math.pow(10, lnkprimew1 - (S1 * this.m_dSolventBFraction));
+			    	double kprime = Math.pow(10, logkprimew1 - (S1 * this.m_dSolventBFraction));
 			    	contentPane.vectChemicalRows.get(i).set(2, formatter.format(kprime));
 			    	
 			    	if (contentPane.jxpanelPlotOptions.jcboRetentionFactorCompounds.getSelectedIndex() == i)
@@ -1432,7 +2109,7 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 			    	
 			    	// 9/22/11 - Peak broadening due to sample injection volume is underestimated.
 			    	//double dSigma = Math.sqrt(Math.pow(dRetentionTime / Math.sqrt(m_dTheoreticalPlates), 2) + Math.pow(m_dTimeConstant, 2) + Math.pow(0.017 * m_dInjectionVolume / m_dFlowRate, 2));
-			    	double dSigma = Math.sqrt(Math.pow(dRetentionTime / Math.sqrt(m_dTheoreticalPlates), 2) + Math.pow(m_dTimeConstant, 2) + (1.0/12.0) * Math.pow((m_dInjectionVolume / 1000.0) / (m_dFlowRate / 60.0), 2));
+			    	double dSigma = Math.sqrt(Math.pow(dRetentionTime / Math.sqrt(m_dTheoreticalPlates), 2) + Math.pow(m_dTimeConstant, 2) + (1.0/12.0) * Math.pow((m_dInjectionVolume / 1000.0) / (m_dFlowRate / 60.0), 2) + dTubingTimeBroadening);
 			    	m_vectCompound.get(i).dSigma = dSigma;	    	
 			    	contentPane.vectChemicalRows.get(i).set(4, formatter.format(dSigma));
 			    	
@@ -1466,6 +2143,9 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 	    	m_dStartTime = 0;
     	}
 
+    	// Clear the old chromatogram
+    	contentPane.m_GraphControl.RemoveAllSeries();
+
 		if (m_iSecondPlotType == 1)
 			plotGradient();
 		if (m_iSecondPlotType == 2 || m_iSecondPlotType == 3)
@@ -1478,12 +2158,11 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
     	// Calculate each data point
     	Random random = new Random();
     	
-    	// Clear the old chromatogram
-    	contentPane.m_GraphControl.RemoveSeries(m_iChromatogramPlotIndex);
+    	//contentPane.m_GraphControl.RemoveSeries(m_iChromatogramPlotIndex);
     	m_iChromatogramPlotIndex = -1;
     	
     	// Clear the single plot if it exists (the red plot that shows up if you click on a compound)
-    	contentPane.m_GraphControl.RemoveSeries(m_iSinglePlotIndex);
+    	//contentPane.m_GraphControl.RemoveSeries(m_iSinglePlotIndex);
     	m_iSinglePlotIndex = -1;
     	
     	if (this.m_vectCompound.size() > 0)
@@ -1507,7 +2186,7 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 	    		{
 	    			Compound curCompound = m_vectCompound.get(j);
 	    			//double dCthis = ((curCompound.dW / 1000000) / (curCompound.dSigma * (m_dFlowRate / (60 * 1000)))) * Math.exp(-0.5*Math.pow((dTime - curCompound.dRetentionTime) / (curCompound.dSigma), 2));
-	    			double dCthis = ((curCompound.dW / 1000000) / (Math.sqrt(Math.PI) * 2 * curCompound.dSigma * (m_dFlowRate / (60 * 1000)))) * Math.exp(-Math.pow((dTime - curCompound.dRetentionTime) / (2 * curCompound.dSigma), 2));
+	    			double dCthis = ((curCompound.dW / 1000000) / (Math.sqrt(2 * Math.PI) * curCompound.dSigma * (m_dFlowRate / (60 * 1000)))) * Math.exp(-Math.pow(dTime - curCompound.dRetentionTime, 2) / (2 * Math.pow(curCompound.dSigma, 2)));
 	    			dCTotal += dCthis;
 	    			
 	    			// If a compound is selected, then show it in a different color and without noise.
@@ -1545,6 +2224,8 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 		{
 			double dFinalValue = 0;
 			
+			//double[][] dPoints = new double[iNumPoints][2];
+			
 			for (int i = 0; i < iNumPoints; i++)
 			{
 				double dViscosity = 0;
@@ -1575,6 +2256,8 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 					// Backpressure in units of Pa
 					double dBackpressure = ((this.m_dOpenTubeVelocity / 100.0) * (this.m_dColumnLength / 1000.0) * (dViscosity / 1000.0) * 180.0 * Math.pow(1 - this.m_dInterparticlePorosity, 2)) / (Math.pow(this.m_dInterparticlePorosity, 3) * Math.pow(m_dParticleSize / 1000000, 2));
 				    contentPane.m_GraphControl.AddDataPoint(m_iSecondPlotIndex, m_dGradientArray[i][0] * 60, dBackpressure / 100000);
+				    //dPoints[i][0] = m_dGradientArray[i][0] * 60;
+				    //dPoints[i][1] = dBackpressure / 100000;
 				    dFinalValue = dBackpressure / 100000;
 				}
 				else if (this.m_iSecondPlotType == 3)

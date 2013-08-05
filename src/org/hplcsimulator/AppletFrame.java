@@ -31,7 +31,7 @@ public class AppletFrame extends JFrame
 	public static void main(String[] args) 
 	{
 		AppletFrame myFrame = new AppletFrame("HPLC Simulator"); // create frame with title
-	    myFrame.setResizable(false);
+	    myFrame.setResizable(true);
 	    
 	    myFrame.myApplet = new HPLCSimulatorApplet(); // define applet of interest
 

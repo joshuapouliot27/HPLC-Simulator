@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
 Sealed: true
-Main-Class: org.retentionprediction.AppletFrame
+Main-Class: org.hplcsimulator.AppletFrame
 
