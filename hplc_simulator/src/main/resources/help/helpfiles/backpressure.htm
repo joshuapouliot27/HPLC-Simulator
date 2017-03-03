@@ -1,0 +1,32 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+	<title>Backpressure indicator</title>
+	<link rel="stylesheet" type="text/css" href="default.css" title="Style">
+</head>
+<body topmargin="0px" leftmargin="0px" marginwidth="0px" marginheight="0px" >
+	<h1>Backpressure indicator</h1>
+    <p>Indicates the pressure drop across the column (in bar) at the given flow rate, eluent viscosity, and column geometry. In gradient mode, the backpressure indicator only shows &quot;--&quot;. To see the backpressure, you must plot it by choosing &quot;Plot backpressure&quot; in the &quot;Plot Options&quot; control panel.</p>
+    <h4>Calculation</h4>
+    <p>The pressure drop across the column is calculated from the Darcy equation. See Thompson, J. D.; Carr, P. W. <i>Anal. Chem.</i> <b>2002</b>, <i>74</i>, 4150-4159.
+</p>
+    <p><img src="images/backpressureeq.jpg"></p>
+    <p>where
+    <br>
+    <span class="symbol"><i>&#916;P</i></span> = pressure drop across column
+    <br>
+    <span class="symbol"><i>u<sub>s</sub></i></span> = open tube flow velocity
+    <br>
+    <span class="symbol"><i>&#951;</i></span> = eluent viscosity
+    <br>
+    <span class="symbol"><i>L</i></span> = column length
+    <br>
+    <span class="symbol"><i>&#949;<sub>e</sub></i></span> = interstitial porosity
+    <br>
+    <span class="symbol"><i>d<sub>p</sub></i></span> = particle size
+    </p>
+    <h4>Remarks</h4>
+    <p>For the purpose of this simulator, the pressure drop across the column is considered to be the only significant contributor to the backpressure. When adjusting the chromatographic conditions, be sure to check that the backpressure is within a reasonable range. Most HPLC instruments can reach a maximum pressure of 400 bar, while most UPLC instruments can reach a maximum pressure of 1000 bar.</p>
+</body>
+</html>

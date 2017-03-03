@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+	<title>Average Diffusion Coefficient indicator</title>
+	<link rel="stylesheet" type="text/css" href="default.css" title="Style">
+</head>
+<body topmargin="0px" leftmargin="0px" marginwidth="0px" marginheight="0px" >
+	<h1>Average Diffusion Coefficient indicator</h1>
+    <p>Indicates the average diffusion coefficient (in cm<sup>2</sup>/s) of the compounds as a function of eluent viscosity, temperature, solvent composition, and their molar volumes.</p>
+    <h4>Calculation</h4>
+    <p>See Wilke, C. R.; Chang, P. AICHE J. 1955, 1, 264-270.</p>
+    <p><img src="images/diffusioncoefficienteq.jpg"></p>
+    <p>where
+    <br>
+    <span class="symbol"><i>D<sub>e</sub></i></span> = diffusion coefficient (cm<sup>2</sup>/s) of the solute in the eluent
+    <br>
+    <span class="symbol"><i>T</i></span> = temperature (&deg;C)
+    <br>
+    <span class="symbol"><i>&#951;</i></span> = solvent viscosity (cP)
+    <br>
+    <span class="symbol"><i>x</i></span> = solvent association parameter<sup>1</sup>
+    <br>
+    <span class="symbol"><i>M</i></span> = molecular weight of solvent (g/mol)<sup>2</sup>
+    <br>
+    <span class="symbol"><i>V</i></span> = molar volume of solute (cm<sup>2</sup>/mol)<sup>3</sup>
+    </p>
+    <p><sup>1</sup>The solvent association parameter for the methanol/water solvent mixture is calculated from the following equation, given that the association parameter for water is 2.6 and for methanol is 1.9:</p>
+    <p><img src="images/associationparametereq.jpg"></p>
+    <p>where
+    <br>
+    <span class="symbol"><i>&#934;</i></span> = volume fraction methanol
+	</p>
+    <p><sup>2</sup>Since the solvent is a mixture of methanol and water, the molecular weight of the solvent is calculated as the weighted average of the molecular weights of the two solvents:</p>
+    <p><img src="images/solventmweq.jpg"></p>
+    <p><sup>3</sup>The molar volume of each solute is calculated from the sum of the appropriate atomic volumes given in Table 2 of Wilke, C. R.; Chang, P. AICHE J. 1955, 1, 264-270.</p>
+    <h4>Remarks</h4>
+    <p>Technically, each compound has its own diffusion coefficient because each one has a different molar volume. However, many of the calculated chromatographic values depend on the diffusion coefficient, so instead of calculating each parameter individually for each solute, the diffusion coefficients for each of the compounds are averaged into one value that is used for subsequent calculations.</p>
+</body>
+</html>

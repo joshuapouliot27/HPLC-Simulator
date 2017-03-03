@@ -1,0 +1,27 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+	<title>Eluent Viscosity indicator</title>
+	<link rel="stylesheet" type="text/css" href="default.css" title="Style">
+</head>
+<body topmargin="0px" leftmargin="0px" marginwidth="0px" marginheight="0px" >
+	<h1>Eluent Viscosity indicator</h1>
+    <p>Indicates the viscosity of the eluent (in cP) at the given solvent composition and temperature. In gradient mode, the eluent viscosity indicator only shows &quot;--&quot;. To see the eluent viscosity, you must plot it by choosing &quot;Plot mobile phase viscosity&quot; in the &quot;Plot Options&quot; control panel.</p>
+<h4>Calculation</h4>
+    <p>When acetonitrile is selected as the organic modifier, the eluent viscosity is calculated by the following equation, reported in Chen, H.; Horvath, C. <i>Anal. Methods Instrum.</i> <b>1993</b>, <i>1</i>, 213-222.</p>
+    <p><img src="images/viscosityacneq.jpg"></p>
+    <p>When methanol is selected as the organic modifier, the eluent viscosity is calculated by the following equation, based on data reported in Billen, J.; Broeckhoven, K.; Liekens, A.; Choikhet, K.; Rozing, G.; Desmet, G. <i>J. Chromatogr. A</i> <b>2008</b>, <i>1210</i>, 30-44.</p>
+    <p><img src="images/viscositymeoheq.jpg"></p>
+    <p>where
+    <br>
+    <span class="symbol"><i>&#951;</i></span> = eluent viscosity (cP)
+    <br>
+    <span class="symbol"><i>T</i></span> = temperature (&deg;C)
+    <br>
+    <span class="symbol"><i>&#934;</i></span> = volume fraction methanol
+    </p>
+    <h4>Remarks</h4>
+    <p>The eluent viscosity is useful for calculating the backpressure and the average diffusion coefficient.</p>
+</body>
+</html>
