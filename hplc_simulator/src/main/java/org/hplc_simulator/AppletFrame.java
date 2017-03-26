@@ -1,5 +1,7 @@
 package org.hplc_simulator;
 
+import org.hplc_simulator.HPLCSimulatorApplet;
+
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
