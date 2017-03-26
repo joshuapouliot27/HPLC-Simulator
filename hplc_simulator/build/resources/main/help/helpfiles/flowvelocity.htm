@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+	<title>Flow Velocity indicators</title>
+	<link rel="stylesheet" type="text/css" href="default.css" title="Style">
+</head>
+<body topmargin="0px" leftmargin="0px" marginwidth="0px" marginheight="0px" >
+	<h1>Flow Velocity indicators</h1>
+    <p>Indicates the linear velocity of mobile phase through the column. The flow velocity is represented four different ways: the open tube (or superficial) flow velocity, the interstitial flow velocity, the chromatographic flow velocity, and the reduced flow velocity.</p>
+    <h4>Open tube (superficial) flow velocity</h4>
+    <p>The open tube flow velocity is the linear velocity the mobile phase would have if the column were completely empty. It is calculated by:
+    <p><img src="images/superficialflowvelocityeq.jpg"></p>
+    <p>where
+    <br>
+    <span class="symbol"><i>u<sub>s</sub></i></span> = open tube (superficial) flow velocity
+    <br>
+    <span class="symbol"><i>F</i></span> = flow rate
+    <br>
+    <span class="symbol"><i>O</i></span> = cross-sectional area of column
+    </p>
+    <h4>Interstitial flow velocity</h4>
+    <p>The interstitial flow velocity is the linear velocity the mobile phase would have if it could only move between the particles (through the interstitial space). It is calculated by:
+    <p><img src="images/interstitialflowvelocityeq.jpg"></p>
+    <p>where
+    <br>
+    <span class="symbol"><i>u<sub>e</sub></i></span> = interstitial flow velocity
+    <br>
+    <span class="symbol"><i>&#949;<sub>e</sub></i></span> = interstitial porosity
+    </p>
+    <h4>Chromatographic flow velocity</h4>
+    <p>The chromatographic flow velocity is the linear velocity the mobile phase would have if it could move between the particles (through the interstitial space) and through the space within the particles. It is calculated by:
+    <p><img src="images/chromatographicflowvelocityeq.jpg"></p>
+    <p>where
+    <br>
+    <span class="symbol"><i>u</i></span> = chromatographic flow velocity
+    <br>
+    <span class="symbol"><i>&#949;<sub>T</sub></i></span> = total porosity
+    </p>
+    <h4>Reduced flow velocity</h4>
+    <p>The reduced flow velocity is the interstitial flow velocity normalized to the particle diameter and the molecular diffusivity of the solute in the eluent. It is useful for comparing different chromatographic conditions. In physical terms, it represents the relative contributions of convection and diffusion to axial transport of the analyte through the column. So, when <span class="symbol"><i>&#957;</i></span> = 1, convection and diffusion contribute equally to movement of the analyte through the column. When <span class="symbol"><i>&#957;</i></span> &lt;&lt; 1, axial transport is dominated by diffusion, and when <span class="symbol"><i>&#957;</i></span> &gt;&gt; 1, axial transport is dominated by convection.It is calculated by:
+    <p><img src="images/reducedflowvelocityeq.jpg"></p>
+    <p>where
+    <br>
+    <span class="symbol"><i>&#957;</i></span> = reduced flow velocity
+    <br>
+    <span class="symbol"><i>d<sub>p</sub></i></span> = stationary phase particle diameter
+    <br>
+    <span class="symbol"><i>D<sub>e</sub></i></span> = molecular diffusivity of the solute in the eluent
+    </p>
+    <h4>Remarks</h4>
+    <p>Different representations of the flow velocity are useful for calculating different chromatographic properties. For example, open tube flow velocity is used to calculate the pressure drop across the column while the reduced flow velocity is used to calculated the reduced plate height.</p>
+</body>
+</html>

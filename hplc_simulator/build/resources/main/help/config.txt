@@ -1,0 +1,1 @@
+IndexRemove C:\Documents and Settings\Paul\My Documents\Eclipse Workspaces\HPLC Simulator\src\org\hplcsimulator\help\

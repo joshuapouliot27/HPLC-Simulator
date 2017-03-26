@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/HPLC-Simulator.iml" filepath="$PROJECT_DIR$/.idea/modules/HPLC-Simulator.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/hplc_simulator/hplc_simulator.iml" filepath="$PROJECT_DIR$/.idea/modules/hplc_simulator/hplc_simulator.iml" group="hplc_simulator" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/hplc_simulator/hplc_simulator_main.iml" filepath="$PROJECT_DIR$/.idea/modules/hplc_simulator/hplc_simulator_main.iml" group="hplc_simulator" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/hplc_simulator/hplc_simulator_test.iml" filepath="$PROJECT_DIR$/.idea/modules/hplc_simulator/hplc_simulator_test.iml" group="hplc_simulator" />
+    </modules>
+  </component>
+</project>

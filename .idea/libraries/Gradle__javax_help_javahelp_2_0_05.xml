@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: javax.help:javahelp:2.0.05">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/javax.help/javahelp/2.0.05/ca70822c47a67fc3a11670270567c2d01566dae1/javahelp-2.0.05.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/javax.help/javahelp/2.0.05/1f92cd0c755a55c274b28a4691c30307b3ea63c0/javahelp-2.0.05-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -40,17 +40,7 @@ import java.util.Vector;
 
 import javax.help.CSH;
 import javax.help.HelpSet;
-import javax.swing.JApplet;
-import javax.swing.JFileChooser;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JSlider;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
@@ -273,12 +263,7 @@ public class HPLCSimulatorApplet extends JApplet implements ActionListener, Chan
 
 		//Execute a job on the event-dispatching thread; creating this applet's GUI.
         try {
-        //    SwingUtilities.invokeAndWait(new Runnable() 
-        //    {
-        //        public void run() {
-                	createGUI();
-        //        }
-        //    });
+            SwingUtilities.invokeAndWait(() -> createGUI());
         } catch (Exception e) { 
             System.err.println("createGUI didn't complete successfully");
             System.err.println(e.getMessage());

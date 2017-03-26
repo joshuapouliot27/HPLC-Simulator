@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='ISO-8859-1'  ?>
+
+<!DOCTYPE toc
+  PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp TOC Version 2.0//EN"
+         "http://java.sun.com/products/javahelp/toc_2_0.dtd">
+<toc version="2.0">
+<tocitem text="HPLC Simulator" target="main_index">
+</tocitem>
+<tocitem text="Mobile Phase Composition" target="panel.mobilephasecomposition">
+	<tocitem text="Solvent A" target="controls.solventa"/>
+	<tocitem text="Solvent B" target="controls.solventb"/>
+	<tocitem text="Isocratic elution mode" target="controls.isocraticelutionmode"/>
+	<tocitem text="Gradient elution mode" target="controls.gradientelutionmode"/>
+	<tocitem text="Solvent B fraction" target="controls.solventbfraction"/>
+	<tocitem text="Gradient program table" target="controls.flowvelocity"/>
+	<tocitem text="Mixing volume" target="controls.mixingvolume"/>
+	<tocitem text="Non-mixing volume" target="controls.nonmixingvolume"/>
+	<tocitem text="Total dwell volume" target="controls.totaldwellvolume"/>
+	<tocitem text="Dwell time" target="controls.dwelltime"/>
+</tocitem>
+<tocitem text="Plot Options" target="panel.plotoptions">
+</tocitem>
+<tocitem text="Chromatographic Properties" target="panel.chromatographicproperties">
+	<tocitem text="Temperature" target="controls.temperature"/>
+	<tocitem text="Injection volume" target="controls.injectionvolume"/>
+	<tocitem text="Flow rate" target="controls.flowrate"/>
+	<tocitem text="Open tube flow velocity" target="controls.flowvelocity"/>
+	<tocitem text="Interstitial flow velocity" target="controls.flowvelocity"/>
+	<tocitem text="Chromatographic flow velocity" target="controls.flowvelocity"/>
+	<tocitem text="Reduced flow velocity" target="controls.flowvelocity"/>
+	<tocitem text="HETP" target="controls.hetp"/>
+	<tocitem text="Theoretical plates" target="controls.theoreticalplates"/>
+	<tocitem text="Backpressure" target="controls.backpressure"/>
+</tocitem>
+<tocitem text="General Properties" target="panel.generalproperties">
+	<tocitem text="Eluent viscosity" target="controls.eluentviscosity"/>
+	<tocitem text="Average diffusion coefficient" target="controls.diffusioncoefficient"/>
+	<tocitem text="Time constant" target="controls.timeconstant"/>
+	<tocitem text="Signal offset" target="controls.signaloffset"/>
+	<tocitem text="Noise" target="controls.noise"/>
+	<tocitem text="Automatically determine time span" target="controls.automatictimespan"/>
+	<tocitem text="Initial time" target="controls.initialtime"/>
+	<tocitem text="Final time" target="controls.finaltime"/>
+	<tocitem text="# Data points" target="controls.numdatapoints"/>
+</tocitem>
+<tocitem text="Column Properties" target="panel.columnproperties">
+	<tocitem text="Stationary phase" target="controls.stationaryphase"/>
+	<tocitem text="Length" target="controls.columnlength"/>
+	<tocitem text="Diameter" target="controls.columndiameter"/>
+	<tocitem text="Particle size" target="controls.particlesize"/>
+	<tocitem text="Interparticle porosity" target="controls.interparticleporosity"/>
+	<tocitem text="Intraparticle porosity" target="controls.intraparticleporosity"/>
+	<tocitem text="Total porosity" target="controls.totalporosity"/>
+	<tocitem text="Void volume" target="controls.voidvolume"/>
+	<tocitem text="Void time" target="controls.voidtime"/>
+	<tocitem text="Van Deemter terms" target="controls.vandeemter"/>
+	<tocitem text="Reduced plate height" target="controls.reducedplateheight"/>
+</tocitem>
+<tocitem text="Compounds">
+	<tocitem text="Compound" target="tut.quickstart"/>
+	<tocitem text="Concentration" target="tut.quickstart"/>
+	<tocitem text="k\'" target="tut.quickstart"/>
+	<tocitem text="tR" target="tut.quickstart"/>
+	<tocitem text="N" target="tut.quickstart"/>
+	<tocitem text="sigma total" target="tut.quickstart"/>
+	<tocitem text="W" target="tut.quickstart"/>
+</tocitem>
+</toc>

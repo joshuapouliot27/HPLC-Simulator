@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='ISO-8859-1' ?>
+<!DOCTYPE map
+  PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp Map Version 1.0//EN"
+         "http://java.sun.com/products/javahelp/map_1_0.dtd">
+
+<map version="1.0">
+	<mapID target="getting_started" url="helpfiles/main_index.htm">
+	<mapID target="tutorials" url="helpfiles/tutorials.htm">
+	<mapID target="panel.mobilephasecomposition" url="helpfiles/mobilephasecomposition.htm">
+	<mapID target="controls.solventa" url="helpfiles/solventa.htm" />
+	<mapID target="controls.solventb" url="helpfiles/solventb.htm" />
+	<mapID target="controls.isocraticelutionmode" url="helpfiles/isocraticelutionmode.htm" />
+	<mapID target="controls.gradientelutionmode" url="helpfiles/gradientelutionmode.htm" />
+	<mapID target="controls.solventbfraction" url="helpfiles/solventbfraction.htm" />
+	<mapID target="controls.gradientprogramtable" url="helpfiles/gradientprogramtable.htm" />
+	<mapID target="controls.mixingvolume" url="helpfiles/mixingvolume.htm" />
+	<mapID target="controls.nonmixingvolume" url="helpfiles/nonmixingvolume.htm" />
+	<mapID target="controls.totaldwellvolume" url="helpfiles/dwellvolume.htm" />
+	<mapID target="controls.dwelltime" url="helpfiles/dwelltime.htm" />
+	<mapID target="panel.plotoptions" url="helpfiles/plotoptions.htm">
+	<mapID target="panel.chromatographicproperties" url="helpfiles/chromatographicproperties.htm">
+	<mapID target="controls.temperature" url="helpfiles/temperature.htm" />
+	<mapID target="controls.injectionvolume" url="helpfiles/injectionvolume.htm" />
+	<mapID target="controls.flowrate" url="helpfiles/flowrate.htm" />
+	<mapID target="controls.flowvelocity" url="helpfiles/flowvelocity.htm" />
+	<mapID target="controls.hetp" url="helpfiles/hetp.htm" />
+	<mapID target="controls.theoreticalplates" url="helpfiles/theoreticalplates.htm" />
+	<mapID target="controls.backpressure" url="helpfiles/backpressure.htm" />
+	<mapID target="panel.generalproperties" url="helpfiles/generalproperties.htm">
+	<mapID target="controls.eluentviscosity" url="helpfiles/eluentviscosity.htm" />
+	<mapID target="controls.diffusioncoefficient" url="helpfiles/diffusioncoefficient.htm" />
+	<mapID target="controls.timeconstant" url="helpfiles/timeconstant.htm" />
+	<mapID target="controls.signaloffset" url="helpfiles/signaloffset.htm" />
+	<mapID target="controls.noise" url="helpfiles/noise.htm" />
+	<mapID target="controls.automatictimespan" url="helpfiles/automatictimespan.htm" />
+	<mapID target="controls.initialtime" url="helpfiles/initialtime.htm" />
+	<mapID target="controls.finaltime" url="helpfiles/finaltime.htm" />
+	<mapID target="controls.numdatapoints" url="helpfiles/numdatapoints.htm" />
+	<mapID target="panel.columnproperties" url="helpfiles/columnproperties.htm">
+	<mapID target="controls.stationaryphase" url="helpfiles/stationaryphase.htm">
+	<mapID target="controls.columnlength" url="helpfiles/columnlength.htm" />
+	<mapID target="controls.columndiameter" url="helpfiles/columndiameter.htm" />
+	<mapID target="controls.particlesize" url="helpfiles/particlesize.htm" />
+	<mapID target="controls.interparticleporosity" url="helpfiles/interparticleporosity.htm" />
+	<mapID target="controls.intraparticleporosity" url="helpfiles/intraparticleporosity.htm" />
+	<mapID target="controls.totalporosity" url="helpfiles/totalporosity.htm" />
+	<mapID target="controls.voidvolume" url="helpfiles/voidvolume.htm" />
+	<mapID target="controls.voidtime" url="helpfiles/voidtime.htm" />
+	<mapID target="controls.vandeemter" url="helpfiles/vandeemter.htm" />
+	<mapID target="controls.reducedplateheight" url="helpfiles/reducedplateheight.htm" />
+</map>
